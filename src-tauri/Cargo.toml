@@ -1,0 +1,31 @@
+[package]
+name = "acompanion"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+default-run = "acompanion"
+
+[lib]
+name = "acompanion"
+path = "src/lib.rs"
+
+[[bin]]
+name = "acompanion"
+path = "src/main.rs"
+# no tests, and a Tauri-linked test harness may not start on Windows (no comctl32 v6 manifest)
+test = false
+
+[[bin]]
+name = "re"
+path = "src/bin/re.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+etherparse = "0.21"
+libloading = "0.9"
+serde_json = "1"
+tauri = { version = "2", features = [] }

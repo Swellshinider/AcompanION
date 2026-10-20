@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 26px;
+  padding: 0 4px 0 10px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  cursor: move;
+  user-select: none;
+}
+
+.title {
+  color: var(--muted);
+  font: 600 11px var(--ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.x {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  color: var(--muted);
+  font: 16px/1 var(--ui);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--panel-2);
+    color: var(--text);
+  }
+}
+
+// `contain: layout` makes the pets map's `position: fixed` fill this area instead of the whole window
+main {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  contain: layout;
+  overflow: auto;
+  padding: 8px 10px;
+}
+
+// the radar fills the area by itself: nothing to scroll or pad
+main.map {
+  overflow: hidden;
+  padding: 0;
+}
+
+// over the map's top left, opposite the zoom buttons; above the filled map (z-index 20 in pets.scss)
+.fade {
+  position: absolute;
+  top: 8px;
+  left: 6px;
+  z-index: 30;
+  width: 72px;
+  margin: 0;
+  accent-color: var(--gold-hi);
+  cursor: pointer;
+}
+
+.who {
+  margin: 0 0 8px;
+  font: 600 15px var(--display);
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+}

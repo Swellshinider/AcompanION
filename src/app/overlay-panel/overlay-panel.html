@@ -1,0 +1,50 @@
+<div id="overlay-panel" class="panel" popover>
+  <h3 i18n="@@overlayPanelTitle">Overlay</h3>
+
+  <label class="check">
+    <input type="checkbox" name="open" [checked]="s().open" (change)="toggle('open', $event)" />
+    <span i18n="@@overlayShow">Show overlay</span>
+  </label>
+
+  <fieldset>
+    <legend i18n="@@overlayView">View</legend>
+    <label class="check">
+      <input type="radio" name="view" [checked]="s().view === 'radar'" (change)="set({ view: 'radar' })" />
+      <span i18n="@@overlayRadar">Radar</span>
+    </label>
+    <label class="check">
+      <input type="radio" name="view" [checked]="s().view === 'dailies'" (change)="set({ view: 'dailies' })" />
+      <span i18n="@@overlayDailies">Dailies</span>
+    </label>
+    <label class="check">
+      <input type="radio" name="view" [checked]="s().view === 'meter'" (change)="set({ view: 'meter' })" />
+      <span i18n="@@overlayMeter">Meter</span>
+    </label>
+  </fieldset>
+
+  <label class="range">
+    <span i18n="@@overlayOpacity">Opacity</span>
+    <input type="range" name="opacity" [min]="minOpacity" max="100" step="5" [value]="s().opacity" (input)="opacity($event)" />
+    <output>{{ s().opacity }}%</output>
+  </label>
+
+  <label class="check">
+    <input type="checkbox" name="onTop" [checked]="s().onTop" (change)="toggle('onTop', $event)" />
+    <span i18n="@@overlayOnTop">Keep above other windows</span>
+  </label>
+
+  <label class="check">
+    <input type="checkbox" name="clickThrough" [checked]="s().clickThrough" (change)="toggle('clickThrough', $event)" />
+    <span i18n="@@overlayClickThrough">Let clicks pass through</span>
+  </label>
+
+  <label class="check">
+    <input type="checkbox" name="autoHide" [checked]="s().autoHide" (change)="toggle('autoHide', $event)" />
+    <span i18n="@@overlayAutoHide">Hide when the game is closed or the map is unknown</span>
+  </label>
+
+  <p class="note" i18n="@@overlayNote">With clicks passing through, the overlay cannot be moved or closed: turn it off here. It shows over the game only in windowed or borderless mode; on another monitor any mode works.</p>
+  @if (failed()) {
+    <p class="err" role="alert" i18n="@@overlayFailed">The overlay could not be opened.</p>
+  }
+</div>

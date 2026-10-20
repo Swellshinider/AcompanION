@@ -1,0 +1,291 @@
+<button type="button" class="back" (click)="back.emit()">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5" /></svg>
+  <ng-container i18n="@@back">Back</ng-container>
+  <kbd aria-hidden="true">Esc</kbd>
+</button>
+
+<div class="page-h">
+  <h2 i18n="@@petsTitle">Pets</h2>
+  @if (collection(); as c) {
+    <span class="meta" i18n="@@petsUpdated">Updated {{ ago(c.updatedUs) }} ago</span>
+  }
+</div>
+
+@if (collection(); as c) {
+<div class="tabs" role="tablist" i18n-aria-label="@@petsTabs" aria-label="Pets views">
+  <button type="button" class="tab" role="tab" id="tab-collection" aria-controls="panel-collection" [attr.aria-selected]="tab() === 'collection'" (click)="setTab('collection')" i18n="@@petsTabCollection">Collection</button>
+  @if (farm()) {
+    <button type="button" class="tab" role="tab" id="tab-map" aria-controls="panel-map" [attr.aria-selected]="tab() === 'map'" (click)="setTab('map')" i18n="@@petsTabMap">Map</button>
+  }
+</div>
+
+@if (tab() === 'collection') {
+<div role="tabpanel" id="panel-collection" aria-labelledby="tab-collection">
+<div class="summary">
+  <div class="stat">
+    <span class="k" i18n="@@petsObtained">Obtained</span>
+    <span class="v">{{ c.obtained | number }}<small>/{{ c.total | number }}</small></span>
+  </div>
+  @for (l of [1, 2, 3]; track l) {
+    <div class="stat">
+      <span class="k" i18n="@@petsLevelN">Level {{ l }}</span>
+      <span class="v">{{ c.byLevel[l] | number }}</span>
+    </div>
+  }
+  <div class="stat">
+    <span class="k" i18n="@@petsSoulsToMax">Souls to max all</span>
+    <span class="v">{{ c.soulsToMax | number }}</span>
+  </div>
+</div>
+
+@if (c.actives.length) {
+  <section class="sec" data-sec="active">
+    <div class="sec-h"><h3 i18n="@@petsActive">Active pets</h3></div>
+    <div class="actives">
+      @for (a of c.actives; track a.character) {
+        <div class="active">
+          <span class="sigil" aria-hidden="true">{{ a.character.charAt(0) }}</span>
+          <span class="who"><b>{{ a.character }}</b><span>{{ a.pet }}</span></span>
+        </div>
+      }
+    </div>
+  </section>
+}
+
+@if (closest().length) {
+  <section class="sec" data-sec="closest">
+    <div class="sec-h">
+      <h3 i18n="@@petsClosest">Closest to the next level</h3>
+      <span class="meta" i18n="@@petsClosestMeta">souls missing</span>
+    </div>
+    <div class="cards">
+      @for (r of closest(); track r.id) {
+        <ng-container [ngTemplateOutlet]="petTpl" [ngTemplateOutletContext]="{ $implicit: r }" />
+      }
+    </div>
+  </section>
+}
+
+<section class="sec" data-sec="all">
+  <div class="sec-h">
+    <h3 i18n="@@petsAll">All pets</h3>
+    <div class="chips" role="group" i18n-aria-label="@@petsFilter" aria-label="Filter by level">
+      <button type="button" class="chip" [class.on]="filter() === null" [attr.aria-pressed]="filter() === null" (click)="filter.set(null)" i18n="@@petsFilterAll">All</button>
+      @for (l of levels; track l) {
+        <button type="button" class="chip" [class.on]="filter() === l" [attr.aria-pressed]="filter() === l" (click)="filter.set(l)">
+          @if (l === 0) { <ng-container i18n="@@petsFilterLocked">Locked</ng-container> }
+          @else { <ng-container i18n="@@petsLevelN">Level {{ l }}</ng-container> }
+        </button>
+      }
+    </div>
+  </div>
+  <div class="cards">
+    @for (r of listed(); track r.id) {
+      <ng-container [ngTemplateOutlet]="petTpl" [ngTemplateOutletContext]="{ $implicit: r }" />
+    }
+  </div>
+</section>
+</div>
+} @else if (farm(); as f) {
+<section class="sec" data-sec="farm" role="tabpanel" id="panel-map" aria-labelledby="tab-map">
+  <div class="sec-h">
+    <h3 i18n="@@farmTitle">Where to farm</h3>
+    @if (picked() !== null) {
+      <button type="button" class="chip on picked" (click)="picked.set(null)" i18n-aria-label="@@farmUnpick" aria-label="Show all pets again">{{ pickedName() }} ×</button>
+    } @else {
+      <div class="chips" role="group" i18n-aria-label="@@farmFilter" aria-label="Pets on the map">
+        <button type="button" class="chip" [class.on]="farmFilter() === 'all'" [attr.aria-pressed]="farmFilter() === 'all'" (click)="farmFilter.set('all')" i18n="@@petsFilterAll">All</button>
+        <button type="button" class="chip" [class.on]="farmFilter() === 'open'" [attr.aria-pressed]="farmFilter() === 'open'" (click)="farmFilter.set('open')" i18n="@@farmNotMax">Not maxed</button>
+        <button type="button" class="chip" [class.on]="farmFilter() === 'closest'" [attr.aria-pressed]="farmFilter() === 'closest'" (click)="farmFilter.set('closest')" i18n="@@farmClosest">Closest</button>
+        @for (l of levels; track l) {
+          <button type="button" class="chip" [class.on]="farmFilter() === l" [attr.aria-pressed]="farmFilter() === l" (click)="farmFilter.set(l)">
+            @if (l === 0) { <ng-container i18n="@@petsFilterLocked">Locked</ng-container> }
+            @else { <ng-container i18n="@@petsLevelN">Level {{ l }}</ng-container> }
+          </button>
+        }
+      </div>
+    }
+  </div>
+  @if (region(); as r) {
+    <div class="map-layout">
+      <div class="stage" [class.filled]="filled()">
+        <div class="stage-top">
+          <div class="chips regions" role="group" i18n-aria-label="@@farmRegions" aria-label="Region">
+            @for (x of f.regions; track x.key) {
+              <button type="button" class="chip" [class.on]="x.key === r.key" [attr.aria-pressed]="x.key === r.key" (click)="regionKey.set(x.key)">{{ x.name }} <small>{{ x.monsters.length }}</small></button>
+            }
+          </div>
+          <div class="tools">
+            <span class="hint" i18n="@@farmHint">Scroll to zoom, drag to move, click a monster to find it.</span>
+            @if (overlay() ? panned() : me()) {
+              <button type="button" class="chip me-btn" (click)="centerOnMe()" i18n="@@farmCenterMe">Centre on me</button>
+            }
+            <button type="button" class="chip" (click)="zoomBy(1.5)" [disabled]="zoom() >= maxZoom" i18n-aria-label="@@farmZoomIn" aria-label="Zoom in">+</button>
+            <button type="button" class="chip" (click)="zoomBy(1 / 1.5)" [disabled]="zoom() <= 1" i18n-aria-label="@@farmZoomOut" aria-label="Zoom out">−</button>
+            <button type="button" class="chip route-btn" [attr.aria-pressed]="showRoute()" (click)="showRoute.set(!showRoute())" i18n="@@farmRoute">Route</button>
+            <button type="button" class="chip legend-btn" [attr.aria-pressed]="legend()" (click)="legend.set(!legend())" i18n="@@farmLegend">Legend</button>
+            <button type="button" class="chip reset-btn" (click)="resetView()" [disabled]="zoom() === 1" i18n="@@farmReset">Reset</button>
+            <button type="button" class="chip fill" [attr.aria-pressed]="filled()" (click)="filled.set(!filled())">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" /></svg>
+              @if (filled()) { <ng-container i18n="@@farmExitFill">Exit fill</ng-container> }
+              @else { <ng-container i18n="@@farmFill">Fill</ng-container> }
+            </button>
+          </div>
+        </div>
+        @if (view(); as v) {
+        <div class="stage-map" #stageMap>
+          <svg class="map" [class.dragging]="dragging()" [attr.viewBox]="v.x + ' ' + v.y + ' ' + v.w + ' ' + v.h" [style.aspect-ratio]="overlay() ? null : r.box.w + ' / ' + r.box.h" [style.--ar]="r.box.w / r.box.h" [style.max-width.px]="filled() ? null : mapHeight * r.box.w / r.box.h"
+            role="img" i18n-aria-label="@@farmMap" aria-label="Spawn points of the monsters listed below"
+            (wheel)="onWheel($event)" (pointerdown)="onDown($event)" (pointermove)="onMove($event)" (pointerup)="onUp()" (pointercancel)="onUp()">
+            <image [attr.href]="r.image.href" [attr.x]="r.image.x" [attr.y]="r.image.y" [attr.width]="r.image.w" [attr.height]="r.image.h" />
+            @for (m of r.monsters; track m.id) {
+              <path [class]="'lv' + m.petLevel" [class.dim]="active() !== null && active()!.id !== m.id" [attr.d]="m.d" [attr.stroke-width]="unit()"
+                (pointerenter)="hovered.set(m.id)" (pointerleave)="hovered.set(null)" (click)="select(m, false)" />
+            }
+            @if (active(); as a) {
+              <path class="halo" [attr.d]="a.d" [attr.stroke-width]="unit() * 2.6" />
+              <path [class]="'lv' + a.petLevel + ' lit'" [attr.d]="a.d" [attr.stroke-width]="unit() * 1.7" />
+            }
+            @if (route(); as rt) {
+              @if (me(); as p) {
+                @if (next(); as n) {
+                  <line class="route-next" [attr.x1]="p.x" [attr.y1]="p.y" [attr.x2]="n.x" [attr.y2]="n.y" [attr.stroke-width]="unit() * 0.3" [attr.stroke-dasharray]="unit() * 1.5 + ' ' + unit()" />
+                }
+              }
+              <path class="route" [attr.d]="rt.d" [attr.stroke-width]="unit() * 0.35" />
+              @for (s of rt.stops; track $index) {
+                <circle class="stop" [class.done]="visited().has($index)" [attr.cx]="s.x" [attr.cy]="s.y" [attr.r]="unit() * 1.1" [attr.stroke-width]="unit() * 0.25" />
+                <text class="stop-n" [class.done]="visited().has($index)" [attr.x]="s.x" [attr.y]="s.y" [attr.font-size]="unit() * 1.4" text-anchor="middle" dominant-baseline="central">{{ $index + 1 }}</text>
+              }
+            }
+            @for (l of live(); track l.entity) {
+              <circle [class]="'live lv' + l.petLevel"
+                [attr.cx]="l.x" [attr.cy]="l.y" [attr.r]="unit() * 0.9" [attr.stroke-width]="unit() * 0.3" />
+            }
+            @if (me(); as p) {
+              <circle class="me" [attr.cx]="p.x" [attr.cy]="p.y" [attr.r]="unit() * 1.3" [attr.stroke-width]="unit() * 0.4" />
+            }
+            @for (z of r.labels; track z.zone) {
+              <text [attr.x]="z.x" [attr.y]="z.y" [attr.font-size]="r.dot / zoom() * 2.4" text-anchor="middle">{{ z.zone }}</text>
+            }
+          </svg>
+          @if (legend()) {
+            <ul class="legend">
+              @for (l of levels; track l) {
+                <li>
+                  <i [class]="'lv' + l" aria-hidden="true"></i>
+                  @if (l === 0) { <ng-container i18n="@@petsFilterLocked">Locked</ng-container> }
+                  @else if (l === 3) { <ng-container i18n="@@petsMax">Max</ng-container> }
+                  @else { <ng-container i18n="@@petsLevelN">Level {{ l }}</ng-container> }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+        }
+        <div class="stage-foot">
+          @if (radar()) {
+            <p class="live-note" data-live>
+              <span i18n="@@farmInView">In view: {{ live().length }}</span>
+              @if (me(); as p) { · <span i18n="@@farmFix">Your last position: {{ fixAge(p.us) }} ago</span> }
+            </p>
+          }
+          @if (showRoute()) {
+            <p class="route-note" data-route>
+              @if (next(); as n) {
+                <b i18n="@@farmRouteNext">Next {{ n.n }}/{{ n.of }}</b> · {{ n.monsters }} · {{ n.pets }} · <span i18n="@@farmRouteSouls">{{ n.souls | number }} souls left</span>
+              } @else if (!route()) {
+                <span i18n="@@farmRouteNone">No open pets to farm here.</span>
+              }
+            </p>
+          }
+          @if (overlay() && gain(); as g) {
+            <p class="gain" data-gain>
+              <b>{{ g.name }}</b> ·
+              @if (g.next === null) { <ng-container i18n="@@petsMax">Max</ng-container> }
+              @else { <ng-container i18n="@@petsLevelN">Level {{ g.level }}</ng-container> · {{ g.souls | number }}/{{ g.next | number }} }
+            </p>
+          }
+          <p class="cap" aria-live="polite">
+            @if (active(); as a) {
+              <b>{{ a.name }}</b> <span i18n="@@farmLevel">Lv {{ a.level }}</span> · {{ a.zones.join(', ') }} · {{ a.petName }}
+              @if (a.toNext > 0) { · <ng-container i18n="@@farmNeeds">{{ a.toNext }} to go</ng-container> }
+            }
+          </p>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="side-h">
+          <h4 i18n="@@farmMonsters">Monsters</h4>
+          <span class="meta" i18n="@@farmInRegion">{{ r.monsters.length }} in region</span>
+        </div>
+        <ul class="rows farm">
+          @for (m of r.monsters; track m.id) {
+            <ng-container [ngTemplateOutlet]="monsterTpl" [ngTemplateOutletContext]="{ $implicit: m, onMap: true }" />
+          }
+        </ul>
+      </aside>
+    </div>
+  } @else {
+    <p class="note" i18n="@@farmEmpty">No monsters on the map for this selection.</p>
+  }
+  @if (f.dungeons.length) {
+    <div class="sec-h dungeons"><h3 i18n="@@farmDungeons">Only in dungeons</h3></div>
+    <ul class="rows farm">
+      @for (m of f.dungeons; track m.id) {
+        <ng-container [ngTemplateOutlet]="monsterTpl" [ngTemplateOutletContext]="{ $implicit: m }" />
+      }
+    </ul>
+  }
+</section>
+}
+} @else {
+  <div class="empty">
+    <p i18n="@@petsEmpty">No pets yet.</p>
+    <p class="note" i18n="@@petsEmptyNote">Pets are read when a character enters the world. Log in with capture running and they appear here.</p>
+  </div>
+}
+
+<ng-template #petTpl let-r>
+  <button type="button" class="pcard" [class.is-max]="r.next === null" [class.is-locked]="r.level === 0" [disabled]="!farm()" (click)="pick(r.id)">
+    <span class="top">
+      <span class="nm">
+        <span class="n">{{ r.name }}</span>
+        @switch (r.genus) {
+          @case ('Cogni') { <span class="sub" i18n="@@genusCogni">Cogni</span> }
+          @case ('Fera') { <span class="sub" i18n="@@genusFera">Fera</span> }
+          @case ('Natura') { <span class="sub" i18n="@@genusNatura">Natura</span> }
+          @case ('Varian') { <span class="sub" i18n="@@genusVarian">Varian</span> }
+          @case ('Special') { <span class="sub" i18n="@@genusSpecial">Special</span> }
+        }
+      </span>
+      <span class="lv">
+        @if (r.level === 0) { <ng-container i18n="@@petsFilterLocked">Locked</ng-container> }
+        @else { <ng-container i18n="@@petsLevelN">Level {{ r.level }}</ng-container> }
+      </span>
+    </span>
+    <span class="meter">
+      <span class="bar" role="progressbar" [attr.aria-label]="r.name" aria-valuemin="0" [attr.aria-valuemax]="r.next ?? 1" [attr.aria-valuenow]="r.next === null ? 1 : r.souls">
+        <i [style.width.%]="pct(r)"></i>
+      </span>
+      <span class="val">
+        @if (r.next === null) { <ng-container i18n="@@petsMax">Max</ng-container> }
+        @else { {{ r.souls | number }}<small>/{{ r.next | number }}</small> }
+      </span>
+    </span>
+    @if (farm()) {
+      <span class="go"><b i18n="@@petsShowOnMap">Show on map</b><span aria-hidden="true">↗</span></span>
+    }
+  </button>
+</ng-template>
+
+<ng-template #monsterTpl let-m let-onMap="onMap">
+  <li class="mon" [class.on]="onMap && m.id === active()?.id" (pointerenter)="onMap && hovered.set(m.id)" (pointerleave)="onMap && hovered.set(null)">
+    <button type="button" class="n" [disabled]="!onMap" (click)="select(m, true)"><i [class]="'lv' + m.petLevel" aria-hidden="true"></i>{{ m.name }} <small i18n="@@farmLevel">Lv {{ m.level }}</small></button>
+    <span class="sub">{{ m.zones.concat(m.dungeons).join(', ') }} · <b>{{ m.petName }}</b></span>
+    <span class="val">
+      @if (m.toNext > 0) { <ng-container i18n="@@farmNeeds">{{ m.toNext }} to go</ng-container> }
+      @else { <ng-container i18n="@@petsMax">Max</ng-container> }
+    </span>
+  </li>
+</ng-template>

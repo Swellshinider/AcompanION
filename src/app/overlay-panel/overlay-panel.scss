@@ -1,0 +1,76 @@
+.panel {
+  // the popover sits under the header's right edge instead of the default centre
+  inset: 56px 16px auto auto;
+  margin: 0;
+  width: min(320px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 16px 18px;
+  background: var(--panel);
+  border: 1px solid var(--gold-line);
+  border-radius: 5px;
+  color: var(--text);
+
+  h3 {
+    margin: 0 0 12px;
+    font: 600 16px var(--display);
+  }
+}
+
+fieldset {
+  margin: 8px 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+
+  legend {
+    float: left;
+    width: 100%;
+    padding: 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+}
+
+.check,
+.range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+}
+
+.range {
+  span {
+    min-width: 56px;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    accent-color: var(--accent);
+  }
+
+  output {
+    min-width: 38px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--accent);
+}
+
+.note,
+.err {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.err {
+  color: var(--bad);
+}

@@ -1,0 +1,124 @@
+<button type="button" class="back" (click)="back.emit()">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5" /></svg>
+  <ng-container i18n="@@back">Back</ng-container>
+  <kbd aria-hidden="true">Esc</kbd>
+</button>
+
+<div class="hero">
+  <span class="art" [appGlyph]="row().icon" aria-hidden="true"></span>
+  <app-emblem [icon]="row().icon" [level]="row().c.level" [size]="132" />
+  <div>
+    <h2>{{ row().c.name }}</h2>
+    <div class="id">
+      <span>
+        @if (row().cls; as cls) { {{ cls }} } @else { <ng-container i18n="@@classCode">Class {{ row().c.class_code }}</ng-container> }
+      </span>
+      <i></i>
+      <span i18n="@@levelLabel">Level {{ row().c.level }}</span>
+      <i></i>
+      <span i18n="@@lastSeen">Last seen {{ ago(row().c.last_seen_us) }} ago</span>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <span class="k" i18n="@@colPower">Combat power</span>
+        <span class="v">{{ row().c.combat_power === null ? '–' : (row().c.combat_power | number) }}</span>
+      </div>
+      <div class="stat">
+        <span class="k" i18n="@@gs">GS</span>
+        <span class="v">{{ row().c.item_level === null ? '–' : (row().c.item_level | number) }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="attn">
+    <span class="k" i18n="@@spendFirst">Spend first</span>
+    @if (wasting().length) {
+      <ul>
+        @for (i of wasting(); track i.id) {
+          <li>{{ name(i) }} <span>{{ i.left }}/{{ i.cap }}</span></li>
+        }
+      </ul>
+      <p i18n="@@wastingNote">Full, so refills are being wasted.</p>
+    } @else {
+      <p i18n="@@nothingWasting">Nothing is wasting refills right now.</p>
+    }
+  </div>
+</div>
+
+@if (tickets().length) {
+  <section class="sec" data-sec="tickets">
+    <div class="sec-h">
+      <h3 i18n="@@secTickets">Tickets and energy</h3>
+      <span class="meta" i18n="@@ticketsMeta">{{ wasting().length }} full · {{ tickets().length - wasting().length }} refilling</span>
+    </div>
+    <ul class="rows">
+      @for (i of tickets(); track i.id) {
+        <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: i }" />
+      }
+    </ul>
+  </section>
+}
+
+@if (weekly().length) {
+  <section class="sec" data-sec="weekly">
+    <div class="sec-h">
+      <h3 i18n="@@secWeekly">Weekly</h3>
+      <span class="meta" i18n="@@resetsIn">Resets in {{ until(weeklyReset()) }}</span>
+    </div>
+    <ul class="rows">
+      @for (i of weekly(); track i.id) {
+        <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: i }" />
+      }
+    </ul>
+  </section>
+}
+
+<section class="sec" data-sec="daily">
+  <div class="sec-h">
+    <h3 i18n="@@secDaily">Daily</h3>
+    <span class="meta" i18n="@@resetsIn">Resets in {{ until(dailyReset()) }}</span>
+  </div>
+  @if (daily().length) {
+    <ul class="rows">
+      @for (i of daily(); track i.id) {
+        <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: i }" />
+      }
+    </ul>
+  } @else {
+    <div class="daily-empty">
+      <p i18n="@@dailyEmpty">Daily tasks are not decoded yet.</p>
+      <p class="note" i18n="@@dailyEmptyNote">AcompanION only shows counters it can read from game traffic. Daily tasks appear here once they are mapped; nothing on this page is estimated.</p>
+    </div>
+  }
+</section>
+
+<ng-template #rowTpl let-i>
+  <li class="row" [class.is-full]="i.wasting" [class.is-soon]="i.soon" [class.is-done]="i.done">
+    <div class="nm">
+      <span class="n">{{ name(i) }}</span>
+      @if (i.refill; as r) {
+        <span class="sub" i18n="@@rhythm">+{{ r.amount }} every {{ r.every_ms / hourMs }}h</span>
+      }
+    </div>
+    <div class="meter">
+      <div class="bar" role="progressbar" [attr.aria-label]="name(i)" aria-valuemin="0" [attr.aria-valuemax]="i.ms ? i.cap / hourMs : i.cap" [attr.aria-valuenow]="i.ms ? shown(i) / hourMs : shown(i)">
+        <i [style.width.%]="pct(i)"></i>
+      </div>
+      <span class="val">
+        @if (i.ms) {
+          {{ shown(i) / hourMs | number: '1.0-1' }}<ng-container i18n="hours unit@@hoursUnit">h</ng-container><small>/{{ i.cap / hourMs | number: '1.0-1' }}<ng-container i18n="hours unit@@hoursUnit">h</ng-container></small>
+        } @else {
+          {{ shown(i) | number }}<small>/{{ i.cap | number }}</small>
+        }
+      </span>
+    </div>
+    <div class="st">
+      @if (i.wasting) {
+        <span class="tag" i18n="@@wasting">Full, wasting refills</span>
+      } @else if (i.fullAt !== null) {
+        <span i18n="@@fullIn">full in <b>{{ until(i.fullAt) }}</b></span>
+      } @else if (i.done) {
+        <span i18n="@@done">Done</span>
+      }
+    </div>
+  </li>
+</ng-template>

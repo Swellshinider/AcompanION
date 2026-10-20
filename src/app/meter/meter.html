@@ -1,0 +1,166 @@
+<ng-template #who let-p>
+  @if (p.name) { {{ p.name }} } @else { <ng-container i18n="@@meterUnknownPlayer">Unknown player</ng-container> }
+</ng-template>
+<ng-template #foe let-name="name" let-template="template">
+  @if (name) { {{ name }} } @else if (template) { <ng-container i18n="@@meterMonsterN">Monster {{ template }}</ng-container> } @else { <ng-container i18n="@@meterUnknownMonster">Unknown monster</ng-container> }
+</ng-template>
+
+<button type="button" class="back" (click)="back.emit()">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5" /></svg>
+  <ng-container i18n="@@back">Back</ng-container>
+  <kbd aria-hidden="true">Esc</kbd>
+</button>
+
+<div class="page-h">
+  <h2 i18n="@@meterTitle">Meter</h2>
+  <span class="meta" i18n="@@meterSaved">{history().length, plural, =0 {No saved fights} =1 {1 saved fight} other {{{ history().length }} saved fights}}</span>
+</div>
+
+@if (!compact()) {
+  <div class="bar">
+    @if (history().length > 0) {
+      <label class="pick">
+        <span i18n="@@meterFight">Fight</span>
+        <select (change)="choose($event)" [value]="pickedStart() ?? ''">
+          <option value="" i18n="@@meterLatest">Latest fight</option>
+          @for (f of history(); track f.start_us) {
+            <option [value]="f.start_us" [selected]="pickedStart() === f.start_us">{{ label(f) }}</option>
+          }
+        </select>
+      </label>
+    }
+    <span class="grow"></span>
+    @if (confirming()) {
+      <span class="ask" i18n="@@meterClearAsk">Delete every saved fight?</span>
+      <button type="button" class="btn danger" (click)="clear()" i18n="@@meterClearYes">Delete</button>
+      <button type="button" class="btn" (click)="confirming.set(false)" i18n="@@meterClearNo">Cancel</button>
+    } @else {
+      <button type="button" class="btn" [disabled]="!canClear()" (click)="confirming.set(true)" i18n="@@meterClear">Clear history</button>
+    }
+  </div>
+}
+
+@if (fight(); as f) {
+  <div class="head">
+    <span class="tag" [class.live]="live()">
+      @if (live()) { <ng-container i18n="@@meterInFight">In a fight</ng-container> }
+      @else { <ng-container i18n="@@meterLastFight">Last fight</ng-container> }
+    </span>
+    <span class="meta">{{ length() }} · {{ short(damage()) }} · {{ short(damageRate()) }}/s</span>
+    @if (target(); as t) {
+      <span class="foe">
+        <ng-container [ngTemplateOutlet]="foe" [ngTemplateOutletContext]="{ name: t.name, template: t.template }" />
+        @if (t.hp !== null) { <b>{{ t.hp | percent:'1.0-0' }}</b> }
+        @if (t.stagger !== null) { <span class="stagger" i18n="@@meterStagger">Stagger {{ t.stagger | percent:'1.0-0' }}</span> }
+      </span>
+    }
+  </div>
+
+  @if (compact()) {
+    <ol class="list">
+      @for (r of rows(); track r.p.entity) {
+        <li class="row" [class.me]="r.me" [style.--c]="tint(r.p)">
+          <span class="fill" [style.width.%]="r.top * 100"></span>
+          <span class="ico" [appGlyph]="icon(r.p)" aria-hidden="true"></span>
+          <span class="n"><ng-container [ngTemplateOutlet]="who" [ngTemplateOutletContext]="{ $implicit: r.p }" /></span>
+          <span class="v">{{ short(r.dps) }}/s</span>
+          <span class="s">{{ r.share | percent:'1.0-0' }}</span>
+        </li>
+      }
+    </ol>
+  } @else {
+    <ol class="board">
+      @for (r of rows(); track r.p.entity; let i = $index) {
+        <li [class.me]="r.me">
+          <button type="button" class="line" [style.--c]="tint(r.p)" [attr.aria-expanded]="pickedPlayer() === r.p.entity" (click)="toggle(r.p.entity)">
+            <span class="fill" [style.width.%]="r.top * 100"></span>
+            <span class="rank">{{ i + 1 }}</span>
+            <span class="ico" [appGlyph]="icon(r.p)" aria-hidden="true"></span>
+            <span class="n"><ng-container [ngTemplateOutlet]="who" [ngTemplateOutletContext]="{ $implicit: r.p }" /></span>
+            <span class="amt">{{ short(r.p.dealt.amount) }}</span>
+            <span class="rate">{{ short(r.dps) }}/s</span>
+            <span class="pct">{{ r.share | percent:'1.1-1' }}</span>
+          </button>
+
+          @if (pickedPlayer() === r.p.entity) {
+            <div class="detail">
+              <dl class="stats">
+                @if (r.p.class_code !== null) {
+                  <div>
+                    <dt i18n="@@meterStatClass">Class</dt>
+                    <dd>@if (cls(r.p); as c) { {{ c }} } @else { <ng-container i18n="@@classCode">Class {{ r.p.class_code }}</ng-container> }</dd>
+                  </div>
+                }
+                <div><dt i18n="@@meterColDamage">Damage</dt><dd>{{ r.p.dealt.amount | number }}</dd></div>
+                <div><dt i18n="@@meterColDps">DPS</dt><dd>{{ r.dps | number:'1.0-0' }}</dd></div>
+                <div><dt i18n="@@meterColCrit">Crit</dt><dd>{{ r.crit | percent:'1.0-0' }}</dd></div>
+                <div><dt i18n="@@meterStatHits">Hits</dt><dd>{{ r.p.dealt.hits | number }}</dd></div>
+                <div><dt i18n="@@meterColTaken">Taken</dt><dd>{{ r.p.taken.amount | number }}</dd></div>
+                <div><dt i18n="@@meterColHealing">Healing</dt><dd>{{ r.p.healing.amount | number }}</dd></div>
+                <div><dt i18n="@@meterStatOverheal">Overheal</dt><dd>{{ r.p.overheal | number }}</dd></div>
+                <div><dt i18n="@@meterStatReceived">Healing received</dt><dd>{{ r.p.healing_received.amount | number }}</dd></div>
+              </dl>
+              <div class="tables">
+                <section>
+                  <h3 i18n="@@meterSkills">Skills</h3>
+                  <div class="scroll">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th scope="col" i18n="@@meterColSkill">Skill</th>
+                          <th scope="col" class="num" i18n="@@meterColDamage">Damage</th>
+                          <th scope="col" class="num" i18n="@@meterColHits">Hits</th>
+                          <th scope="col" class="num" i18n="@@meterColCrit">Crit</th>
+                          <th scope="col" class="num" i18n="@@meterColShare">Share</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (s of skills(); track s.id) {
+                          <tr>
+                            <th scope="row">
+                              @if (s.name) { {{ s.name }} } @else { <ng-container i18n="@@meterSkillN">Skill {{ s.id }}</ng-container> }
+                            </th>
+                            <td class="num">{{ s.amount | number }}</td>
+                            <td class="num">{{ s.hits | number }}</td>
+                            <td class="num">{{ s.crit | percent:'1.0-0' }}</td>
+                            <td class="num">{{ s.share | percent:'1.0-0' }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+                <section>
+                  <h3 i18n="@@meterTargets">Targets</h3>
+                  <div class="scroll">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th scope="col" i18n="@@meterColTarget">Target</th>
+                          <th scope="col" class="num" i18n="@@meterColDamage">Damage</th>
+                          <th scope="col" class="num" i18n="@@meterColHits">Hits</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (t of targets(); track t.template) {
+                          <tr>
+                            <th scope="row"><ng-container [ngTemplateOutlet]="foe" [ngTemplateOutletContext]="{ name: t.name, template: t.template }" /></th>
+                            <td class="num">{{ t.amount | number }}</td>
+                            <td class="num">{{ t.hits | number }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+            </div>
+          }
+        </li>
+      }
+    </ol>
+    <p class="note" i18n="@@meterNote">Healing and damage taken count only inside the fight, so they can differ from other meters' session totals.</p>
+  }
+} @else {
+  <p class="empty" i18n="@@meterEmpty">No fight yet. Hit something with capture running and it appears here.</p>
+}

@@ -1,0 +1,89 @@
+# Task runner for the repository. Install: https://taskfile.dev
+# Usage: task <name>   (e.g. `task check`, `task live -- --seconds 60`); `task` lists tasks.
+# Arguments after `--` are passed to the command.
+version: "3"
+
+vars:
+  MANIFEST: src-tauri/Cargo.toml
+  RE: cargo run --manifest-path src-tauri/Cargo.toml --bin re --
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task --list --sort none
+
+  # Build and validate
+  build:
+    desc: Build the crate and the `re` tool
+    cmds:
+      - cargo build --manifest-path {{.MANIFEST}}
+
+  test:
+    desc: Run the unit tests
+    cmds:
+      - cargo test --manifest-path {{.MANIFEST}}
+
+  test:ignored:
+    desc: Run the tests that need the Npcap runtime
+    cmds:
+      - cargo test --manifest-path {{.MANIFEST}} -- --ignored
+
+  lint:
+    desc: Run clippy with warnings as errors
+    cmds:
+      - cargo clippy --manifest-path {{.MANIFEST}} --all-targets -- -D warnings
+
+  check:
+    desc: Lint, then test (run before every commit)
+    cmds:
+      - task: lint
+      - task: test
+      - task: web:test
+
+  # Reverse-engineering tool (`re`)
+  re:
+    desc: "Run any `re` subcommand: task re -- decode captures/x.pcap"
+    cmds:
+      - "{{.RE}} {{.CLI_ARGS}}"
+
+  devices:
+    desc: List Npcap adapters and their IPv4 addresses
+    cmds:
+      - "{{.RE}} devices"
+
+  record:
+    desc: "Record a capture (elevated terminal): task record -- captures/name --seconds 600"
+    cmds:
+      - "{{.RE}} record {{.CLI_ARGS}}"
+
+  live:
+    desc: "Follow live traffic into the character state (elevated terminal): task live -- --seconds 60"
+    cmds:
+      - "{{.RE}} live {{.CLI_ARGS}}"
+
+  analyze:
+    desc: "Ad-hoc capture analysis: task analyze -- chain captures/x.pcap"
+    cmds:
+      - uv run --with lz4 python tools/re/aion_re.py {{.CLI_ARGS}}
+
+  # Desktop app and frontend
+  app:
+    desc: Run the desktop app in dev mode (Angular dev server + Tauri; elevated terminal to capture)
+    cmds:
+      - pnpm tauri dev
+
+  app:build:
+    desc: Build the release app (no installer)
+    cmds:
+      - pnpm tauri build
+
+  web:test:
+    desc: Run the frontend unit tests once
+    cmds:
+      - pnpm ng test --watch=false
+
+  i18n:
+    desc: Extract translatable strings to src/locale/messages.xlf
+    cmds:
+      - pnpm i18n

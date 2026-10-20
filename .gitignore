@@ -1,0 +1,27 @@
+# Raw captures contain account data - never commit
+captures/
+
+# Rust
+target/
+src-tauri/gen/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# captures may be written outside captures/
+*.pcap
+*.pcapng
+
+# Python
+__pycache__/
+
+# Playwright MCP scratch output
+.playwright-mcp/

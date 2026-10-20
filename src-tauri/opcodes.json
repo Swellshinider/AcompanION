@@ -1,0 +1,37 @@
+{
+  "builds": {
+    "default": {
+      "identity": "3336",
+      "combat_power": "5636",
+      "item_level": "1d56",
+      "quest_boards": "56e2",
+      "quest_entry": "3ee2",
+      "kinah_today": "a5ff",
+      "kinah_today_update": "a6ff",
+      "duty_missions": "1c8d",
+      "pass_used": "24e3",
+      "counters_snapshot": "0b61",
+      "counter_update": "0c61",
+      "pets_snapshot": "0090",
+      "pet_souls_delta": "0d90",
+      "pet_level": "1490",
+      "pet_souls_total": "0e90",
+      "monster_spawn": "4136",
+      "monster_move_a": "1a37",
+      "monster_move_b": "1b37",
+      "monster_move_c": "1c37",
+      "monster_move_d": "3c37",
+      "monster_gone": "4236",
+      "player_spawn": "4536",
+      "player_gone": "4736",
+      "skill_pos_a": "2a38",
+      "skill_pos_b": "2b38",
+      "zone_load": "2336",
+      "map_enter": "2136",
+      "hit": "0438",
+      "hit_tick": "0538",
+      "hp": "008d",
+      "stagger": "05e0"
+    }
+  }
+}

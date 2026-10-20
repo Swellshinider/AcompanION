@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Unknown class">
+  <!-- diamond with a notch cut into the upper-right edge -->
+  <path d="M45 18L58 32L32 60L6 32L32 4L37 9.6"/>
+  <!-- rune-style question mark -->
+  <path d="M24 26L28 21H36L40 26V31L32 37V41"/>
+  <path d="M32 47V48"/>
+</svg>

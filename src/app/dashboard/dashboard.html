@@ -1,0 +1,113 @@
+<header class="top">
+  <div class="brand">
+    <span class="mark" aria-hidden="true"></span>
+    <h1 i18n="@@appTitle">AcompanION</h1>
+  </div>
+  <span class="pill" [attr.data-status]="status().id">
+    @switch (status().id) {
+      @case ('running') { <ng-container i18n="@@statusRunning">Network connected</ng-container> }
+      @case ('save_failed') { <ng-container i18n="@@statusRunning">Network connected</ng-container> }
+      @case ('starting') { <ng-container i18n="@@statusStarting">Starting</ng-container> }
+      @default { <ng-container i18n="@@statusOff">Capture off</ng-container> }
+    }
+  </span>
+  @if (status().id === 'running' || status().id === 'save_failed') {
+    <span class="pill" [attr.data-game]="game()">
+      @if (game()) { <ng-container i18n="@@gameDetected">Game detected</ng-container> }
+      @else { <ng-container i18n="@@gameNotDetected">Game not detected</ng-container> }
+    </span>
+  }
+  @if (gamedata()) {
+    <button type="button" class="btn roster-btn" [attr.aria-current]="screen() === 'roster' ? 'page' : null" (click)="roster()" i18n="@@charactersButton">Characters</button>
+    <button type="button" class="btn pets-btn" [attr.aria-current]="screen() === 'pets' ? 'page' : null" (click)="screen.set('pets')" i18n="@@petsButton">Pets</button>
+    <button type="button" class="btn meter-btn" [attr.aria-current]="screen() === 'meter' ? 'page' : null" (click)="screen.set('meter')" i18n="@@meterButton">DPS Meter</button>
+    <button type="button" class="btn overlay-btn" popovertarget="overlay-panel" i18n="@@overlayButton">Overlay</button>
+  }
+  <app-overlay-panel />
+  @if (resets(); as r) {
+    <div class="resets">
+      <span class="reset" i18n="@@dailyResetIn">Daily reset in <b>{{ until(r.daily) }}</b></span>
+      <span class="reset" i18n="@@weeklyResetIn">Weekly reset in <b>{{ until(r.weekly) }}</b></span>
+    </div>
+  }
+</header>
+
+@if (status().id !== 'running' && status().id !== 'starting') {
+  <section class="banner" role="status">
+    @switch (status().id) {
+      @case ('not_admin') {
+        <p i18n="@@bannerNotAdmin">Reading game traffic needs administrator rights. Saved characters are shown below.</p>
+        <button type="button" class="btn" (click)="restart()" [disabled]="restarting()" i18n="@@restartAsAdmin">Restart as admin</button>
+      }
+      @case ('npcap_missing') { <p i18n="@@bannerNpcapMissing">Npcap is not installed. Install it from npcap.com, then restart AcompanION.</p> }
+      @case ('no_adapter') { <p i18n="@@bannerNoAdapter">No network adapter carries the default route. Check the connection, then restart AcompanION.</p> }
+      @case ('state_unreadable') { <p i18n="@@bannerStateUnreadable">The saved character file cannot be read, so capture is paused to keep it intact. Fix or move the file, then restart AcompanION.</p> }
+      @case ('state_in_use') { <p i18n="@@bannerStateInUse">Another instance is saving this character file. Saved characters are shown below. Close the other instance, then reopen this window to capture.</p> }
+      @case ('save_failed') { <p i18n="@@bannerSaveFailed">Capture is running, but changes could not be saved. AcompanION will keep retrying. Keep this window open until this warning clears to avoid losing unsaved changes.</p> }
+      @default { <p i18n="@@bannerError">Capture stopped with an error.</p> }
+    }
+    @if (status().detail; as detail) { <code class="detail">{{ detail }}</code> }
+  </section>
+}
+@if (gamedataFailed()) {
+  <section class="banner" role="alert"><p i18n="@@bannerGamedata">Game data could not be loaded.</p></section>
+}
+
+<main>
+  @if (screen() === 'pets') {
+    <app-pets [collection]="pets()" [gamedata]="gamedata()" [radar]="radar()" [now]="now()" (back)="back()" />
+  } @else if (screen() === 'meter') {
+    <app-meter [gamedata]="gamedata()" (back)="back()" />
+  } @else if (open(); as r) {
+    @if (resets(); as t) {
+      <app-character [row]="r" [now]="now()" [dailyReset]="t.daily" [weeklyReset]="t.weekly" (back)="back()" />
+    }
+  } @else {
+    <div class="page-h">
+      <h2 i18n="@@rosterTitle">Roster</h2>
+      <span class="meta">
+        <ng-container i18n="@@rosterCount">{rows().length, plural, =1 {1 character} other {{{ rows().length }} characters}}</ng-container>
+        ·
+        <ng-container i18n="@@rosterSort">sorted by what is left</ng-container>
+      </span>
+    </div>
+
+    @if (rows().length === 0) {
+      <div class="empty">
+        <app-emblem icon="unknown" [ghost]="true" [size]="96" />
+        <h3 i18n="@@emptyTitle">No characters yet.</h3>
+        <p i18n="@@emptyBody">Log in with capture running and they appear here.</p>
+      </div>
+    } @else {
+      <div class="grid">
+        @for (r of rows(); track r.key) {
+          <button type="button" class="card" [attr.data-key]="r.key" (click)="selected.set(r.key)">
+            <span class="art" [appGlyph]="r.icon" aria-hidden="true"></span>
+            <app-emblem [icon]="r.icon" [level]="r.c.level" />
+            <span class="who">
+              <span class="name">{{ r.c.name }}</span>
+              <span class="cls">
+                @if (r.cls) { {{ r.cls }} } @else { <ng-container i18n="@@classCode">Class {{ r.c.class_code }}</ng-container> }
+              </span>
+            </span>
+            <span class="stats">
+              <span class="stat">
+                <span class="k" i18n="@@colPower">Combat power</span>
+                <span class="v">{{ r.c.combat_power === null ? '–' : (r.c.combat_power | number) }}</span>
+              </span>
+              <span class="stat">
+                <span class="k" i18n="@@gs">GS</span>
+                <span class="v">{{ r.c.item_level === null ? '–' : (r.c.item_level | number) }}</span>
+              </span>
+            </span>
+            <span class="seen" i18n="@@lastSeen">Last seen {{ ago(r.c.last_seen_us) }} ago</span>
+          </button>
+        }
+      </div>
+    }
+  }
+</main>
+
+@if (gamedata()) {
+  <footer class="foot" i18n="@@footerResets">All resets at {{ resetHour }}:00 UTC · weekly on {{ weekday() }}</footer>
+}

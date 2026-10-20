@@ -1,0 +1,406 @@
+:host {
+  display: block;
+}
+
+:host(.compact) {
+  font-size: 13px;
+
+  .back, .page-h {
+    display: none;
+  }
+
+  .head {
+    margin-top: 0;
+  }
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  margin-bottom: 16px;
+  padding: 0 12px 0 10px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: var(--panel-2);
+    border-color: var(--gold-line);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+kbd {
+  margin-left: 4px;
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font: 600 11px var(--ui);
+  color: var(--muted);
+}
+
+.page-h {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+
+  h2 {
+    margin: 0;
+    font: 600 32px/1.2 var(--display);
+  }
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 16px;
+}
+
+.grow {
+  flex: 1;
+}
+
+.pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+
+  select {
+    max-width: 100%;
+    height: 34px;
+    padding: 0 8px;
+    background: var(--panel);
+    border: 1px solid var(--gold-line);
+    border-radius: 4px;
+    color: var(--text);
+    font: inherit;
+  }
+}
+
+.ask {
+  color: var(--muted);
+}
+
+.btn {
+  height: 34px;
+  padding: 0 14px;
+  background: var(--panel);
+  border: 1px solid var(--gold-line);
+  border-radius: 4px;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--panel-2);
+    border-color: var(--accent);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  &.danger {
+    border-color: var(--bad);
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-top: 16px;
+}
+
+.tag {
+  color: var(--muted);
+  font: 600 11px var(--ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  &.live {
+    color: var(--ok);
+  }
+}
+
+.foe {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  font-weight: 600;
+
+  b {
+    color: var(--accent);
+  }
+}
+
+.stagger {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+// the overlay: one bar per player, filled to the share of the best
+.list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  height: 24px;
+  padding: 0 6px;
+  overflow: hidden;
+
+  .n {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // over the bar, which is positioned
+  > :not(.fill) {
+    position: relative;
+  }
+
+  .ico {
+    width: 18px;
+    height: 18px;
+  }
+
+  .v, .s {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .s {
+    min-width: 3ch;
+    color: var(--muted);
+  }
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  // the class colour (`--c`, from the game data), the accent when the class is not listed
+  background: color-mix(in oklch, var(--c, var(--accent)) 55%, transparent);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+// the local player: a gold outline, whatever the class colour
+.row.me,
+.me .line {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.me .n {
+  font-weight: 600;
+}
+
+// the main window's ranking: one line per player, opened for the details
+.board {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+
+.line {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2ch 28px minmax(0, 1fr) auto auto auto;
+  gap: 4px 14px;
+  align-items: center;
+  width: 100%;
+  min-height: 38px;
+  padding: 4px 12px;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:hover,
+  &[aria-expanded="true"] {
+    border-color: var(--gold-line);
+  }
+
+  > :not(.fill) {
+    position: relative;
+  }
+
+  .fill {
+    border-radius: 0;
+  }
+
+  .rank {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ico {
+    width: 28px;
+    height: 28px;
+  }
+
+  .n {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .amt, .rate, .pct {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .amt {
+    min-width: 6ch;
+    font-weight: 600;
+  }
+
+  .rate {
+    min-width: 8ch;
+    color: var(--muted);
+  }
+
+  .pct {
+    min-width: 6ch;
+  }
+}
+
+small {
+  color: var(--muted);
+}
+
+.note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.detail {
+  margin: 4px 0 8px;
+  padding: 14px 14px 10px;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+  gap: 8px;
+  margin: 0;
+
+  div {
+    display: grid;
+    gap: 2px;
+    padding: 8px 10px;
+    background: var(--panel);
+    border-radius: 4px;
+  }
+
+  dt {
+    color: var(--muted);
+    font: 600 11px var(--ui);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 0;
+    font: 600 18px var(--ui);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.scroll {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  th, td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    font-weight: 400;
+  }
+
+  thead th {
+    color: var(--muted);
+    font: 600 11px var(--ui);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .num {
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+.tables {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 8px 28px;
+  margin-top: 16px;
+
+  h3 {
+    margin: 0;
+    font: 600 18px var(--display);
+  }
+}
+
+.empty {
+  margin: 16px 0 0;
+  color: var(--muted);
+}
+
+@media (max-width: 480px) {
+  .page-h h2 {
+    font-size: 26px;
+  }
+}

@@ -1,0 +1,119 @@
+import { DecimalPipe } from '@angular/common';
+import { Component, DestroyRef, ElementRef, LOCALE_ID, computed, inject, signal } from '@angular/core';
+import { CharactersService } from '../characters.service';
+import { CharacterDetail, CharacterRow } from '../character/character';
+import { Emblem } from '../emblem/emblem';
+import { DAILY_RESET_HOUR_UTC, GameData, loadGamedata, nextReset, petCollection, pick, span, summarize } from '../gamedata';
+import { Glyph } from '../glyph';
+import { Meter } from '../meter/meter';
+import { OverlayPanel } from '../overlay-panel/overlay-panel';
+import { Pets } from '../pets/pets';
+
+@Component({
+  selector: 'app-dashboard',
+  imports: [DecimalPipe, CharacterDetail, Emblem, Glyph, Meter, OverlayPanel, Pets],
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss',
+  host: { '(document:keydown.escape)': 'back()' },
+})
+export class Dashboard {
+  private readonly chars = inject(CharactersService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly lang = inject(LOCALE_ID).split('-')[0];
+  /** Ticks once a minute so resets, refills and countdowns are re-evaluated. */
+  readonly now = signal(Date.now());
+  readonly status = this.chars.status;
+  readonly game = this.chars.game;
+  /** What the game shows around the player; null while the game is not running. */
+  readonly radar = computed(() => (this.chars.game() ? this.chars.radar() : null));
+  readonly gamedata = signal<GameData | null>(null);
+  readonly gamedataFailed = signal(false);
+  readonly restarting = signal(false);
+  /** `server:name` of the character whose detail is open. */
+  readonly selected = signal<string | null>(null);
+  /** The screen: the roster (and a character's detail), the Pets screen or the combat Meter. */
+  readonly screen = signal<'roster' | 'pets' | 'meter'>('roster');
+  readonly resetHour = String(DAILY_RESET_HOUR_UTC).padStart(2, '0');
+
+  readonly rows = computed<CharacterRow[]>(() => {
+    const gd = this.gamedata();
+    if (!gd) return [];
+    const now = this.now();
+    return this.chars.characters()
+      .map(c => ({
+        key: `${c.server}:${c.name}`,
+        c,
+        s: summarize(gd, c, now),
+        cls: pick(gd.classes[c.class_code]?.name, this.lang),
+        icon: gd.classes[c.class_code]?.icon ?? 'unknown',
+      }))
+      .sort((a, b) => b.s.score - a.s.score);
+  });
+
+  /** The open character; null (back to the roster) when none is selected or it left the list. */
+  readonly open = computed(() => this.rows().find(r => r.key === this.selected()) ?? null);
+
+  /** The account's pets; null until a character reported them. */
+  readonly pets = computed(() => {
+    const gd = this.gamedata();
+    return gd ? petCollection(gd, this.chars.characters(), this.lang) : null;
+  });
+
+  readonly resets = computed(() => {
+    const gd = this.gamedata();
+    if (!gd) return null;
+    const now = this.now();
+    return { daily: nextReset('daily', now, gd.weekly_reset_day), weekly: nextReset('weekly', now, gd.weekly_reset_day) };
+  });
+
+  readonly weekday = computed(() => {
+    const gd = this.gamedata();
+    // 2023-01-01 is a Sunday
+    return gd ? new Intl.DateTimeFormat(this.lang, { weekday: 'long', timeZone: 'UTC' }).format(Date.UTC(2023, 0, 1 + gd.weekly_reset_day)) : '';
+  });
+
+  constructor() {
+    loadGamedata().then(gd => this.gamedata.set(gd), () => this.gamedataFailed.set(true));
+    const timer = setInterval(() => this.now.set(Date.now()), 60_000);
+    inject(DestroyRef).onDestroy(() => clearInterval(timer));
+  }
+
+  /** Time from now until `at` (epoch ms). */
+  until(at: number): string {
+    return span(at - this.now(), this.lang);
+  }
+
+  /** Time since a capture timestamp (µs since the epoch). */
+  ago(us: number): string {
+    return span(this.now() - us / 1000, this.lang);
+  }
+
+  back(): void {
+    if (this.screen() !== 'roster') {
+      this.screen.set('roster');
+      return;
+    }
+    const key = this.selected();
+    if (key === null) return;
+    this.selected.set(null);
+    // the roster re-creates its cards: give focus back to the one that was open
+    setTimeout(() => this.host.nativeElement.querySelectorAll<HTMLElement>('.card').forEach(el => {
+      if (el.dataset['key'] === key) el.focus();
+    }));
+  }
+
+  /** The character selection, from wherever the user is. */
+  roster(): void {
+    this.screen.set('roster');
+    this.selected.set(null);
+  }
+
+  async restart(): Promise<void> {
+    this.restarting.set(true);
+    try {
+      await this.chars.restartAsAdmin(); // on success this window closes
+    } finally {
+      this.restarting.set(false);
+    }
+  }
+}

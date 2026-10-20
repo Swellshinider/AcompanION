@@ -1,0 +1,7 @@
+<span class="emblem" [class.ghost]="ghost()" [style.--s]="size() + 'px'">
+  <span class="dia"></span>
+  <span class="mark" [appGlyph]="icon()"></span>
+  @if (level() !== null) {
+    <span class="lv"><small i18n="@@levelShort">LV</small>{{ level() }}</span>
+  }
+</span>
