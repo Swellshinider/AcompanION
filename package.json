@@ -11,7 +11,7 @@
     "i18n": "ng extract-i18n --output-path src/locale"
   },
   "private": true,
-  "packageManager": "pnpm@11.13.0",
+  "packageManager": "pnpm@11.22.0",
   "dependencies": {
     "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.2.0",

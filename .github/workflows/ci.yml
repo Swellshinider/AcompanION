@@ -8,40 +8,45 @@ on:
 permissions:
   contents: read
 
+env:
+  # no incremental data and no debug info: CI builds once, and both only slow the compile and bloat the cache
+  CARGO_INCREMENTAL: 0
+  CARGO_PROFILE_DEV_DEBUG: 0
+
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  rust:
-    name: Rust
+  # Clippy and the tests are separate jobs so they compile in parallel; each compiles Tauri's dependencies
+  # cold the first time, then restores them from the cache that main's runs save.
+  clippy:
+    name: Clippy
     # Windows: the app targets Windows only and loads Npcap at runtime (the tests that need it are #[ignore]d)
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
-
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: "24"
-          cache: pnpm
-
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           workspaces: src-tauri
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: mkdir -p dist/acompanion/browser && echo '<!doctype html>' > dist/acompanion/browser/index.html
+        shell: bash
+      - run: cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --locked -- -D warnings
 
-      - run: pnpm install --frozen-lockfile
-
-      # tauri::generate_context! embeds the built frontend, so it must exist before cargo compiles the app
-      - name: Build the frontend
-        run: pnpm ng build
-
-      - name: Lint
-        run: cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --locked -- -D warnings
-
-      - name: Test
-        run: cargo test --manifest-path src-tauri/Cargo.toml --locked
+  rust-tests:
+    name: Rust tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: src-tauri
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      # tauri::generate_context! needs the frontend folder to exist; the Rust code does not read its content
+      - run: mkdir -p dist/acompanion/browser && echo '<!doctype html>' > dist/acompanion/browser/index.html
+        shell: bash
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --locked
 
   frontend:
     name: Frontend
