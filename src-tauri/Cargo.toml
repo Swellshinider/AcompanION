@@ -29,3 +29,4 @@ etherparse = "0.21"
 libloading = "0.9"
 serde_json = "1"
 tauri = { version = "2", features = [] }
+tauri-plugin-updater = "2"

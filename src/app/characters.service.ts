@@ -128,4 +128,14 @@ export class CharactersService {
   restartAsAdmin(): Promise<boolean> {
     return invoke<boolean>('restart_as_admin');
   }
+
+  /** The newer version on GitHub Releases, or null when up to date. */
+  checkUpdate(): Promise<string | null> {
+    return invoke<string | null>('check_update');
+  }
+
+  /** Downloads and installs the update found by `checkUpdate`; the app restarts. */
+  installUpdate(): Promise<void> {
+    return invoke<void>('install_update');
+  }
 }

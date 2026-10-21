@@ -63,5 +63,5 @@ Layouts and evidence for everything decoded are in [protocol.md](protocol.md).
 
 - `tcp.rs`: truncated or large-send-offload frames may need `LaxSlicedPacket` if `dump` reports gaps on a clean capture.
 - `re record` chooses the default adapter from the route to 8.8.8.8, not to the game server; pass `--device` to override.
-- `npcap.rs` takes the DLL path from the `SystemRoot` environment variable (use `GetSystemDirectoryW` before shipping an installer).
+- Installer and updater: not exercised end to end yet (needs the signing key, a first tag and a second version to update to). The installer is unsigned (no Authenticode certificate), so SmartScreen warns on first install.
 - Opcodes are remapped per game build; there is no build detection or per-patch update flow yet.

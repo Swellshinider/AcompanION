@@ -115,10 +115,28 @@ pub fn is_elevated() -> bool {
     }
 }
 
+/// The Windows System32 folder (`kernel32!GetSystemDirectoryW`); an environment variable could point anywhere.
+fn system_dir() -> PathBuf {
+    type GetSystemDirectoryW = unsafe extern "system" fn(*mut u16, u32) -> u32;
+    let fallback = || PathBuf::from("C:\\Windows\\System32");
+    let Ok(lib) = (unsafe { WinLibrary::load_with_flags("kernel32.dll", LOAD_LIBRARY_SEARCH_SYSTEM32) }) else {
+        return fallback();
+    };
+    let Ok(get) = (unsafe { lib.get::<GetSystemDirectoryW>(b"GetSystemDirectoryW\0") }) else {
+        return fallback();
+    };
+    let mut buf = [0u16; 260];
+    let len = unsafe { get(buf.as_mut_ptr(), buf.len() as u32) } as usize;
+    // 0 = failed; more than the buffer = it was too small
+    if len == 0 || len >= buf.len() {
+        return fallback();
+    }
+    PathBuf::from(String::from_utf16_lossy(&buf[..len]))
+}
+
 impl Npcap {
     pub fn load() -> Result<Self> {
-        let root = std::env::var_os("SystemRoot").unwrap_or_else(|| "C:\\Windows".into());
-        let path = PathBuf::from(root).join("System32").join("Npcap").join("wpcap.dll");
+        let path = system_dir().join("Npcap").join("wpcap.dll");
         // altered search path: wpcap.dll's own directory is searched for Packet.dll
         let lib: Library = unsafe { WinLibrary::load_with_flags(&path, LOAD_WITH_ALTERED_SEARCH_PATH) }
             .with_context(|| NotInstalled(path.clone()))?
@@ -227,6 +245,13 @@ impl Drop for Capture<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn system_dir_is_the_real_system32() {
+        let dir = system_dir();
+        assert!(dir.ends_with("System32") || dir.ends_with("system32"), "{dir:?}");
+        assert!(dir.join("kernel32.dll").exists());
+    }
 
     #[test]
     fn is_elevated_answers_without_panicking() {

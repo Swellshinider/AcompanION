@@ -8,7 +8,7 @@
   A Windows companion for AION 2 that passively reads game traffic and tracks every character you play.
 </p>
 
-> **Status: early development.** The protocol decoder, the live engine and the desktop app (Tauri + Angular) work, but only from source: there is no installer. The curated game data (names, caps, resets) is partial, so some counters and dailies are not shown yet. See [`docs/status.md`](docs/status.md) for exactly where things stand.
+> **Status: early development.** The protocol decoder, the live engine and the desktop app (Tauri + Angular) work and ship as a Windows installer (unsigned, so SmartScreen warns on the first install). The curated game data (names, caps, resets) is partial, so some counters and dailies are not shown yet. See [`docs/status.md`](docs/status.md) for exactly where things stand.
 
 ## Features
 
@@ -26,6 +26,12 @@ Working today (from source):
 1. **Passive capture.** Packets are read through [Npcap](https://npcap.com/), loaded at runtime (no SDK needed). No memory reads, no injection, no input sent to the game.
 2. **Own decoder.** Server to client traffic is length-framed and LZ4-compressed but not encrypted, so it decodes without keys (see [`docs/protocol.md`](docs/protocol.md)).
 3. **Character state.** Decoded events update a per-character state (identity, combat power, checklist counters, pets) that is saved to `%APPDATA%\AcompanION\characters.json`. Fights are saved to `meter.json` next to it.
+
+## Install
+
+Download `AcompanION_<version>_x64-setup.exe` from the [latest release](https://github.com/Swellshinider/AcompanION/releases/latest) and run it. It installs for the current user (no administrator prompt) and you remove it in Settings > Apps. You still need the [Npcap](https://npcap.com/) runtime, and capture needs administrator rights (the app offers "Restart as admin").
+
+On start the app checks the latest release; when a newer one exists, a banner offers "Update and restart".
 
 ## Quick start
 
@@ -63,7 +69,7 @@ task live -- --device "<adapter name>"             # pick the adapter from `task
 ```powershell
 pnpm install
 task app          # elevated terminal to capture; unelevated shows saved characters and offers "Restart as admin"
-task app:build    # release exe, no installer
+task app:build    # release exe, no installer (the installer is built by the release workflow)
 ```
 
 The dashboard lists every character seen with what is left to collect and updates live. It reads and writes the same state file as `task live`.
@@ -91,6 +97,16 @@ The same tools as above are enough; the Angular and Tauri CLIs are dev dependenc
 | Tests that need the Npcap runtime | `task test:ignored` |
 | Build the crate and the `re` tool | `task build` |
 | Extract translatable strings | `task i18n` |
+
+### Releasing
+
+The version lives in `src-tauri/Cargo.toml` only. One-time setup: `pnpm tauri signer generate -w <path>`, put the public key in `plugins.updater.pubkey` of `src-tauri/tauri.conf.json`, and add the private key and its password as the repository secrets `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Never commit the private key: without it nobody can ship updates, and anyone who has it can.
+
+1. Bump `version` in `src-tauri/Cargo.toml` (and `Cargo.lock`) through a pull request and merge it.
+2. On `main`: `git tag vX.Y.Z && git push origin vX.Y.Z`. The `Release` workflow builds the installer and creates a **draft** release.
+3. Check the draft and publish it. Only then do installed apps see the update.
+
+Hotfix for an old version: `git switch -c release/X.Y vX.Y.Z`, fix, bump the patch version, tag `vX.Y.(Z+1)` on that branch.
 
 ### Reverse-engineering workflow
 
