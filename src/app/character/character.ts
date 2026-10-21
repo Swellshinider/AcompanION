@@ -1,5 +1,5 @@
 import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, LOCALE_ID, afterNextRender, computed, inject, input, output } from '@angular/core';
+import { Component, ElementRef, LOCALE_ID, afterNextRender, computed, inject, input, output, signal } from '@angular/core';
 import { Character } from '../characters.service';
 import { Emblem } from '../emblem/emblem';
 import { Item, Summary, pick, span } from '../gamedata';
@@ -16,7 +16,9 @@ export interface CharacterRow {
   icon: string;
 }
 
-type Entry = Item & { wasting: boolean; soon: boolean; done: boolean };
+type Filter = 'all' | 'tickets' | 'weekly' | 'daily';
+
+type Entry =Item & { wasting: boolean; soon: boolean; done: boolean };
 
 const HOUR_MS = 3_600_000;
 const FAR = Number.MAX_SAFE_INTEGER;
@@ -40,6 +42,8 @@ export class CharacterDetail {
   /** Shown in the overlay window: the sections only, without Back and the hero. */
   readonly compact = input(false);
   readonly hourMs = HOUR_MS;
+  /** Which sections the detail shows; the filter chips set it. */
+  readonly filter = signal<Filter>('all');
 
   private readonly entries = computed<Entry[]>(() =>
     this.row().s.items.map(i => ({

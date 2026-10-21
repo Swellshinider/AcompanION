@@ -116,6 +116,27 @@ describe('CharacterDetail', () => {
     expect(el.querySelector('.daily-empty')).toBeNull();
   });
 
+  it('filters the sections with the chips', () => {
+    const { f, el } = render(row([
+      item({ id: 1, category: 'ticket', left: 5, refill }),
+      item({ id: 2, category: 'weekly', left: 1 }),
+      item({ id: 3, category: 'daily', left: 1 }),
+    ]));
+    const sections = () => [...el.querySelectorAll('[data-sec]')].map(s => s.getAttribute('data-sec'));
+    const chip = (text: string) => [...el.querySelectorAll<HTMLButtonElement>('.chip')].find(b => b.textContent?.trim() === text)!;
+    expect(sections()).toEqual(['tickets', 'weekly', 'daily']);
+    chip('Daily').click();
+    f.detectChanges();
+    expect(sections()).toEqual(['daily']);
+    expect(chip('Daily').getAttribute('aria-pressed')).toBe('true');
+    chip('Tickets').click();
+    f.detectChanges();
+    expect(sections()).toEqual(['tickets']);
+    chip('All').click();
+    f.detectChanges();
+    expect(sections()).toEqual(['tickets', 'weekly', 'daily']);
+  });
+
   it('emits back from the button', () => {
     const { f, el } = render(row([]));
     const spy = vi.fn();
