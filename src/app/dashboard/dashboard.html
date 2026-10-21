@@ -1,35 +1,33 @@
 <header class="top">
   <div class="brand">
-    <span class="mark" aria-hidden="true"></span>
+    <img class="mark" src="logo.png" alt="" width="30" height="30" />
     <h1 i18n="@@appTitle">AcompanION</h1>
   </div>
-  <span class="pill" [attr.data-status]="status().id">
-    @switch (status().id) {
-      @case ('running') { <ng-container i18n="@@statusRunning">Network connected</ng-container> }
-      @case ('save_failed') { <ng-container i18n="@@statusRunning">Network connected</ng-container> }
-      @case ('starting') { <ng-container i18n="@@statusStarting">Starting</ng-container> }
-      @default { <ng-container i18n="@@statusOff">Capture off</ng-container> }
-    }
-  </span>
-  @if (status().id === 'running' || status().id === 'save_failed') {
-    <span class="pill" [attr.data-game]="game()">
-      @if (game()) { <ng-container i18n="@@gameDetected">Game detected</ng-container> }
-      @else { <ng-container i18n="@@gameNotDetected">Game not detected</ng-container> }
+  <div class="status-group">
+    <span class="pill" [attr.data-status]="status().id">
+      @switch (status().id) {
+        @case ('running') { <ng-container i18n="@@statusRunning">Network connected</ng-container> }
+        @case ('save_failed') { <ng-container i18n="@@statusRunning">Network connected</ng-container> }
+        @case ('starting') { <ng-container i18n="@@statusStarting">Starting</ng-container> }
+        @default { <ng-container i18n="@@statusOff">Capture off</ng-container> }
+      }
     </span>
-  }
+    @if (status().id === 'running' || status().id === 'save_failed') {
+      <span class="pill" [attr.data-game]="game()">
+        @if (game()) { <ng-container i18n="@@gameDetected">Game detected</ng-container> }
+        @else { <ng-container i18n="@@gameNotDetected">Game not detected</ng-container> }
+      </span>
+    }
+  </div>
   @if (gamedata()) {
-    <button type="button" class="btn roster-btn" [attr.aria-current]="screen() === 'roster' ? 'page' : null" (click)="roster()" i18n="@@charactersButton">Characters</button>
-    <button type="button" class="btn pets-btn" [attr.aria-current]="screen() === 'pets' ? 'page' : null" (click)="screen.set('pets')" i18n="@@petsButton">Pets</button>
-    <button type="button" class="btn meter-btn" [attr.aria-current]="screen() === 'meter' ? 'page' : null" (click)="screen.set('meter')" i18n="@@meterButton">DPS Meter</button>
-    <button type="button" class="btn overlay-btn" popovertarget="overlay-panel" i18n="@@overlayButton">Overlay</button>
+    <nav class="tabs">
+      <button type="button" class="tab roster-btn" [attr.aria-current]="screen() === 'roster' ? 'page' : null" (click)="roster()" i18n="@@charactersButton">Characters</button>
+      <button type="button" class="tab pets-btn" [attr.aria-current]="screen() === 'pets' ? 'page' : null" (click)="screen.set('pets')" i18n="@@petsButton">Pets</button>
+      <button type="button" class="tab meter-btn" [attr.aria-current]="screen() === 'meter' ? 'page' : null" (click)="screen.set('meter')" i18n="@@meterButton">DPS Meter</button>
+      <button type="button" class="tab overlay-btn" popovertarget="overlay-panel" i18n="@@overlayButton">Overlay</button>
+    </nav>
   }
   <app-overlay-panel />
-  @if (resets(); as r) {
-    <div class="resets">
-      <span class="reset" i18n="@@dailyResetIn">Daily reset in <b>{{ until(r.daily) }}</b></span>
-      <span class="reset" i18n="@@weeklyResetIn">Weekly reset in <b>{{ until(r.weekly) }}</b></span>
-    </div>
-  }
 </header>
 
 @if (status().id !== 'running' && status().id !== 'starting') {
@@ -109,5 +107,13 @@
 </main>
 
 @if (gamedata()) {
-  <footer class="foot" i18n="@@footerResets">All resets at {{ resetHour }}:00 UTC · weekly on {{ weekday() }}</footer>
+  <footer class="foot">
+    @if (resets(); as r) {
+      <div class="resets">
+        <span class="reset" i18n="@@dailyResetIn">Daily reset in <b>{{ until(r.daily) }}</b></span>
+        <span class="reset" i18n="@@weeklyResetIn">Weekly reset in <b>{{ until(r.weekly) }}</b></span>
+      </div>
+    }
+    <span i18n="@@footerResets">All resets at {{ resetHour }}:00 UTC · weekly on {{ weekday() }}</span>
+  </footer>
 }

@@ -6,7 +6,7 @@
 
 <div class="hero">
   <span class="art" [appGlyph]="row().icon" aria-hidden="true"></span>
-  <app-emblem [icon]="row().icon" [level]="row().c.level" [size]="132" />
+  <app-emblem [icon]="row().icon" [level]="row().c.level" [size]="96" />
   <div>
     <h2>{{ row().c.name }}</h2>
     <div class="id">
@@ -44,21 +44,32 @@
   </div>
 </div>
 
-@if (tickets().length) {
+<div class="chips" role="group" i18n-aria-label="@@charFilter" aria-label="Show">
+  <button type="button" class="chip" [class.on]="filter() === 'all'" [attr.aria-pressed]="filter() === 'all'" (click)="filter.set('all')" i18n="@@petsFilterAll">All</button>
+  <button type="button" class="chip" [class.on]="filter() === 'wasting'" [attr.aria-pressed]="filter() === 'wasting'" (click)="filter.set('wasting')" i18n="@@charFilterWasting">Wasting</button>
+  <button type="button" class="chip" [class.on]="filter() === 'tickets'" [attr.aria-pressed]="filter() === 'tickets'" (click)="filter.set('tickets')" i18n="@@charFilterTickets">Tickets</button>
+  <button type="button" class="chip" [class.on]="filter() === 'weekly'" [attr.aria-pressed]="filter() === 'weekly'" (click)="filter.set('weekly')" i18n="@@charFilterWeekly">Weekly</button>
+  <button type="button" class="chip" [class.on]="filter() === 'daily'" [attr.aria-pressed]="filter() === 'daily'" (click)="filter.set('daily')" i18n="@@charFilterDaily">Daily</button>
+</div>
+
+@if (tickets().length && (filter() === 'all' || filter() === 'tickets' || filter() === 'wasting')) {
   <section class="sec" data-sec="tickets">
     <div class="sec-h">
       <h3 i18n="@@secTickets">Tickets and energy</h3>
       <span class="meta" i18n="@@ticketsMeta">{{ wasting().length }} full · {{ tickets().length - wasting().length }} refilling</span>
     </div>
     <ul class="rows">
-      @for (i of tickets(); track i.id) {
+      @for (i of shownTickets(); track i.id) {
         <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: i }" />
       }
     </ul>
+    @if (!shownTickets().length) {
+      <div class="daily-empty"><p i18n="@@nothingWasting">Nothing is wasting refills right now.</p></div>
+    }
   </section>
 }
 
-@if (weekly().length) {
+@if (weekly().length && (filter() === 'all' || filter() === 'weekly')) {
   <section class="sec" data-sec="weekly">
     <div class="sec-h">
       <h3 i18n="@@secWeekly">Weekly</h3>
@@ -72,24 +83,26 @@
   </section>
 }
 
-<section class="sec" data-sec="daily">
-  <div class="sec-h">
-    <h3 i18n="@@secDaily">Daily</h3>
-    <span class="meta" i18n="@@resetsIn">Resets in {{ until(dailyReset()) }}</span>
-  </div>
-  @if (daily().length) {
-    <ul class="rows">
-      @for (i of daily(); track i.id) {
-        <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: i }" />
-      }
-    </ul>
-  } @else {
-    <div class="daily-empty">
-      <p i18n="@@dailyEmpty">Daily tasks are not decoded yet.</p>
-      <p class="note" i18n="@@dailyEmptyNote">AcompanION only shows counters it can read from game traffic. Daily tasks appear here once they are mapped; nothing on this page is estimated.</p>
+@if (filter() === 'all' || filter() === 'daily') {
+  <section class="sec" data-sec="daily">
+    <div class="sec-h">
+      <h3 i18n="@@secDaily">Daily</h3>
+      <span class="meta" i18n="@@resetsIn">Resets in {{ until(dailyReset()) }}</span>
     </div>
-  }
-</section>
+    @if (daily().length) {
+      <ul class="rows">
+        @for (i of daily(); track i.id) {
+          <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: i }" />
+        }
+      </ul>
+    } @else {
+      <div class="daily-empty">
+        <p i18n="@@dailyEmpty">Daily tasks are not decoded yet.</p>
+        <p class="note" i18n="@@dailyEmptyNote">AcompanION only shows counters it can read from game traffic. Daily tasks appear here once they are mapped; nothing on this page is estimated.</p>
+      </div>
+    }
+  </section>
+}
 
 <ng-template #rowTpl let-i>
   <li class="row" [class.is-full]="i.wasting" [class.is-soon]="i.soon" [class.is-done]="i.done">

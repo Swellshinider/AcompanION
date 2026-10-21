@@ -7,12 +7,8 @@
     display: none;
   }
 
-  .sec {
-    margin-top: 14px;
-  }
-
-  .sec-h h3 {
-    font-size: 15px;
+  .chips {
+    margin-top: 0;
   }
 }
 
@@ -20,8 +16,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 36px;
-  margin-bottom: 16px;
+  height: 32px;
+  margin-bottom: 12px;
   padding: 0 12px 0 10px;
   background: transparent;
   border: 1px solid var(--line);
@@ -55,13 +51,12 @@ kbd {
   position: relative;
   overflow: hidden;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(230px, 320px);
-  gap: 12px 32px;
+  grid-template-columns: auto minmax(0, 1fr) minmax(210px, 260px);
+  gap: 12px 17px;
   align-items: center;
-  padding: 28px 30px;
+  padding: 13px 16px;
   border: 1px solid var(--line);
-  border-radius: 5px;
-  background: radial-gradient(60% 140% at 8% 50%, color-mix(in oklch, var(--accent) 9%, var(--panel)) 0%, var(--panel) 70%);
+  background: radial-gradient(65% 150% at 5% 50%, color-mix(in oklch, var(--accent) 7%, var(--panel)) 0%, var(--panel) 70%);
   box-shadow: inset 0 1px 0 var(--gold-line);
 
   > * {
@@ -81,17 +76,18 @@ kbd {
 
   h2 {
     margin: 0;
-    font: 600 36px/1.1 var(--display);
-    letter-spacing: 0.01em;
+    font: 600 28px/1.05 var(--display);
+    overflow-wrap: anywhere;
   }
 
   .id {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 10px;
+    gap: 4px 10px;
     align-items: center;
-    margin-top: 6px;
+    margin-top: 5px;
     color: var(--muted);
+    font-size: 12px;
 
     i {
       width: 3px;
@@ -101,36 +97,50 @@ kbd {
     }
   }
 
+  // Combat power / GS: a compact row instead of the roster card's two-column block
   .stats {
-    max-width: 380px;
-    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    margin-top: 11px;
   }
 
-  .stat .v {
-    font-size: 28px;
+  .stat {
+    padding-top: 0;
+    border-top: 0;
+    gap: 1px;
+
+    .k {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+    }
+
+    .v {
+      font-size: 17px;
+      font-weight: 650;
+    }
   }
 }
 
 .attn {
   display: grid;
   align-content: center;
-  gap: 8px;
+  gap: 5px;
   align-self: stretch;
-  padding: 14px 16px;
+  padding: 9px 13px;
   background: var(--well);
   border: 1px solid var(--line);
-  border-radius: 4px;
 
   .k {
-    font-size: 11px;
-    letter-spacing: 0.09em;
+    font-size: 10px;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--muted);
   }
 
   ul {
     display: grid;
-    gap: 6px;
+    gap: 3px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -140,9 +150,10 @@ kbd {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    font-weight: 600;
+    font: 600 15px/1.15 var(--display);
 
     span {
+      font: 600 12px var(--ui);
       color: var(--ok);
       font-variant-numeric: tabular-nums;
     }
@@ -151,82 +162,119 @@ kbd {
   p {
     margin: 0;
     color: var(--muted);
+    font-size: 11px;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 13px;
+}
+
+.chip {
+  height: 30px;
+  padding: 0 12px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s, color 0.14s;
+
+  &:hover {
+    background: var(--panel-2);
+    color: var(--text);
+  }
+
+  &.on {
+    color: var(--text);
+    background: var(--panel-2);
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--accent) 10%, transparent);
   }
 }
 
 .sec {
-  margin-top: 30px;
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
 }
 
 .sec-h {
-  position: relative;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--line);
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -1px;
-    width: 64px;
-    height: 1px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-  }
+  gap: 12px;
+  padding: 7px 0 6px;
 
   h3 {
     margin: 0;
-    font: 600 22px/1.2 var(--display);
-    letter-spacing: 0.01em;
+    font: 600 17px/1.15 var(--display);
   }
 }
 
 .meta {
   color: var(--muted);
   font-size: 12.5px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
+// two columns of one-line rows, hairlines between them, no box around the list
 .rows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0;
   padding: 0;
   list-style: none;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-top: 0;
+  border-top: 1px solid var(--line);
 }
 
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.5fr) minmax(170px, 0.8fr);
-  gap: 8px 24px;
+  grid-template-columns: minmax(96px, 1fr) minmax(112px, 1.05fr) auto;
+  gap: 8px;
   align-items: center;
-  padding: 13px 18px;
-  border-top: 1px solid var(--line);
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 14px;
+  border-bottom: 1px solid var(--line);
 
-  &:first-child {
-    border-top: 0;
+  &:nth-child(odd) {
+    padding-left: 0;
+    border-right: 1px solid var(--line);
+  }
+
+  &:nth-child(even) {
+    padding-right: 0;
+  }
+
+  .nm {
+    min-width: 0;
   }
 
   .n {
+    overflow-wrap: anywhere;
+    font-size: 14px;
     font-weight: 600;
-    text-wrap: balance;
   }
 
   .sub {
     display: block;
-    margin-top: 1px;
     font-size: 12px;
+    line-height: 1.2;
     color: var(--muted);
   }
 
   .meter {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 12px;
+    gap: 7px;
     align-items: center;
+    min-width: 0;
   }
 
   .bar {
@@ -244,9 +292,10 @@ kbd {
   }
 
   .val {
-    min-width: 76px;
     text-align: right;
+    font-size: 13px;
     font-weight: 600;
+    white-space: nowrap;
     font-variant-numeric: tabular-nums;
 
     small {
@@ -258,6 +307,8 @@ kbd {
 
   .st {
     text-align: right;
+    font-size: 13px;
+    white-space: nowrap;
     color: var(--muted);
     font-variant-numeric: tabular-nums;
 
@@ -272,10 +323,6 @@ kbd {
     color: var(--accent);
   }
 
-  &.is-full {
-    background: color-mix(in oklch, var(--ok) 10%, var(--panel));
-  }
-
   &.is-full .bar i,
   &.is-done .bar i {
     background: var(--ok);
@@ -287,23 +334,15 @@ kbd {
   }
 }
 
+// "Full, wasting refills": green text, not a pill
 .tag {
-  display: inline-block;
-  padding: 4px 10px;
-  border: 1px solid color-mix(in oklch, var(--ok) 50%, transparent);
-  border-radius: 99px;
-  background: color-mix(in oklch, var(--ok) 14%, transparent);
-  font-size: 12.5px;
-  font-weight: 600;
-  line-height: 1.3;
   color: var(--ok);
+  font-weight: 650;
 }
 
 .daily-empty {
-  padding: 22px 20px;
-  border: 1px dashed var(--line);
-  border-top: 0;
-  background: color-mix(in oklch, var(--panel) 55%, transparent);
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
 
   p {
     margin: 0;
@@ -316,51 +355,53 @@ kbd {
   }
 }
 
-@media (max-width: 900px) {
+// one column only in narrow windows (the overlay is 420px wide by default)
+@media (max-width: 899px) {
+  .rows {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .row:nth-child(odd),
+  .row:nth-child(even) {
+    padding-left: 0;
+    padding-right: 0;
+    border-right: 0;
+  }
+}
+
+@media (max-width: 760px) {
   .hero {
     grid-template-columns: auto minmax(0, 1fr);
-    padding: 22px;
-
-    h2 {
-      font-size: 30px;
-    }
+    gap: 12px;
+    padding: 12px;
   }
 
   .attn {
     grid-column: 1 / -1;
   }
-
-  .row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "nm st" "meter meter";
-    gap: 10px 16px;
-
-    .nm { grid-area: nm; }
-    .st { grid-area: st; }
-    .meter { grid-area: meter; }
-  }
 }
 
 @media (max-width: 560px) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: start;
-    padding: 18px;
-
-    h2 {
-      font-size: 26px;
-    }
-
-    .stats {
-      max-width: none;
-    }
+  .hero h2 {
+    font-size: 24px;
   }
 
-  .attn {
-    justify-self: stretch;
+  .hero .stats {
+    gap: 6px 14px;
+    margin-top: 8px;
   }
 
   .row {
-    padding: 12px 14px;
+    grid-template-columns: minmax(88px, 0.9fr) minmax(85px, 1fr) auto;
+    gap: 6px;
+  }
+
+  .row .n {
+    font-size: 13px;
+  }
+
+  .row .val,
+  .row .st {
+    font-size: 12px;
   }
 }

@@ -1,5 +1,5 @@
 import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, LOCALE_ID, afterNextRender, computed, inject, input, output } from '@angular/core';
+import { Component, ElementRef, LOCALE_ID, afterNextRender, computed, inject, input, output, signal } from '@angular/core';
 import { Character } from '../characters.service';
 import { Emblem } from '../emblem/emblem';
 import { Item, Summary, pick, span } from '../gamedata';
@@ -15,6 +15,8 @@ export interface CharacterRow {
   /** Glyph file stem under `public/classes/`. */
   icon: string;
 }
+
+type Filter = 'all' | 'wasting' | 'tickets' | 'weekly' | 'daily';
 
 type Entry = Item & { wasting: boolean; soon: boolean; done: boolean };
 
@@ -40,6 +42,8 @@ export class CharacterDetail {
   /** Shown in the overlay window: the sections only, without Back and the hero. */
   readonly compact = input(false);
   readonly hourMs = HOUR_MS;
+  /** Which sections the detail shows; the filter chips set it. */
+  readonly filter = signal<Filter>('all');
 
   private readonly entries = computed<Entry[]>(() =>
     this.row().s.items.map(i => ({
@@ -53,6 +57,8 @@ export class CharacterDetail {
     .filter(i => i.category === 'ticket' || i.category === 'energy')
     .sort((a, b) => Number(b.wasting) - Number(a.wasting) || (a.fullAt ?? FAR) - (b.fullAt ?? FAR)));
   readonly wasting = computed(() => this.tickets().filter(i => i.wasting));
+  /** The Tickets rows the filter lets through: only the wasting ones under "Wasting". */
+  readonly shownTickets = computed(() => (this.filter() === 'wasting' ? this.wasting() : this.tickets()));
   readonly weekly = computed(() => this.entries().filter(i => i.category === 'weekly').sort(byLeft));
   readonly daily = computed(() => this.entries().filter(i => i.category === 'daily').sort(byLeft));
 
