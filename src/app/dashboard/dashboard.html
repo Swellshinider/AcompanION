@@ -47,6 +47,13 @@
     @if (status().detail; as detail) { <code class="detail">{{ detail }}</code> }
   </section>
 }
+@if (update(); as version) {
+  <section class="banner" role="status">
+    <p i18n="@@bannerUpdate">Version {{ version }} is available.</p>
+    <button type="button" class="btn" (click)="install()" [disabled]="installing()" i18n="@@installUpdate">Update and restart</button>
+    @if (updateFailed()) { <p role="alert" i18n="@@bannerUpdateFailed">The update failed. Try again later.</p> }
+  </section>
+}
 @if (gamedataFailed()) {
   <section class="banner" role="alert"><p i18n="@@bannerGamedata">Game data could not be loaded.</p></section>
 }

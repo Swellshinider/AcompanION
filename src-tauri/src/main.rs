@@ -14,6 +14,7 @@ use acompanion::live::Engine;
 use acompanion::state::State;
 use serde_json::Value;
 use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize, RunEvent, WebviewUrl, WebviewWindow, WebviewWindowBuilder, WindowEvent};
+use tauri_plugin_updater::{Update, UpdaterExt};
 
 /// Game server port and embedded opcode table, as in `re`.
 const PORT: u16 = 13328;
@@ -27,6 +28,18 @@ struct AppState {
     capture: Mutex<Option<JoinHandle<()>>>,
     /// The main window is closing: the overlay going away with it is not the user switching it off.
     quitting: AtomicBool,
+}
+
+/// The update `check_update` found, kept for `install_update`.
+struct PendingUpdate(Mutex<Option<Update>>);
+
+/// Stop capture and wait for the engine to flush its state to disk. Safe to call twice.
+fn stop_capture(handle: &AppHandle) {
+    let app = handle.state::<AppState>();
+    app.stop.store(true, Ordering::Relaxed);
+    if let Some(t) = app.capture.lock().unwrap().take() {
+        let _ = t.join();
+    }
 }
 
 #[tauri::command]
@@ -72,6 +85,29 @@ fn restart_as_admin(handle: AppHandle) -> Result<bool, String> {
         handle.exit(0);
     }
     Ok(accepted)
+}
+
+/// The newer version published on GitHub Releases, if any. Dev builds never ask.
+#[tauri::command]
+async fn check_update(handle: AppHandle, pending: tauri::State<'_, PendingUpdate>) -> Result<Option<String>, String> {
+    if cfg!(debug_assertions) {
+        return Ok(None);
+    }
+    let update = handle.updater().map_err(|e| e.to_string())?.check().await.map_err(|e| e.to_string())?;
+    let version = update.as_ref().map(|u| u.version.clone());
+    *pending.0.lock().unwrap() = update;
+    Ok(version)
+}
+
+/// Download the update, flush the state, then run the installer, which restarts the app.
+#[tauri::command]
+async fn install_update(handle: AppHandle, pending: tauri::State<'_, PendingUpdate>) -> Result<(), String> {
+    let update = pending.0.lock().unwrap().clone().ok_or("no update to install")?;
+    let bytes = update.download(|_, _| {}, || {}).await.map_err(|e| e.to_string())?;
+    // the installer ends this process without a RunEvent::Exit
+    stop_capture(&handle);
+    update.install(bytes).map_err(|e| e.to_string())?;
+    handle.restart()
 }
 
 const OVERLAY: &str = "overlay";
@@ -203,7 +239,9 @@ fn main() {
     let clear = Arc::new(AtomicBool::new(false));
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, overlay, restart_as_admin])
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .manage(PendingUpdate(Mutex::new(None)))
+        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, overlay, restart_as_admin, check_update, install_update])
         .setup(move |app| {
             let thread = start.map(|(state, path, guard)| {
                 let (handle, shared, stop, clear) = (app.handle().clone(), shared.clone(), stop.clone(), clear.clone());
@@ -228,14 +266,8 @@ fn main() {
                         let _ = handle.emit_to("main", "overlay://closed", ());
                     }
                 }
-                RunEvent::Exit => {
-                    let app = handle.state::<AppState>();
-                    app.stop.store(true, Ordering::Relaxed);
-                    // joining lets `live::run` flush the engine to disk
-                    if let Some(t) = app.capture.lock().unwrap().take() {
-                        let _ = t.join();
-                    }
-                }
+                // joining lets `live::run` flush the engine to disk
+                RunEvent::Exit => stop_capture(handle),
                 _ => {}
             }
         });

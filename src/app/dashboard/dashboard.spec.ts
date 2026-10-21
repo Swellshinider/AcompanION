@@ -17,16 +17,18 @@ const ch = (name: string, left: number, classCode = 3): Character => ({
   counters: [{ id: 1, value: left, ms: false, updated_us: nowUs }], last_seen_us: nowUs,
 });
 
-async function render(status: CaptureStatus, chars: Character[], game = false) {
+async function render(status: CaptureStatus, chars: Character[], game = false, update: string | null = null) {
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => gd })));
   const restartAsAdmin = vi.fn(async () => false);
+  const checkUpdate = vi.fn(async () => update);
+  const installUpdate = vi.fn(async () => {});
   TestBed.configureTestingModule({
-    providers: [{ provide: CharactersService, useValue: { characters: signal(chars), status: signal(status), game: signal(game), radar: signal(null), meter: signal(null), fights: signal([]), restartAsAdmin } }],
+    providers: [{ provide: CharactersService, useValue: { characters: signal(chars), status: signal(status), game: signal(game), radar: signal(null), meter: signal(null), fights: signal([]), restartAsAdmin, checkUpdate, installUpdate } }],
   });
   const f = TestBed.createComponent(Dashboard);
-  await new Promise(r => setTimeout(r)); // let loadGamedata resolve
+  await new Promise(r => setTimeout(r)); // let loadGamedata and checkUpdate resolve
   f.detectChanges();
-  return { f, el: f.nativeElement as HTMLElement, restartAsAdmin };
+  return { f, el: f.nativeElement as HTMLElement, restartAsAdmin, installUpdate };
 }
 const cardNames = (el: HTMLElement) => [...el.querySelectorAll('.card .name')].map(n => n.textContent?.trim());
 
@@ -146,6 +148,18 @@ describe('Dashboard', () => {
     button.click();
     expect(restartAsAdmin).toHaveBeenCalledOnce();
     expect(cardNames(el)).toEqual(['Alpha']); // saved characters still show
+  });
+
+  it('offers an update when a newer version is published', async () => {
+    const { el, installUpdate } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)], false, '0.2.0');
+    expect(el.querySelector('.banner')?.textContent).toContain('0.2.0');
+    el.querySelector<HTMLButtonElement>('.banner button')!.click();
+    expect(installUpdate).toHaveBeenCalledOnce();
+  });
+
+  it('shows no update banner when up to date', async () => {
+    const { el } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)]);
+    expect(el.querySelector('.banner')).toBeNull();
   });
 
   it('shows an empty state without characters', async () => {

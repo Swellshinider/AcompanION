@@ -29,6 +29,10 @@ export class Dashboard {
   readonly gamedata = signal<GameData | null>(null);
   readonly gamedataFailed = signal(false);
   readonly restarting = signal(false);
+  /** The newer version on GitHub Releases; null while unknown, up to date or offline. */
+  readonly update = signal<string | null>(null);
+  readonly installing = signal(false);
+  readonly updateFailed = signal(false);
   /** `server:name` of the character whose detail is open. */
   readonly selected = signal<string | null>(null);
   /** The screen: the roster (and a character's detail), the Pets screen or the combat Meter. */
@@ -74,6 +78,8 @@ export class Dashboard {
 
   constructor() {
     loadGamedata().then(gd => this.gamedata.set(gd), () => this.gamedataFailed.set(true));
+    // offline or no backend: no banner
+    this.chars.checkUpdate().then(v => this.update.set(v), () => {});
     const timer = setInterval(() => this.now.set(Date.now()), 60_000);
     inject(DestroyRef).onDestroy(() => clearInterval(timer));
   }
@@ -114,6 +120,17 @@ export class Dashboard {
       await this.chars.restartAsAdmin(); // on success this window closes
     } finally {
       this.restarting.set(false);
+    }
+  }
+
+  async install(): Promise<void> {
+    this.installing.set(true);
+    this.updateFailed.set(false);
+    try {
+      await this.chars.installUpdate(); // on success the app restarts
+    } catch {
+      this.updateFailed.set(true);
+      this.installing.set(false);
     }
   }
 }
