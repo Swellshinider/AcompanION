@@ -16,9 +16,9 @@ export interface CharacterRow {
   icon: string;
 }
 
-type Filter = 'all' | 'tickets' | 'weekly' | 'daily';
+type Filter = 'all' | 'wasting' | 'tickets' | 'weekly' | 'daily';
 
-type Entry =Item & { wasting: boolean; soon: boolean; done: boolean };
+type Entry = Item & { wasting: boolean; soon: boolean; done: boolean };
 
 const HOUR_MS = 3_600_000;
 const FAR = Number.MAX_SAFE_INTEGER;
@@ -57,6 +57,8 @@ export class CharacterDetail {
     .filter(i => i.category === 'ticket' || i.category === 'energy')
     .sort((a, b) => Number(b.wasting) - Number(a.wasting) || (a.fullAt ?? FAR) - (b.fullAt ?? FAR)));
   readonly wasting = computed(() => this.tickets().filter(i => i.wasting));
+  /** The Tickets rows the filter lets through: only the wasting ones under "Wasting". */
+  readonly shownTickets = computed(() => (this.filter() === 'wasting' ? this.wasting() : this.tickets()));
   readonly weekly = computed(() => this.entries().filter(i => i.category === 'weekly').sort(byLeft));
   readonly daily = computed(() => this.entries().filter(i => i.category === 'daily').sort(byLeft));
 

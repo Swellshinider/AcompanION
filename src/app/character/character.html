@@ -46,22 +46,26 @@
 
 <div class="chips" role="group" i18n-aria-label="@@charFilter" aria-label="Show">
   <button type="button" class="chip" [class.on]="filter() === 'all'" [attr.aria-pressed]="filter() === 'all'" (click)="filter.set('all')" i18n="@@petsFilterAll">All</button>
+  <button type="button" class="chip" [class.on]="filter() === 'wasting'" [attr.aria-pressed]="filter() === 'wasting'" (click)="filter.set('wasting')" i18n="@@charFilterWasting">Wasting</button>
   <button type="button" class="chip" [class.on]="filter() === 'tickets'" [attr.aria-pressed]="filter() === 'tickets'" (click)="filter.set('tickets')" i18n="@@charFilterTickets">Tickets</button>
   <button type="button" class="chip" [class.on]="filter() === 'weekly'" [attr.aria-pressed]="filter() === 'weekly'" (click)="filter.set('weekly')" i18n="@@charFilterWeekly">Weekly</button>
   <button type="button" class="chip" [class.on]="filter() === 'daily'" [attr.aria-pressed]="filter() === 'daily'" (click)="filter.set('daily')" i18n="@@charFilterDaily">Daily</button>
 </div>
 
-@if (tickets().length && (filter() === 'all' || filter() === 'tickets')) {
+@if (tickets().length && (filter() === 'all' || filter() === 'tickets' || filter() === 'wasting')) {
   <section class="sec" data-sec="tickets">
     <div class="sec-h">
       <h3 i18n="@@secTickets">Tickets and energy</h3>
       <span class="meta" i18n="@@ticketsMeta">{{ wasting().length }} full · {{ tickets().length - wasting().length }} refilling</span>
     </div>
     <ul class="rows">
-      @for (i of tickets(); track i.id) {
+      @for (i of shownTickets(); track i.id) {
         <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: i }" />
       }
     </ul>
+    @if (!shownTickets().length) {
+      <div class="daily-empty"><p i18n="@@nothingWasting">Nothing is wasting refills right now.</p></div>
+    }
   </section>
 }
 

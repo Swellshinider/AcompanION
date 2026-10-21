@@ -92,6 +92,10 @@
           <context context-type="sourcefile">src/app/character/character.html</context>
           <context context-type="linenumber">42,45</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="charFilter" datatype="html">
         <source>Show</source>
@@ -115,96 +119,103 @@
           <context context-type="linenumber">97,98</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="charFilterWasting" datatype="html">
+        <source>Wasting</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">49,50</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="charFilterTickets" datatype="html">
         <source>Tickets</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">49,50</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="charFilterWeekly" datatype="html">
         <source>Weekly</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="charFilterDaily" datatype="html">
         <source>Daily</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">51,54</context>
+          <context context-type="linenumber">52,55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="secTickets" datatype="html">
         <source>Tickets and energy</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">57,58</context>
+          <context context-type="linenumber">58,59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="ticketsMeta" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ wasting().length }}"/> full · <x id="INTERPOLATION_1" equiv-text="{{ tickets().length - wasting().length }}"/> refilling</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">58,59</context>
+          <context context-type="linenumber">59,60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="secWeekly" datatype="html">
         <source>Weekly</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">71,72</context>
+          <context context-type="linenumber">75,76</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resetsIn" datatype="html">
         <source>Resets in <x id="INTERPOLATION" equiv-text="{{ until(weeklyReset()) }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">72,73</context>
+          <context context-type="linenumber">76,77</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">86,87</context>
+          <context context-type="linenumber">90,91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="secDaily" datatype="html">
         <source>Daily</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">85,86</context>
+          <context context-type="linenumber">89,90</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dailyEmpty" datatype="html">
         <source>Daily tasks are not decoded yet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">96,97</context>
+          <context context-type="linenumber">100,101</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dailyEmptyNote" datatype="html">
         <source>AcompanION only shows counters it can read from game traffic. Daily tasks appear here once they are mapped; nothing on this page is estimated.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">97,100</context>
+          <context context-type="linenumber">101,104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rhythm" datatype="html">
         <source>+<x id="INTERPOLATION" equiv-text="{{ r.amount }}"/> every <x id="INTERPOLATION_1" equiv-text="{{ r.every_ms / hourMs }}"/>h</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">108,110</context>
+          <context context-type="linenumber">112,114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="hoursUnit" datatype="html">
         <source>h</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">117</context>
+          <context context-type="linenumber">121</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">117,118</context>
+          <context context-type="linenumber">121,122</context>
         </context-group>
         <note priority="1" from="description">hours unit</note>
       </trans-unit>
@@ -212,21 +223,21 @@
         <source>Full, wasting refills</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">125,126</context>
+          <context context-type="linenumber">129,130</context>
         </context-group>
       </trans-unit>
       <trans-unit id="fullIn" datatype="html">
         <source>full in <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ until(i.fullAt) }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">127,128</context>
+          <context context-type="linenumber">131,132</context>
         </context-group>
       </trans-unit>
       <trans-unit id="done" datatype="html">
         <source>Done</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/character/character.html</context>
-          <context context-type="linenumber">129,131</context>
+          <context context-type="linenumber">133,135</context>
         </context-group>
       </trans-unit>
       <trans-unit id="appTitle" datatype="html">
