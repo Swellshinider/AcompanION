@@ -10,7 +10,11 @@ How to write a line:
 
 The top section is the next version, named by the patch bump of the last release (`v0.1.1` is out, so `v0.1.2`; a bigger change may rename it to the minor or major it needs). When the release is cut, put its date on the heading and open a section for the version after it. Released versions stay below, newest first.
 
-## v0.1.2 (next)
+## v0.1.3 (next)
+
+Nothing yet.
+
+## v0.1.2 (2026-10-22)
 
 ### New
 
@@ -20,3 +24,7 @@ The top section is the next version, named by the patch bump of the last release
 
 - Combat meter: the damage of a Spiritmaster's spirits now counts for the Spiritmaster, so their total, DPS and place in the ranking are right.
 - Combat meter: every boss now gets its own fight with its own time and DPS. Two bosses killed back to back used to show up as one long fight.
+
+## v0.1.1 (2026-10-22)
+
+- A small update to check that automatic updates work. Nothing changes in how the app looks or behaves.
