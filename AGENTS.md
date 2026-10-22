@@ -40,6 +40,7 @@ Expected today: Rust 166 tests pass (plus 2 integration), 2 ignored; frontend 16
 - **Smallest change that solves the problem.** Follow existing structure; no opportunistic refactors.
 - **Rust emits ids and raw values, never display text.** All names, formatting and plurals belong to the frontend (i18n from day one; English first).
 - **Commits:** small, imperative, conventional prefixes (`feat:`, `fix:`, `docs:`, `chore:`, `test:`). No co-author trailers and no tool/agent attribution in messages.
+- **Releases:** a `vX.Y.Z` tag creates a draft (README, Releasing). Before publishing, its notes are rewritten for players in plain language (what changed for the user), never a developer changelog.
 - **Branches/PRs:** work on a `feature/*`, `bugfix/*`, `docs/*`, `refactor/*`, `test/*` or `chore/*` branch, never directly on the default branch. Do not open PRs or merge without explicit approval from the maintainer.
 
 ## Conventions
