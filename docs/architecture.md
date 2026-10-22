@@ -40,7 +40,7 @@ All under `src-tauri/src/`, in one crate (`acompanion` library plus the `re` and
 | `state.rs` | `State`/`Character`, session binding, JSON persistence at `%APPDATA%\AcompanION\characters.json` |
 | `live.rs` | `Engine` (frames in; state, radar and meter out; throttled save) and `run` (Npcap capture loop) |
 | `radar.rs` | Transient radar state: pet monsters in view, the player's last exact position, the map id |
-| `meter.rs` | Combat meter: fights closed after 10 s without a counted hit, tallies per player, skill and target, the last 50 fights saved to `meter.json` next to the state file |
+| `meter.rs` | Combat meter: fights closed after 10 s without a counted hit or at a boss's death (one fight per boss), tallies per player, skill and target, the last 50 fights saved to `meter.json` next to the state file |
 | `hexdump.rs` | Hexdump and Shannon entropy for `re dump` |
 | `app.rs` | App glue testable without a window: `Status` (stable id plus raw error chain), `classify`, `Shared`, the UAC relaunch. Windows only |
 | `main.rs` | The `acompanion` bin: Tauri builder, capture thread, the commands, join on exit |

@@ -30,7 +30,7 @@ pnpm i18n                                                            # extract s
 uv run --with lz4 python tools/re/aion_re.py <chain|hist|findstr|findint|frame> ...
 ```
 
-Expected today: Rust 166 tests pass (plus 2 integration), 2 ignored; frontend 161 tests pass; clippy clean. Keep all true. The app needs an elevated terminal to capture; `pnpm ng build`, `pnpm i18n` and `pnpm tauri build --no-bundle` pass (the installer needs the updater signing key and is built by `.github/workflows/release.yml` on a `vX.Y.Z` tag; see README, Releasing).
+Expected today: Rust 167 tests pass (plus 2 integration), 2 ignored; frontend 161 tests pass; clippy clean. Keep all true. The app needs an elevated terminal to capture; `pnpm ng build`, `pnpm i18n` and `pnpm tauri build --no-bundle` pass (the installer needs the updater signing key and is built by `.github/workflows/release.yml` on a `vX.Y.Z` tag; see README, Releasing).
 
 ## Hard rules
 
@@ -40,6 +40,7 @@ Expected today: Rust 166 tests pass (plus 2 integration), 2 ignored; frontend 16
 - **Smallest change that solves the problem.** Follow existing structure; no opportunistic refactors.
 - **Rust emits ids and raw values, never display text.** All names, formatting and plurals belong to the frontend (i18n from day one; English first).
 - **Commits:** small, imperative, conventional prefixes (`feat:`, `fix:`, `docs:`, `chore:`, `test:`). No co-author trailers and no tool/agent attribution in messages.
+- **Patch notes:** a commit that changes something a player can notice also adds a plain-language line under the next version's section in `docs/patch-notes.md` (what the player sees, no jargon). Release notes are built from it.
 - **Releases:** a `vX.Y.Z` tag creates a draft (README, Releasing). Before publishing, its notes are rewritten for players in plain language (what changed for the user), never a developer changelog.
 - **Branches/PRs:** work on a `feature/*`, `bugfix/*`, `docs/*`, `refactor/*`, `test/*` or `chore/*` branch, never directly on the default branch. Do not open PRs or merge without explicit approval from the maintainer.
 

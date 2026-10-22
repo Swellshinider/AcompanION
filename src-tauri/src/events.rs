@@ -463,7 +463,7 @@ impl Opcodes {
             }
             Kind::MonsterSpawn => {
                 let entity = c.varint()?;
-                if let Some(owner) = summon_owner(&frame[2..c.i], frame.get(c.i..)?) {
+                if let Some(owner) = summon_owner(frame.get(c.i..)?) {
                     return Some(Event::Summon { entity, owner });
                 }
                 // [3 bytes; bit 0 of the last: a name follows][u32 template][2 bytes; bit 3 of the
@@ -647,16 +647,16 @@ fn hit_head(c: &mut Cur) -> Option<HitHead> {
     Some(HitHead { target, flags, extra, attacker, skill, crit, effect, amount: c.varint()? })
 }
 
-/// The owner of a summon in a `41 36` spawn: `ent` is the spawned entity's varint bytes, `rest`
-/// the frame after it. The spawn repeats the entity later as `[entity][01 02][f32 x, y, z][07 02 06]
-/// [u32 owner]`; monsters and players carry other bytes there.
+/// The owner of a summon in a `41 36` spawn, `rest` being the frame after the entity. The spawn
+/// ends in `[varint][01 02][f32 x, y, z][07 02 06][u32 owner]`; monsters and players carry other
+/// bytes there. The varint is the summon's own entity for a Ranger's, the owner's for a
+/// Spiritmaster's spirits (`292xxxx` templates), so it is not compared.
 /// ponytail: found by searching for that shape (a named spawn's fields before it vary in length and
 /// are not decoded); decode the spawn's tail field by field if another owned kind turns up.
-fn summon_owner(ent: &[u8], rest: &[u8]) -> Option<u32> {
-    let n = ent.len();
-    rest.windows(n + 21)
-        .find(|w| w[..n] == *ent && w[n..n + 2] == [1, 2] && w[n + 14..n + 17] == [7, 2, 6])
-        .and_then(|w| Some(u32::from_le_bytes(w[n + 17..].try_into().ok()?)))
+fn summon_owner(rest: &[u8]) -> Option<u32> {
+    rest.windows(21)
+        .find(|w| w[..2] == [1, 2] && w[14..17] == [7, 2, 6])
+        .and_then(|w| Some(u32::from_le_bytes(w[17..].try_into().ok()?)))
 }
 
 /// Bounds-checked little-endian cursor.
@@ -1105,6 +1105,12 @@ mod tests {
         }
         // another tag there is not an owner
         assert!(!matches!(ops().parse(&named_spawn(3, [0x11, 0x02, 0x84])), Some(Event::Summon { .. })));
+        // a spirit's tail repeats the owner's entity, not its own: still a summon
+        let mut spirit = named_spawn(3, [0x07, 0x02, 0x06]);
+        let at = spirit.len() - 25 - ENT.len();
+        assert_eq!(spirit[at..at + ENT.len()], ENT);
+        spirit[at..at + ENT.len()].copy_from_slice(&[0xce, 0x4a, 0x00][..ENT.len()]);
+        assert_eq!(ops().parse(&spirit), Some(Event::Summon { entity: 60651, owner: 4990 }));
         assert_eq!(Event::Summon { entity: 1, owner: 2 }.to_json(), json!({"type": "summon", "entity": 1, "owner": 2}));
     }
 
