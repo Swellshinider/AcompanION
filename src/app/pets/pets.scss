@@ -623,6 +623,20 @@ kbd {
   position: relative;
 }
 
+// the overlay's hover name, beside the pointer
+.tip {
+  position: absolute;
+  z-index: 3;
+  padding: 2px 6px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 12px;
+  white-space: nowrap;
+  transform: translate(10px, -100%);
+  pointer-events: none;
+}
+
 // the colour key, over the map's corner
 .legend {
   position: absolute;
