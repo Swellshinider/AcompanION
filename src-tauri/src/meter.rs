@@ -16,6 +16,11 @@ use crate::events::Event;
 /// A fight ends this long after its last hit.
 /// ponytail: fixed gap; per-boss logic if a boss that goes untargetable splits real fights.
 const FIGHT_GAP_US: u64 = 10_000_000;
+
+/// Hits still in flight when a boss reaches 0 HP (a spirit's and a tick landed 0.10 and 0.15 s later
+/// in a `spirit-1` boss) count in its fight; the fight closes at the first event after this.
+/// ponytail: fixed 1 s; raise it if a slower tail shows up.
+const BOSS_TAIL_US: u64 = 1_000_000;
 /// Finished fights kept.
 /// ponytail: fixed cap; make it a setting if anyone wants more.
 pub const MAX_HISTORY: usize = 50;
@@ -120,9 +125,17 @@ struct Fight {
     /// The foe the fight shows, and when it was picked.
     target: Option<u32>,
     picked_us: u64,
+    /// When a boss of this fight reached 0 HP: the fight closes at the first event after that instant.
+    boss_dead_us: Option<u64>,
 }
 
 impl Fight {
+    /// A boss is a foe that had a stagger gauge when it was first hit.
+    /// ponytail: stagger as the boss marker; a boss without one is merged by the 10 s gap as before.
+    fn has_boss(&self) -> bool {
+        self.foes.values().any(|f| f.stagger.is_some())
+    }
+
     /// Keep the target while it lives; when it dies (HP 0), or at the first hit, take the living foe
     /// the players dealt the most damage to. A pick made at this instant is redone, so the frames
     /// of one packet count together. Ties go to the highest entity. When no foe lives, a target picked before
@@ -298,7 +311,10 @@ impl Meter {
 
     /// Move the clock: closes the fight when `FIGHT_GAP_US` passed since its last hit. `true` when it closed.
     pub fn advance(&mut self, ts_us: u64) -> bool {
-        match self.fight.take_if(|f| ts_us.saturating_sub(f.last_us) > FIGHT_GAP_US) {
+        let over = |f: &Fight| {
+            ts_us.saturating_sub(f.last_us) > FIGHT_GAP_US || f.boss_dead_us.is_some_and(|d| ts_us > d + BOSS_TAIL_US)
+        };
+        match self.fight.take_if(|f| over(f)) {
             Some(f) => {
                 self.finish(&f);
                 true
@@ -340,6 +356,9 @@ impl Meter {
         let Some(fight) = self.fight.as_mut() else { return false };
         let Some(foe) = fight.foes.get_mut(&entity) else { return false };
         (foe.hp, foe.max_hp) = (hp.or(foe.hp), max.or(foe.max_hp));
+        if hp == Some(0) && foe.stagger.is_some() {
+            fight.boss_dead_us.get_or_insert(ts_us);
+        }
         if hp == Some(0) && fight.target == Some(entity) {
             fight.pick(ts_us);
         }
@@ -384,6 +403,14 @@ impl Meter {
             who(fight, &self.players, target).taken.add(amount, crit);
             return true;
         }
+        // the first hit on a boss ends a fight that only had other foes: one fight per boss
+        if dealt
+            && self.staggers.contains_key(&target)
+            && self.fight.as_ref().is_some_and(|f| !f.foes.contains_key(&target) && !f.foes.is_empty() && !f.has_boss())
+        {
+            let closing = self.fight.take().expect("checked above");
+            self.finish(&closing);
+        }
         let taken = on_me || on_other;
         let template = self.templates.get(&target).copied().unwrap_or(0);
         let fight = self.fight.get_or_insert_with(|| Fight {
@@ -393,6 +420,7 @@ impl Meter {
             foes: BTreeMap::new(),
             target: None,
             picked_us: ts_us,
+            boss_dead_us: None,
         });
         fight.last_us = ts_us;
         if dealt {
@@ -715,16 +743,17 @@ mod tests {
         assert!(m.apply(&at(3 * S, Event::Stagger { entity: 5, state: 3, value: None, max: None })));
         assert_eq!(m.to_json()["current"]["target"]["entity"], 5);
         assert_eq!(m.to_json()["current"]["target"]["stagger"], json!({"state": 3, "value": null, "max": null}));
-        // 5 dies: the living 6 is the target
+        // 5 dies: the living 6 is the target until the fight closes with its boss
         assert!(m.apply(&at(4 * S, hp(5, 0))));
         assert_eq!(m.to_json()["current"]["target"]["entity"], 6);
-        // 6 dies and despawns: it stays the finished fight's target
-        m.apply(&at(5 * S, hit(6, 77, 1, 199)));
-        m.apply(&at(5 * S, hp(6, 0)));
-        m.apply(&at(6 * S, Event::Gone { entity: 6 }));
-        m.advance(16 * S);
+        // 6 dies and despawns in the fight after the boss's (history: 6's first hit, the boss's, this one):
+        // it stays that finished fight's target
+        m.apply(&at(6 * S, hit(6, 77, 1, 199)));
+        m.apply(&at(6 * S, hp(6, 0)));
+        m.apply(&at(7 * S, Event::Gone { entity: 6 }));
+        m.advance(17 * S + 1);
         assert_eq!(
-            m.history_json()[0]["target"],
+            m.history_json()[2]["target"],
             json!({"entity": 6, "template": 2_100_026, "hp": 0, "max_hp": 500, "stagger": null})
         );
     }
@@ -759,6 +788,38 @@ mod tests {
         m.apply(&at(30 * S, hit(5, 77, 1, 20)));
         assert_eq!(m.to_json()["current"]["start_us"], 30 * S);
         assert_eq!(m.history_json()[0]["players"][0]["dealt"], json!({"amount": 10, "hits": 1, "direct": 1, "crits": 0}));
+    }
+
+    #[test]
+    fn each_boss_gets_its_own_fight() {
+        let boss = |entity: u32, template: u32| {
+            [
+                Event::Spawn { entity, template, x: 0, y: 0, max_hp: Some(1000) },
+                Event::Stagger { entity, state: 1, value: Some(10), max: Some(10) },
+            ]
+        };
+        let mut m = Meter::default();
+        m.apply(&at(0, identity(77)));
+        m.apply(&at(0, Event::Spawn { entity: 4, template: 2_100_025, x: 0, y: 0, max_hp: None }));
+        for e in boss(5, 2_300_909).into_iter().chain(boss(6, 2_300_910)) {
+            m.apply(&at(0, e));
+        }
+        // trash, then a boss with no pause: two fights
+        m.apply(&at(S, hit(4, 77, 1, 10)));
+        m.apply(&at(2 * S, hit(5, 77, 1, 100)));
+        assert_eq!(m.closed(), 1);
+        assert_eq!(m.history_json()[0]["target"]["template"], 2_100_025);
+        // the boss dies: hits in flight (the same instant, and 0.2 s later) still count
+        m.apply(&at(3 * S, Event::Hp { entity: 5, hp: Some(0), max: None }));
+        m.apply(&at(3 * S, hit(5, 77, 1, 50)));
+        m.apply(&at(3 * S + 200_000, hit(5, 77, 1, 25)));
+        assert_eq!(m.closed(), 1);
+        // a second boss right away: the first fight is over, a third starts
+        m.apply(&at(4 * S + 1, hit(6, 77, 1, 70)));
+        assert_eq!(m.closed(), 2);
+        let first = &m.history_json()[1];
+        assert_eq!((first["target"]["template"].clone(), first["players"][0]["dealt"]["amount"].clone()), (json!(2_300_909), json!(175)));
+        assert_eq!(m.to_json()["current"]["target"]["template"], 2_300_910);
     }
 
     #[test]
