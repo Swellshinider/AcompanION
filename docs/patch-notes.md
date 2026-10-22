@@ -1,6 +1,6 @@
 # Patch notes
 
-What changed for players, in plain language. Every change a player can notice adds a line under **Unreleased** in the same commit; the notes of a release are taken from here (see [README](../README.md), Releasing).
+What changed for players, in plain language. Every change a player can notice adds a line in the same commit, under the section of the next version (the top one); the notes of a release are taken from here (see [README](../README.md), Releasing).
 
 How to write a line:
 
@@ -8,9 +8,9 @@ How to write a line:
 - One short sentence per change, filed under **New**, **Improved** or **Fixed**.
 - Changes nobody would notice (tests, refactors, docs) get no line.
 
-When a release is cut, rename **Unreleased** to `vX.Y.Z (date)` and add a new empty **Unreleased** above it.
+The top section is the next version, named by the patch bump of the last release (`v0.1.1` is out, so `v0.1.2`; a bigger change may rename it to the minor or major it needs). When the release is cut, put its date on the heading and open a section for the version after it. Released versions stay below, newest first.
 
-## Unreleased
+## v0.1.2 (next)
 
 ### New
 
