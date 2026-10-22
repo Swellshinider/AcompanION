@@ -7,6 +7,7 @@
 | [architecture.md](architecture.md) | Pipeline, modules, state and threading model | A module, boundary or data flow changes |
 | [protocol.md](protocol.md) | Wire protocol findings with evidence | A finding is confirmed or disproved |
 | [decisions.md](decisions.md) | Decision log with rationale | A decision is made or changed |
+| [patch-notes.md](patch-notes.md) | What changed for players, the source of the release notes | Every commit that changes something a player can notice |
 
 Conventions:
 
