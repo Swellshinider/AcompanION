@@ -6,12 +6,14 @@ import { Emblem } from '../emblem/emblem';
 import { DAILY_RESET_HOUR_UTC, GameData, loadGamedata, nextReset, petCollection, pick, span, summarize } from '../gamedata';
 import { Glyph } from '../glyph';
 import { Meter } from '../meter/meter';
-import { OverlayPanel } from '../overlay-panel/overlay-panel';
+import { applyAppSettings, loadAppSettings } from '../app-settings';
+import { restoreOverlay } from '../overlay-control';
 import { Pets } from '../pets/pets';
+import { Settings } from '../settings/settings';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DecimalPipe, CharacterDetail, Emblem, Glyph, Meter, OverlayPanel, Pets],
+  imports: [DecimalPipe, CharacterDetail, Emblem, Glyph, Meter, Pets, Settings],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   host: { '(document:keydown.escape)': 'back()' },
@@ -35,8 +37,8 @@ export class Dashboard {
   readonly updateFailed = signal(false);
   /** `server:name` of the character whose detail is open. */
   readonly selected = signal<string | null>(null);
-  /** The screen: the roster (and a character's detail), the Pets screen or the combat Meter. */
-  readonly screen = signal<'roster' | 'pets' | 'meter'>('roster');
+  /** The screen: the roster (and a character's detail), the Pets screen, the combat Meter or Settings. */
+  readonly screen = signal<'roster' | 'pets' | 'meter' | 'settings'>('roster');
   readonly resetHour = String(DAILY_RESET_HOUR_UTC).padStart(2, '0');
 
   readonly rows = computed<CharacterRow[]>(() => {
@@ -80,8 +82,14 @@ export class Dashboard {
     loadGamedata().then(gd => this.gamedata.set(gd), () => this.gamedataFailed.set(true));
     // offline or no backend: no banner
     this.chars.checkUpdate().then(v => this.update.set(v), () => {});
+    // send Rust the saved preferences (and bring the tray icon back); no backend: nothing to do
+    applyAppSettings(loadAppSettings()).catch(() => {});
+    const stopOverlay = restoreOverlay();
     const timer = setInterval(() => this.now.set(Date.now()), 60_000);
-    inject(DestroyRef).onDestroy(() => clearInterval(timer));
+    inject(DestroyRef).onDestroy(() => {
+      clearInterval(timer);
+      stopOverlay();
+    });
   }
 
   /** Time from now until `at` (epoch ms). */

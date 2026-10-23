@@ -77,9 +77,12 @@ describe('OverlayPanel', () => {
     expect(stored().view).toBe('dailies');
   });
 
-  it('reopens at start when it was open, and does not remember an overlay that failed to open', async () => {
-    localStorage.setItem('acompanion.overlay', JSON.stringify({ open: true }));
-    const { f, el, invoke } = render(vi.fn(async () => { throw new Error('no window'); }));
+  it('does not remember an overlay that failed to open', async () => {
+    const { f, el, input, invoke } = render(vi.fn(async () => { throw new Error('no window'); }));
+    const open = input('open');
+    open.checked = true;
+    open.dispatchEvent(new Event('change'));
+    f.detectChanges(); // the browser re-renders right after the click, then again when the work settles
     await tick();
     f.detectChanges();
     expect(calls(invoke, 'overlay')).toHaveLength(1);

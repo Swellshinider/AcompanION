@@ -12,6 +12,13 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.1.3 (next)
 
+### New
+
+- The Overlay button is now **Settings**: a page with the overlay options and the new ones below.
+- Settings: an option to keep AcompanION running in the system tray when you close the window. Click the tray icon to bring it back, or choose Quit there.
+- Settings: a **Check for updates now** button that tells you whether you are up to date.
+- Settings: capture reopens by itself when the network connection drops and comes back. You can turn this off.
+
 ### Improved
 
 - Meter: while a fight is on, every player shows two rates, the current one (last 5 seconds) and the average; when it ends only the average stays. The group's total works the same way, and so does the overlay.

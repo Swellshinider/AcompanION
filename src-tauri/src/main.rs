@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
+use std::time::{Duration, Instant};
 
 use anyhow::Context;
 use acompanion::app::{Rect, Shared, Status, classify, on_screen, save_status};
@@ -28,6 +29,10 @@ struct AppState {
     capture: Mutex<Option<JoinHandle<()>>>,
     /// The main window is closing: the overlay going away with it is not the user switching it off.
     quitting: AtomicBool,
+    /// Closing the main window hides it instead (the frontend keeps a tray icon to bring it back).
+    close_to_tray: AtomicBool,
+    /// Reopen capture when it stops for a reason that may pass (see `app::retryable`).
+    reconnect: Arc<AtomicBool>,
 }
 
 /// The update `check_update` found, kept for `install_update`.
@@ -75,6 +80,23 @@ fn meter_history(app: tauri::State<'_, AppState>) -> Value {
 #[tauri::command]
 fn meter_clear(app: tauri::State<'_, AppState>) {
     app.clear.store(true, Ordering::Relaxed);
+}
+
+/// The preferences the Rust side acts on; the frontend owns and stores them and sends them at start and on change.
+#[tauri::command]
+fn app_settings(app: tauri::State<'_, AppState>, close_to_tray: bool, reconnect: bool) {
+    app.close_to_tray.store(close_to_tray, Ordering::Relaxed);
+    app.reconnect.store(reconnect, Ordering::Relaxed);
+}
+
+/// Really quit (the close button only hides the window when closing to the tray).
+#[tauri::command]
+fn quit(handle: AppHandle) {
+    handle.state::<AppState>().quitting.store(true, Ordering::Relaxed);
+    if let Some(w) = handle.get_webview_window(OVERLAY) {
+        let _ = w.close();
+    }
+    handle.exit(0);
 }
 
 /// Off the main thread: it waits on the UAC prompt.
@@ -169,7 +191,13 @@ fn set_game(handle: &AppHandle, shared: &Mutex<Shared>, game: bool) {
     let _ = handle.emit("capture://game", game);
 }
 
-fn capture(handle: AppHandle, shared: Arc<Mutex<Shared>>, stop: Arc<AtomicBool>, clear: Arc<AtomicBool>, state: State, path: PathBuf, guard: File) {
+/// How long to wait before reopening a capture that stopped.
+/// ponytail: fixed; back off if reopening ever hammers a failing adapter. A route change the adapter does not report
+/// (the capture stays open on the old one) is not followed either.
+const RETRY_EVERY: Duration = Duration::from_secs(5);
+
+#[allow(clippy::too_many_arguments)]
+fn capture(handle: AppHandle, shared: Arc<Mutex<Shared>>, stop: Arc<AtomicBool>, clear: Arc<AtomicBool>, reconnect: Arc<AtomicBool>, state: State, path: PathBuf, guard: File) {
     let ops = match Opcodes::embedded(BUILD) {
         Ok(ops) => ops,
         Err(e) => {
@@ -177,43 +205,59 @@ fn capture(handle: AppHandle, shared: Arc<Mutex<Shared>>, stop: Arc<AtomicBool>,
             return set_status(&handle, &shared, Status::failed("error", &e));
         }
     };
+    // One engine across reopenings: the characters and the fights carry on, and the decoder resyncs over the gap.
     let mut engine = Engine::new(ops, PORT, state, Some(path));
-    let result = acompanion::live::run(
-        None,
-        &format!("tcp port {PORT}"),
-        &mut engine,
-        &stop,
-        &clear,
-        || set_status(&handle, &shared, Status::new("running")),
-        |state, keys| {
-            let changed: Vec<Value> = keys.iter().filter_map(|k| state.get(k)).map(|c| c.to_json()).collect();
-            shared.lock().unwrap().characters = state.to_json()["characters"].clone();
-            let _ = handle.emit("characters://update", changed);
-        },
-        |result| set_status(&handle, &shared, save_status(result)),
-        |game| set_game(&handle, &shared, game),
-        |radar| {
-            shared.lock().unwrap().radar = radar.clone();
-            let _ = handle.emit("radar://update", radar);
-        },
-        |meter| {
-            let mut light = meter.clone();
-            let history = light.as_object_mut().and_then(|o| o.remove("history"));
-            {
-                let mut s = shared.lock().unwrap();
-                s.meter = light;
-                if let Some(h) = history {
-                    s.meter_history = h;
+    let last = loop {
+        let result = acompanion::live::run(
+            None,
+            &format!("tcp port {PORT}"),
+            &mut engine,
+            &stop,
+            &clear,
+            || set_status(&handle, &shared, Status::new("running")),
+            |state, keys| {
+                let changed: Vec<Value> = keys.iter().filter_map(|k| state.get(k)).map(|c| c.to_json()).collect();
+                shared.lock().unwrap().characters = state.to_json()["characters"].clone();
+                let _ = handle.emit("characters://update", changed);
+            },
+            |result| set_status(&handle, &shared, save_status(result)),
+            |game| set_game(&handle, &shared, game),
+            |radar| {
+                shared.lock().unwrap().radar = radar.clone();
+                let _ = handle.emit("radar://update", radar);
+            },
+            |meter| {
+                let mut light = meter.clone();
+                let history = light.as_object_mut().and_then(|o| o.remove("history"));
+                {
+                    let mut s = shared.lock().unwrap();
+                    s.meter = light;
+                    if let Some(h) = history {
+                        s.meter_history = h;
+                    }
                 }
-            }
-            let _ = handle.emit("meter://update", meter);
-        },
-    );
+                let _ = handle.emit("meter://update", meter);
+            },
+        );
+        set_game(&handle, &shared, false);
+        let Err(e) = result else { break None };
+        let status = classify(&e, acompanion::npcap::is_elevated());
+        if stop.load(Ordering::Relaxed) || !reconnect.load(Ordering::Relaxed) || !acompanion::app::retryable(status.id) {
+            break Some(status);
+        }
+        set_status(&handle, &shared, Status::failed("reconnecting", &e));
+        let until = Instant::now() + RETRY_EVERY;
+        while Instant::now() < until && !stop.load(Ordering::Relaxed) {
+            std::thread::sleep(Duration::from_millis(100));
+        }
+        if stop.load(Ordering::Relaxed) {
+            break None;
+        }
+    };
     // Release before showing a restart button: the elevated replacement needs this lock.
     drop(guard);
-    set_game(&handle, &shared, false);
-    if let Err(e) = result {
-        set_status(&handle, &shared, classify(&e, acompanion::npcap::is_elevated()));
+    if let Some(status) = last {
+        set_status(&handle, &shared, status);
     }
 }
 
@@ -237,24 +281,35 @@ fn main() {
     let shared = Arc::new(Mutex::new(Shared { status, characters: saved, game: false, radar: Value::Null, meter: Value::Null, meter_history: fights }));
     let stop = Arc::new(AtomicBool::new(false));
     let clear = Arc::new(AtomicBool::new(false));
+    // on until the frontend says otherwise; it sends the saved preference as soon as it starts
+    let reconnect = Arc::new(AtomicBool::new(true));
 
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(PendingUpdate(Mutex::new(None)))
-        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, overlay, restart_as_admin, check_update, install_update])
+        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, overlay, restart_as_admin, check_update, install_update, app_settings, quit])
         .setup(move |app| {
+            let reconnect_flag = reconnect.clone();
             let thread = start.map(|(state, path, guard)| {
                 let (handle, shared, stop, clear) = (app.handle().clone(), shared.clone(), stop.clone(), clear.clone());
-                std::thread::spawn(move || capture(handle, shared, stop, clear, state, path, guard))
+                std::thread::spawn(move || capture(handle, shared, stop, clear, reconnect, state, path, guard))
             });
-            app.manage(AppState { shared, stop, clear, capture: Mutex::new(thread), quitting: AtomicBool::new(false) });
+            app.manage(AppState { shared, stop, clear, capture: Mutex::new(thread), quitting: AtomicBool::new(false), close_to_tray: AtomicBool::new(false), reconnect: reconnect_flag });
             Ok(())
         })
         .build(tauri::generate_context!())
         .expect("cannot start AcompanION")
         .run(|handle, event| {
             match event {
-                RunEvent::WindowEvent { label, event: WindowEvent::CloseRequested { .. }, .. } if label == "main" => {
+                RunEvent::WindowEvent { label, event: WindowEvent::CloseRequested { api, .. }, .. } if label == "main" => {
+                    // with a tray icon to bring it back, closing only hides the window (the overlay stays)
+                    if handle.state::<AppState>().close_to_tray.load(Ordering::Relaxed) {
+                        api.prevent_close();
+                        if let Some(w) = handle.get_webview_window("main") {
+                            let _ = w.hide();
+                        }
+                        return;
+                    }
                     // the overlay must not keep the app alive (or be remembered as switched off)
                     handle.state::<AppState>().quitting.store(true, Ordering::Relaxed);
                     if let Some(w) = handle.get_webview_window(OVERLAY) {

@@ -24,10 +24,9 @@
       <button type="button" class="tab roster-btn" [attr.aria-current]="screen() === 'roster' ? 'page' : null" (click)="roster()" i18n="@@charactersButton">Characters</button>
       <button type="button" class="tab pets-btn" [attr.aria-current]="screen() === 'pets' ? 'page' : null" (click)="screen.set('pets')" i18n="@@petsButton">Pets</button>
       <button type="button" class="tab meter-btn" [attr.aria-current]="screen() === 'meter' ? 'page' : null" (click)="screen.set('meter')" i18n="@@meterButton">DPS Meter</button>
-      <button type="button" class="tab overlay-btn" popovertarget="overlay-panel" i18n="@@overlayButton">Overlay</button>
+      <button type="button" class="tab settings-btn" [attr.aria-current]="screen() === 'settings' ? 'page' : null" (click)="screen.set('settings')" i18n="@@settingsButton">Settings</button>
     </nav>
   }
-  <app-overlay-panel />
 </header>
 
 @if (status().id !== 'running' && status().id !== 'starting') {
@@ -41,6 +40,7 @@
       @case ('no_adapter') { <p i18n="@@bannerNoAdapter">No network adapter carries the default route. Check the connection, then restart AcompanION.</p> }
       @case ('state_unreadable') { <p i18n="@@bannerStateUnreadable">The saved character file cannot be read, so capture is paused to keep it intact. Fix or move the file, then restart AcompanION.</p> }
       @case ('state_in_use') { <p i18n="@@bannerStateInUse">Another instance is saving this character file. Saved characters are shown below. Close the other instance, then reopen this window to capture.</p> }
+      @case ('reconnecting') { <p i18n="@@bannerReconnecting">Capture stopped. Trying to reconnect…</p> }
       @case ('save_failed') { <p i18n="@@bannerSaveFailed">Capture is running, but changes could not be saved. AcompanION will keep retrying. Keep this window open until this warning clears to avoid losing unsaved changes.</p> }
       @default { <p i18n="@@bannerError">Capture stopped with an error.</p> }
     }
@@ -63,6 +63,8 @@
     <app-pets [collection]="pets()" [gamedata]="gamedata()" [radar]="radar()" [now]="now()" (back)="back()" />
   } @else if (screen() === 'meter') {
     <app-meter [gamedata]="gamedata()" (back)="back()" />
+  } @else if (screen() === 'settings') {
+    <app-settings (back)="back()" (update)="update.set($event)" />
   } @else if (open(); as r) {
     @if (resets(); as t) {
       <app-character [row]="r" [now]="now()" [dailyReset]="t.daily" [weeklyReset]="t.weekly" (back)="back()" />

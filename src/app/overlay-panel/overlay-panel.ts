@@ -3,7 +3,7 @@ import { listen } from '@tauri-apps/api/event';
 import { OVERLAY_CLOSED_EVENT, updateOverlay } from '../overlay-control';
 import { MIN_OPACITY, OverlaySettings, loadOverlaySettings, saveOverlaySettings } from '../overlay-settings';
 
-/** The overlay's controls, a popover opened by the header's Overlay button. The overlay window itself may not take input. */
+/** The overlay's controls, a section of the Settings screen. The overlay window itself may not take input. */
 @Component({
   selector: 'app-overlay-panel',
   templateUrl: './overlay-panel.html',
@@ -26,8 +26,6 @@ export class OverlayPanel {
       destroyed = true;
       unlisten?.();
     });
-    // reopen where it was when the app last closed
-    if (this.s().open) void this.set({});
   }
 
   async set(patch: Partial<OverlaySettings>): Promise<void> {

@@ -60,6 +60,12 @@ pub fn classify(err: &anyhow::Error, elevated: bool) -> Status {
     Status::failed(id, err)
 }
 
+/// Whether a stopped capture is worth reopening: a lost adapter or a transient error may come back,
+/// a missing Npcap or missing rights will not until the user acts.
+pub fn retryable(id: &str) -> bool {
+    matches!(id, "no_adapter" | "error")
+}
+
 /// Capture continues after a failed save; only a completed write clears this warning.
 pub fn save_status(result: Result<(), &anyhow::Error>) -> Status {
     match result {
@@ -160,6 +166,12 @@ mod tests {
         assert_eq!(classify(&e, false).id, "not_admin");
         let s = classify(&e, true);
         assert_eq!((s.id, s.detail.as_deref()), ("error", Some("pcap_open_live(x): denied (run as Administrator?)")));
+    }
+
+    #[test]
+    fn only_a_lost_adapter_or_a_transient_error_is_retried() {
+        assert!(retryable("no_adapter") && retryable("error"));
+        assert!(!retryable("npcap_missing") && !retryable("not_admin"));
     }
 
     #[test]
