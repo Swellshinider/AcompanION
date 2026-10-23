@@ -127,7 +127,8 @@ Status ids: `starting`, `running`, `save_failed`, `not_admin`, `npcap_missing`, 
 | `src/app/settings/` + `app-settings.ts` | Settings screen (overlay panel, close to tray, reconnect, update check) and the app preferences; `applyAppSettings` creates or removes the tray icon and tells Rust |
 | `public/gamedata.json` | Hand-curated game facts: counter names, caps, reset kind, refills, classes, pets, farm regions and spawns, skill and monster names. Counter ids not in it are hidden |
 | `src/locale/messages.xlf` | `ng extract-i18n` output; every user-facing string has an `@@` id |
-| `src/locale/messages.pt-BR.xlf`, `src/app/locale.ts` | Portuguese (Brazil) translation (same ids, `<target>` per unit; copied to `locale/` in the build) and the startup code that loads it by system language; add a language by adding its file, an entry in `TRANSLATED` and its Angular locale data import |
+| `src/app/untranslated-names.json`, `src/app/translations.spec.ts` | The guard: every message has a target in each locale file, and every game name has `en` and `pt` or its id is on the list of names still English-only |
+| `src/locale/messages.pt-BR.xlf`, `src/app/locale.ts` | Portuguese (Brazil) translation (same ids, `<target>` per unit; copied to `locale/` in the build) and the startup code that loads it by the Settings language (default: the system language); add a language by adding its file, an entry in `TRANSLATED` and its Angular locale data import |
 
 **Time math.** A daily reset is 07:00 UTC and the weekly one is the `weekly_reset_day` at that hour. Refills land on `07:00 UTC + k * every_ms`, not on the time of the last update. Both are measured, with a `ponytail:` in `gamedata.ts` (fixed hour; use the game's next reset once decoded). Counters with `"ms": true` hold milliseconds in value and cap; the wire's own `ms` flag (mask bit0 of a `0b 61`/`0c 61` record) is not trusted for display; gamedata decides.
 

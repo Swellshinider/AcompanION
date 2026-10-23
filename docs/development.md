@@ -72,7 +72,7 @@ The window's states, the commands and events it uses are described in [`architec
 Names, caps, reset kinds and refills are not on the wire; the dashboard reads them from this hand-curated file, and counter ids not in it are hidden. It holds game facts only: no character names, no values.
 
 1. Find the counter ids the engine stores for a character (`%APPDATA%\AcompanION\characters.json`) and match them **with confidence** to the in-game activity they belong to, for example by doing one action in the game and watching which counter moves. A counter you cannot match stays out; list it in [`status.md`](status.md).
-2. Add the entry: `name.en`, `category` (`daily`, `weekly`, `ticket`, `energy`), `cap`, `reset` (`daily`, `weekly` or `null`), `refill` (`amount`, `every_ms`) or `null`, and `"ms": true` when value and cap are milliseconds (store time caps in ms). A class is a `classes` entry keyed by `class_code`. Another language is another key beside `en`.
+2. Add the entry: `name.en`, `category` (`daily`, `weekly`, `ticket`, `energy`), `cap`, `reset` (`daily`, `weekly` or `null`), `refill` (`amount`, `every_ms`) or `null`, and `"ms": true` when value and cap are milliseconds (store time caps in ms). A class is a `classes` entry keyed by `class_code`. Another language is another key beside `en` (`pt`): add it in the same change, or list the name in `src/app/untranslated-names.json` (see Translations).
 3. `task web:test` (the shipped file is checked against the `GameData` shape), then `task app` to look at it.
 
 Reset facts are in `src/app/gamedata.ts` and `weekly_reset_day`: daily reset 07:00 UTC, weekly on Wednesday (`3`), refills on `07:00 UTC + k * every_ms`. Change them with a test if the game changes.
@@ -80,6 +80,16 @@ Reset facts are in `src/app/gamedata.ts` and `weekly_reset_day`: daily reset 07:
 ### Translations
 
 Every user-facing string in a template has an `i18n` attribute with a custom `@@` id. After adding or changing one, run `task i18n`; it rewrites `src/locale/messages.xlf` and a second run must leave no diff. Display text never comes from Rust.
+
+**Every language, same change.** The app ships in English (the source) and Brazilian Portuguese. A new or changed string is not done until it is translated everywhere:
+
+1. `task i18n` updates `messages.xlf` (English).
+2. Add or update the `<target>` of the same id in every `src/locale/messages.<locale>.xlf` (today `messages.pt-BR.xlf`), keeping the placeholders (`<x id="INTERPOLATION"/>`, ICU plurals) as in the source. A new language is a new file there, an entry in `TRANSLATED` in `src/app/locale.ts`, its locale data import, an option in Settings and an entry in `translations.spec.ts`.
+3. Game names in `public/gamedata.json` need every language key (`en`, `pt`) on each name map. If the official name is not known, keep it English-only by listing its id in `src/app/untranslated-names.json` (a name with no `pt` and no entry there fails the test; an entry whose name got a `pt` must be removed). Translate generic words, keep unverified in-game proper nouns in English, and say which in the PR.
+
+`src/app/translations.spec.ts` enforces this: every id of `messages.xlf` has a target with the same placeholders in each locale file, and every game name has all languages or is on the list.
+
+The language is the Settings choice (Automatic, English, Português) saved in `localStorage` (`acompanion.app`); Automatic follows the system language. Translations load before the app starts, so a change applies after a restart.
 
 ## Tests
 
