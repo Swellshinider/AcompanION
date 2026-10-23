@@ -112,7 +112,7 @@ describe('Overlay', () => {
       return invoke.mock.calls.map(c => c[0]).filter(c => c === 'plugin:window|show' || c === 'plugin:window|hide').at(-1);
     }
 
-    it('shows the window while the game runs in a known map', async () => {
+    it('shows the radar while the game runs in a known map', async () => {
       expect(await windowCalls({}, { on: true, radar: here(1010) })).toBe('plugin:window|show');
     });
 
@@ -120,23 +120,17 @@ describe('Overlay', () => {
       expect(await windowCalls({}, { on: false, radar: here(1010) })).toBe('plugin:window|hide');
     });
 
-    it('hides it in a map that is not a region when no region was ever seen', async () => {
-      expect(await windowCalls({}, { on: true, radar: here(999) })).toBe('plugin:window|hide');
+    it('shows the radar while the game runs, in a map that is not a region and none was ever seen', async () => {
+      expect(await windowCalls({}, { on: true, radar: here(999) })).toBe('plugin:window|show');
     });
 
-    it('shows it, before any map is known, in the region the player was last seen in', async () => {
-      localStorage.setItem('acompanion.overlay.region', 'verteron');
+    it('shows the radar while the game runs, before any map is known', async () => {
       expect(await windowCalls({}, { on: true, radar: null })).toBe('plugin:window|show');
     });
 
     it('remembers the region it saw', async () => {
       await windowCalls({}, { on: true, radar: here(1010) });
       expect(localStorage.getItem('acompanion.overlay.region')).toBe('verteron');
-    });
-
-    it('ignores a remembered region that no longer exists', async () => {
-      localStorage.setItem('acompanion.overlay.region', 'gone');
-      expect(await windowCalls({}, { on: true, radar: null })).toBe('plugin:window|hide');
     });
 
     it('shows the dailies while the game runs, in a map that is not a region', async () => {

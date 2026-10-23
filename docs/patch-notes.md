@@ -33,6 +33,7 @@ The top section is the next version, named by the patch bump of the last release
 - Meter: you can switch the ranking between damage dealt, damage taken and healing.
 - Overlay minimap: hovering a monster shows its name next to the mouse.
 - Overlay minimap: the route line at the bottom now just shows the next monster to farm.
+- Overlay minimap: with "Hide when the game is closed" on, the minimap now stays up whenever the game is running, like the dailies and the meter, even in a map the radar does not know.
 
 ## v0.1.2 (2026-10-22)
 
