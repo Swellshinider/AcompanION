@@ -50,8 +50,8 @@ export interface GameData {
   /** `maps`: the game's map ids that are this region (`radar.map`); only those seen on the wire are listed. */
   pet_regions: Record<string, { name: Names; origin: [number, number]; extent: [number, number]; maps?: number[] }>;
   pet_monsters: Record<string, PetMonsterDef>;
-  /** Skill names by the folded skill id and monster names by template (partial; absent ones fall back to `Skill N` / `Monster N`). */
-  skills?: Record<string, { name: Names }>;
+  /** Skill names by the folded skill id and monster names by template (partial; absent ones fall back to `Skill N` / `Monster N`). A skill's `icon` is a file stem in `public/skills/` (absent: a coloured tile with its initial). */
+  skills?: Record<string, { name: Names; icon?: string }>;
   monsters?: Record<string, { name: Names }>;
 }
 /** One curated counter as the dashboard shows it. `left` is what remains now. */

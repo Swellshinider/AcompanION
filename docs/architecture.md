@@ -120,7 +120,7 @@ Status ids: `starting`, `running`, `save_failed`, `not_admin`, `npcap_missing`, 
 | `src/app/character/` | Detail screen for one character (`CharacterRow`) |
 | `src/app/emblem/` + `src/app/glyph.ts` | Diamond emblem and class icons: the game's own images (`public/classes/<class>.png`) and a mask-painted generic glyph (`unknown.svg`) |
 | `src/app/pets/` + `src/app/route.ts` | Pets screen: collection, farm map, live radar layer and the farm route (`farmRoute`, pure) |
-| `src/app/meter/` + `src/app/fight.ts` | Meter screen and overlay view; `fight.ts` is pure (skill folding, DPS window, player and skill rows) |
+| `src/app/meter/` + `src/app/fight.ts` | Meter screen and overlay view; `fight.ts` is pure (skill folding, DPS window, current rate over the last 5 s from the service's `recent` snapshots, boss result, player and skill rows) |
 | `src/app/overlay/`, `overlay-panel/`, `overlay-settings.ts` | The overlay page, its control panel in the main window and the persisted preferences |
 | `public/gamedata.json` | Hand-curated game facts: counter names, caps, reset kind, refills, classes, pets, farm regions and spawns, skill and monster names. Counter ids not in it are hidden |
 | `src/locale/messages.xlf` | `ng extract-i18n` output; every user-facing string has an `@@` id |

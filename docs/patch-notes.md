@@ -14,6 +14,12 @@ The top section is the next version, named by the patch bump of the last release
 
 ### Improved
 
+- Meter: while a fight is on, every player shows two rates, the current one (last 5 seconds) and the average; when it ends only the average stays. The group's total works the same way, and so does the overlay.
+- Meter: new look. A big group DPS at the top, the boss with its health bar and a Victory or Attempt tag, and a cleaner ranking with a column header.
+- Meter: the fights are now a list on the left, grouped by day, with the boss, result, duration, group DPS and your own DPS and place.
+- Meter: opening a player is more colourful: each figure has its own colour, a bar shows how the damage splits between skills, and each skill and target row has a bar. Skills show their in-game icon.
+- Meter: many more skills have their real name instead of "Skill 123456".
+- Meter: you can switch the ranking between damage dealt, damage taken and healing.
 - Overlay minimap: hovering a monster shows its name next to the mouse.
 - Overlay minimap: the route line at the bottom now just shows the next monster to farm.
 
