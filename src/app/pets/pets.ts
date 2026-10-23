@@ -162,16 +162,14 @@ export class Pets {
       return seen;
     },
   });
-  /** The first stop not visited yet, with the names the foot line shows. */
+  /** The first stop not visited yet, with the one monster the foot line names: the first that feeds a pet the stop was picked for. */
   readonly next = computed(() => {
     const [r, gd] = [this.route(), this.gamedata()];
     const i = r ? r.stops.findIndex((_, k) => !this.visited().has(k)) : -1;
     if (!r || !gd || i < 0) return null;
     const s = r.stops[i];
-    return {
-      x: s.x, y: s.y,
-      monsters: s.monsters.map(m => pick(gd.pet_monsters[m]?.name, this.lang) ?? `#${m}`).join(', '),
-    };
+    const m = s.monsters.find(id => s.pets.includes(gd.pet_monsters[id]?.pet)) ?? s.monsters[0];
+    return { x: s.x, y: s.y, monster: pick(gd.pet_monsters[m]?.name, this.lang) ?? `#${m}` };
   });
   /** The overlay map was dragged away from the player. */
   readonly panned = computed(() => this.overlayPan()?.key === this.region()?.key && this.overlayPan() !== null);

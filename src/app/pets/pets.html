@@ -196,7 +196,7 @@
           @if (showRoute()) {
             <p class="route-note" data-route>
               @if (next(); as n) {
-                <b i18n="@@farmRouteNext">Next: {{ n.monsters }}</b>
+                <b i18n="@@farmRouteNext">Next: {{ n.monster }}</b>
               } @else if (!route()) {
                 <span i18n="@@farmRouteNone">No open pets to farm here.</span>
               }

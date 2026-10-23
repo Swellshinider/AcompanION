@@ -12,6 +12,11 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.1.4 (next)
 
+### Fixed
+
+- Pets overlay: "Next" now names a single monster instead of listing every monster at that spot.
+- Pets overlay: a soul you collect now shows its pet and its souls (or Max) even when AcompanION was opened after you logged in.
+
 ## v0.1.3 (2026-10-23)
 
 ### New

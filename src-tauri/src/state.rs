@@ -184,6 +184,25 @@ impl Character {
 }
 
 impl State {
+    /// Whose pet collection a live soul or level frame on `conn` changes: the character it plays when that one
+    /// has pets, else (the app started after the login, so no identity or snapshot was seen on it) the
+    /// character with the freshest collection. `None` while the connection holds a snapshot of its own.
+    /// ponytail: two accounts on one PC credit the fresher collection (same limit as the frontend's `petCollection`).
+    fn pet_owner(&self, conn: u16) -> Option<Key> {
+        let c = self.conns.get(&conn);
+        if c.is_some_and(|c| c.pending.iter().any(|(_, e)| matches!(e, Event::Pets { .. }))) {
+            return None;
+        }
+        let bound = c.and_then(|c| c.session.as_ref()).filter(|k| self.chars.get(*k).is_some_and(|ch| ch.pets.is_some()));
+        bound.cloned().or_else(|| {
+            self.chars
+                .iter()
+                .filter_map(|(k, ch)| ch.pets.as_ref().map(|p| (p.updated_us, k)))
+                .max_by_key(|(t, _)| *t)
+                .map(|(_, k)| k.clone())
+        })
+    }
+
     /// Fold one decoded event in; returns the character it changed, `None` when it is held.
     ///
     /// The identity frame trails the world-entry bundle on the wire (`CombatPower`, `0b 61`
@@ -195,7 +214,14 @@ impl State {
     /// The item level is not held: unbound, it is dropped, because the identity carries the same
     /// value (and is applied last, so it wins). The pet snapshot trails the counter snapshot like the boards,
     /// so it is held too; `PetSoulsTotal` is ignored (the delta and level frames carry the same change).
+    /// A soul or level frame with no snapshot of its own on the connection goes straight to `pet_owner`.
     pub fn apply(&mut self, d: &Decoded) -> Option<Key> {
+        if matches!(d.event, Event::PetSoulsDelta(_) | Event::PetLevel { .. })
+            && let Some(key) = self.pet_owner(d.conn)
+        {
+            self.chars.get_mut(&key)?.record(d.ts_us, &d.event);
+            return Some(key);
+        }
         let conn = self.conns.entry(d.conn).or_default();
         match &d.event {
             Event::Identity { name, server, class_code, level, item_level, .. } => {
@@ -832,6 +858,38 @@ mod tests {
         let c = s.get(&key(7, "Alpha")).unwrap();
         assert_eq!((c.pets.clone(), c.last_seen_us), (None, 3));
         assert_eq!(s.dropped, 0);
+    }
+
+    #[test]
+    fn soul_and_level_frames_without_a_session_of_their_own_credit_the_freshest_collection() {
+        let mut s = State::default();
+        s.apply(&ident(5000, 1, "Alpha", 7, 40));
+        s.apply(&ev(5000, 2, pets_snapshot()));
+        s.apply(&ident(5001, 3, "Beta", 7, 20));
+        s.apply(&ev(5001, 10, pets_snapshot()));
+        s.apply(&ident(5002, 4, "Gamma", 7, 30)); // bound, but never saw a snapshot
+
+        // a connection that was not there at world entry (the app started mid-session)
+        assert_eq!(s.apply(&ev(9, 20, Event::PetSoulsDelta(vec![(1, 1)]))), Some(key(7, "Beta")));
+        // a bound character without pets
+        assert_eq!(s.apply(&ev(5002, 21, Event::PetLevel { id: 1, level: 2 })), Some(key(7, "Beta")));
+        let pet = |name: &str| s.get(&key(7, name)).unwrap().pets.as_ref().unwrap().list[&1];
+        assert_eq!(pet("Beta"), Pet { level: 2, souls: 0 });
+        assert_eq!(pet("Alpha"), Pet { level: 1, souls: 24 });
+        assert!(s.get(&key(7, "Gamma")).unwrap().pets.is_none());
+    }
+
+    #[test]
+    fn a_connection_holding_its_own_pet_snapshot_keeps_its_soul_frames_for_the_identity() {
+        let mut s = State::default();
+        s.apply(&ident(5000, 1, "Alpha", 7, 40));
+        s.apply(&ev(5000, 2, pets_snapshot()));
+        // a new login on another connection: snapshot, then a delta, both before the identity
+        assert_eq!(s.apply(&ev(6000, 3, pets_snapshot())), None);
+        assert_eq!(s.apply(&ev(6000, 4, Event::PetSoulsDelta(vec![(1, 1)]))), None);
+        assert_eq!(s.get(&key(7, "Alpha")).unwrap().pets.as_ref().unwrap().list[&1], Pet { level: 1, souls: 24 });
+        s.apply(&ident(6000, 5, "Beta", 7, 20));
+        assert_eq!(s.get(&key(7, "Beta")).unwrap().pets.as_ref().unwrap().list[&1], Pet { level: 1, souls: 25 });
     }
 
     #[test]

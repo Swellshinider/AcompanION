@@ -201,6 +201,18 @@ describe('Pets farm map', () => {
       expect(chip(el, 'Route').getAttribute('aria-pressed')).toBe('true');
     });
 
+    it('names one monster for the next stop even when several share its spot', () => {
+      const shared: GameData = { ...gd, pet_monsters: { ...gd.pet_monsters, 13: { name: { en: 'Rat' }, level: 5, grade: 'normal', pet: 5, zones: [], spawns: { north: [[0.05, 0.05]] } } } };
+      const f = TestBed.createComponent(Pets);
+      f.componentRef.setInput('collection', collection);
+      f.componentRef.setInput('gamedata', shared);
+      f.componentRef.setInput('now', 60_000);
+      f.componentRef.setInput('overlay', true);
+      f.componentRef.setInput('lastRegion', 'north');
+      f.detectChanges();
+      expect(note(f.nativeElement)).toBe('Next: Slime');
+    });
+
     it('drops a pet from the route when it reaches the top, and says so when none is left', () => {
       const { f, el } = renderFarm();
       chip(el, 'Route').click();
