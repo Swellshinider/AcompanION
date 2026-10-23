@@ -235,7 +235,7 @@ fn live(
             }
             let filter = filter.unwrap_or_else(|| format!("tcp port {port}"));
             eprintln!("following {filter:?}; press Enter to stop");
-            acompanion::live::run(device.as_deref(), &filter, &mut engine, &stop, &AtomicBool::new(false), || {}, print_changes, |_| {}, |_| {}, |_| {}, |_| {})?;
+            acompanion::live::run(device.as_deref(), &filter, &mut engine, &stop, &AtomicBool::new(false), &std::sync::Mutex::new(Vec::new()), || {}, print_changes, |_| {}, |_| {}, |_| {}, |_| {})?;
         }
     }
     eprintln!("{} events dropped before their connection reported an identity", engine.state.dropped);

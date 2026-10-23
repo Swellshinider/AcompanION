@@ -88,6 +88,7 @@
     } @else {
       <div class="grid">
         @for (r of rows(); track r.key) {
+          <div class="slot">
           <button type="button" class="card" [attr.data-key]="r.key" (click)="selected.set(r.key)">
             <span class="art" [appGlyph]="r.icon" aria-hidden="true"></span>
             <app-emblem [icon]="r.icon" [level]="r.c.level" />
@@ -109,6 +110,23 @@
             </span>
             <span class="seen" i18n="@@lastSeen">Last seen {{ ago(r.c.last_seen_us) }} ago</span>
           </button>
+          @if (canForget()) {
+            @if (confirming() === r.key) {
+              <div class="confirm">
+                <span i18n="@@forgetAsk">Remove {{ r.c.name }} from AcompanION? It comes back if it logs in again.</span>
+                <span class="actions">
+                  <button type="button" class="btn danger" (click)="forget(r)" i18n="@@forgetYes">Remove</button>
+                  <button type="button" class="btn" (click)="confirming.set(null)" i18n="@@forgetNo">Cancel</button>
+                </span>
+              </div>
+            } @else {
+              <button type="button" class="trash" (click)="confirming.set(r.key)"
+                      i18n-aria-label="@@forget" aria-label="Remove character" i18n-title="@@forget" title="Remove character">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.5 7v4M9.5 7v4" /></svg>
+              </button>
+            }
+          }
+          </div>
         }
       </div>
     }

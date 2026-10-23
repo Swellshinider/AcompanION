@@ -45,13 +45,19 @@ export interface Meter { me: number | null; current: Fight | null; fights: numbe
 export type StatusId = 'starting' | 'running' | 'save_failed' | 'not_admin' | 'npcap_missing' | 'no_adapter' | 'state_unreadable' | 'state_in_use' | 'reconnecting' | 'error';
 export interface CaptureStatus { id: StatusId; detail: string | null }
 
-const key = (c: Character) => `${c.server}\u0000${c.name}`;
+const key = (c: Pick<Character, 'server' | 'name'>) => `${c.server}\u0000${c.name}`;
 
 /** `base` with every update replacing the character with the same (server, name). */
 export function merge(base: Character[], updates: Character[]): Character[] {
   const byKey = new Map(base.map(c => [key(c), c]));
   for (const u of updates) byKey.set(key(u), u);
   return [...byKey.values()];
+}
+
+/** `base` without the characters with these (server, name). */
+export function without(base: Character[], removed: Pick<Character, 'server' | 'name'>[]): Character[] {
+  const gone = new Set(removed.map(key));
+  return base.filter(c => !gone.has(key(c)));
 }
 
 @Injectable({ providedIn: 'root' })
@@ -82,6 +88,7 @@ export class CharactersService {
   private async connect(): Promise<void> {
     try {
       await listen<Character[]>('characters://update', e => this.characters.update(cs => merge(cs, e.payload)));
+      await listen<Pick<Character, 'server' | 'name'>[]>('characters://removed', e => this.characters.update(cs => without(cs, e.payload)));
       await listen<CaptureStatus>('capture://status', e => {
         this.statusSeen = true;
         this.status.set(e.payload);
@@ -127,6 +134,11 @@ export class CharactersService {
   /** Empties the saved fights; the capture thread does it, and the next update sends the empty list. */
   clearMeter(): Promise<void> {
     return invoke<void>('meter_clear');
+  }
+
+  /** Removes a saved character; the capture thread does it and the next update drops it from the list. */
+  forget(c: Pick<Character, 'server' | 'name'>): Promise<void> {
+    return invoke<void>('forget_character', { server: c.server, name: c.name });
   }
 
   restartAsAdmin(): Promise<boolean> {
