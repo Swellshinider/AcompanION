@@ -10,7 +10,9 @@ How to write a line:
 
 The top section is the next version, named by the patch bump of the last release (`v0.1.1` is out, so `v0.1.2`; a bigger change may rename it to the minor or major it needs). When the release is cut, put its date on the heading and open a section for the version after it. Released versions stay below, newest first.
 
-## v0.1.3 (next)
+## v0.1.4 (next)
+
+## v0.1.3 (2026-10-23)
 
 ### New
 
