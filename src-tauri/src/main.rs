@@ -12,7 +12,7 @@ use anyhow::Context;
 use acompanion::app::{Rect, Shared, Status, classify, on_screen, save_status};
 use acompanion::events::Opcodes;
 use acompanion::live::Engine;
-use acompanion::state::State;
+use acompanion::state::{Key, State};
 use serde_json::Value;
 use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize, RunEvent, WebviewUrl, WebviewWindow, WebviewWindowBuilder, WindowEvent};
 use tauri_plugin_updater::{Update, UpdaterExt};
@@ -26,6 +26,8 @@ struct AppState {
     stop: Arc<AtomicBool>,
     /// Raised by `meter_clear`; the capture loop empties the saved fights (the engine is its own).
     clear: Arc<AtomicBool>,
+    /// Characters `forget_character` queued; the capture loop removes them (the engine is its own).
+    forget: Arc<Mutex<Vec<Key>>>,
     capture: Mutex<Option<JoinHandle<()>>>,
     /// The main window is closing: the overlay going away with it is not the user switching it off.
     quitting: AtomicBool,
@@ -80,6 +82,12 @@ fn meter_history(app: tauri::State<'_, AppState>) -> Value {
 #[tauri::command]
 fn meter_clear(app: tauri::State<'_, AppState>) {
     app.clear.store(true, Ordering::Relaxed);
+}
+
+/// Remove a saved character; it comes back only if it logs in again.
+#[tauri::command]
+fn forget_character(app: tauri::State<'_, AppState>, server: u16, name: String) {
+    app.forget.lock().unwrap().push((server, name));
 }
 
 /// The preferences the Rust side acts on; the frontend owns and stores them and sends them at start and on change.
@@ -197,7 +205,7 @@ fn set_game(handle: &AppHandle, shared: &Mutex<Shared>, game: bool) {
 const RETRY_EVERY: Duration = Duration::from_secs(5);
 
 #[allow(clippy::too_many_arguments)]
-fn capture(handle: AppHandle, shared: Arc<Mutex<Shared>>, stop: Arc<AtomicBool>, clear: Arc<AtomicBool>, reconnect: Arc<AtomicBool>, state: State, path: PathBuf, guard: File) {
+fn capture(handle: AppHandle, shared: Arc<Mutex<Shared>>, stop: Arc<AtomicBool>, clear: Arc<AtomicBool>, forget: Arc<Mutex<Vec<Key>>>, reconnect: Arc<AtomicBool>, state: State, path: PathBuf, guard: File) {
     let ops = match Opcodes::embedded(BUILD) {
         Ok(ops) => ops,
         Err(e) => {
@@ -214,11 +222,18 @@ fn capture(handle: AppHandle, shared: Arc<Mutex<Shared>>, stop: Arc<AtomicBool>,
             &mut engine,
             &stop,
             &clear,
+            &forget,
             || set_status(&handle, &shared, Status::new("running")),
             |state, keys| {
                 let changed: Vec<Value> = keys.iter().filter_map(|k| state.get(k)).map(|c| c.to_json()).collect();
+                // a key the state no longer has was removed
+                let removed: Vec<Value> =
+                    keys.iter().filter(|k| state.get(k).is_none()).map(|(server, name)| serde_json::json!({"server": server, "name": name})).collect();
                 shared.lock().unwrap().characters = state.to_json()["characters"].clone();
                 let _ = handle.emit("characters://update", changed);
+                if !removed.is_empty() {
+                    let _ = handle.emit("characters://removed", removed);
+                }
             },
             |result| set_status(&handle, &shared, save_status(result)),
             |game| set_game(&handle, &shared, game),
@@ -281,20 +296,21 @@ fn main() {
     let shared = Arc::new(Mutex::new(Shared { status, characters: saved, game: false, radar: Value::Null, meter: Value::Null, meter_history: fights }));
     let stop = Arc::new(AtomicBool::new(false));
     let clear = Arc::new(AtomicBool::new(false));
+    let forget = Arc::new(Mutex::new(Vec::new()));
     // on until the frontend says otherwise; it sends the saved preference as soon as it starts
     let reconnect = Arc::new(AtomicBool::new(true));
 
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(PendingUpdate(Mutex::new(None)))
-        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, overlay, restart_as_admin, check_update, install_update, app_settings, quit])
+        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, forget_character, overlay, restart_as_admin, check_update, install_update, app_settings, quit])
         .setup(move |app| {
             let reconnect_flag = reconnect.clone();
             let thread = start.map(|(state, path, guard)| {
-                let (handle, shared, stop, clear) = (app.handle().clone(), shared.clone(), stop.clone(), clear.clone());
-                std::thread::spawn(move || capture(handle, shared, stop, clear, reconnect, state, path, guard))
+                let (handle, shared, stop, clear, forget) = (app.handle().clone(), shared.clone(), stop.clone(), clear.clone(), forget.clone());
+                std::thread::spawn(move || capture(handle, shared, stop, clear, forget, reconnect, state, path, guard))
             });
-            app.manage(AppState { shared, stop, clear, capture: Mutex::new(thread), quitting: AtomicBool::new(false), close_to_tray: AtomicBool::new(false), reconnect: reconnect_flag });
+            app.manage(AppState { shared, stop, clear, forget, capture: Mutex::new(thread), quitting: AtomicBool::new(false), close_to_tray: AtomicBool::new(false), reconnect: reconnect_flag });
             Ok(())
         })
         .build(tauri::generate_context!())

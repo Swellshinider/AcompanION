@@ -18,6 +18,7 @@ The top section is the next version, named by the patch bump of the last release
 - Settings: an option to keep AcompanION running in the system tray when you close the window. Click the tray icon to bring it back, or choose Quit there.
 - Settings: a **Check for updates now** button that tells you whether you are up to date.
 - Settings: capture reopens by itself when the network connection drops and comes back. You can turn this off.
+- You can remove a character from the roster: hover its card and click the red trash can (for example after deleting it in the game). It comes back only if you log in with it again. Needs capture running.
 
 ### Improved
 

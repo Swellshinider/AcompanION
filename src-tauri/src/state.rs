@@ -275,6 +275,11 @@ impl State {
     pub fn get(&self, key: &Key) -> Option<&Character> {
         self.chars.get(key)
     }
+
+    /// Forget a character. A connection still bound to it re-creates it only with its next identity.
+    pub fn remove(&mut self, key: &Key) -> bool {
+        self.chars.remove(key).is_some()
+    }
 }
 
 /// On-disk format version.
@@ -766,6 +771,20 @@ mod tests {
         s.apply(&ident(5000, 3, "Alpha", 7, 41));
         let c = s.get(&key(7, "Alpha")).unwrap();
         assert_eq!((c.level, c.counters[&1].value), (41, 5));
+    }
+
+    #[test]
+    fn a_removed_character_stays_gone_until_its_next_identity() {
+        let mut s = State::default();
+        s.apply(&ident(5000, 1, "Alpha", 7, 40));
+        s.apply(&ident(5001, 1, "Beta", 7, 20));
+        assert!(!s.remove(&key(7, "Nobody")));
+        assert!(s.remove(&key(7, "Alpha")));
+        assert!(s.get(&key(7, "Alpha")).is_none() && s.get(&key(7, "Beta")).is_some());
+        assert_eq!(s.apply(&counter(5000, 2, 1, 5)), None); // still bound, but nothing to update
+        assert!(s.get(&key(7, "Alpha")).is_none());
+        s.apply(&ident(5000, 3, "Alpha", 7, 40));
+        assert!(s.get(&key(7, "Alpha")).unwrap().counters.is_empty());
     }
 
     #[test]

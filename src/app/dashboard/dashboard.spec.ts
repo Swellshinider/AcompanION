@@ -22,13 +22,14 @@ async function render(status: CaptureStatus, chars: Character[], game = false, u
   const restartAsAdmin = vi.fn(async () => false);
   const checkUpdate = vi.fn(async () => update);
   const installUpdate = vi.fn(async () => {});
+  const forget = vi.fn(async () => {});
   TestBed.configureTestingModule({
-    providers: [{ provide: CharactersService, useValue: { characters: signal(chars), status: signal(status), game: signal(game), radar: signal(null), meter: signal(null), fights: signal([]), restartAsAdmin, checkUpdate, installUpdate } }],
+    providers: [{ provide: CharactersService, useValue: { characters: signal(chars), status: signal(status), game: signal(game), radar: signal(null), meter: signal(null), fights: signal([]), restartAsAdmin, checkUpdate, installUpdate, forget } }],
   });
   const f = TestBed.createComponent(Dashboard);
   await new Promise(r => setTimeout(r)); // let loadGamedata and checkUpdate resolve
   f.detectChanges();
-  return { f, el: f.nativeElement as HTMLElement, restartAsAdmin, installUpdate };
+  return { f, el: f.nativeElement as HTMLElement, restartAsAdmin, installUpdate, forget };
 }
 const cardNames = (el: HTMLElement) => [...el.querySelectorAll('.card .name')].map(n => n.textContent?.trim());
 
@@ -70,6 +71,44 @@ describe('Dashboard', () => {
     f.detectChanges();
     expect(el.querySelector('app-character')).toBeNull();
     expect(el.querySelectorAll('.card').length).toBe(2);
+  });
+
+  it('removes a character from its card through the service once confirmed', async () => {
+    const { f, el, forget } = await render({ id: 'running', detail: null }, [ch('Alpha', 1), ch('Beta', 2)]);
+    const slot = [...el.querySelectorAll<HTMLElement>('.slot')].find(s => s.textContent?.includes('Alpha'))!;
+    slot.querySelector<HTMLButtonElement>('.trash')!.click();
+    f.detectChanges();
+    expect(forget).not.toHaveBeenCalled();
+    expect(slot.querySelector('.confirm')?.textContent).toContain('Remove Alpha');
+    slot.querySelector<HTMLButtonElement>('.btn.danger')!.click();
+    f.detectChanges();
+    expect(forget).toHaveBeenCalledOnce();
+    expect(forget).toHaveBeenCalledWith(expect.objectContaining({ server: 7, name: 'Alpha' }));
+    expect(el.querySelector('.confirm')).toBeNull();
+  });
+
+  it('keeps the character when the removal is cancelled or Escape is pressed', async () => {
+    const { f, el, forget } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)]);
+    const ask = () => {
+      el.querySelector<HTMLButtonElement>('.trash')!.click();
+      f.detectChanges();
+    };
+    ask();
+    [...el.querySelectorAll<HTMLButtonElement>('.confirm .btn')].find(b => b.textContent?.trim() === 'Cancel')!.click();
+    f.detectChanges();
+    expect(el.querySelector('.confirm')).toBeNull();
+    ask();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    f.detectChanges();
+    expect(el.querySelector('.confirm')).toBeNull();
+    expect(forget).not.toHaveBeenCalled();
+    expect(el.querySelectorAll('.card').length).toBe(1);
+  });
+
+  it('offers no trash while capture is not running', async () => {
+    const { el } = await render({ id: 'not_admin', detail: null }, [ch('Alpha', 1)]);
+    expect(el.querySelectorAll('.card').length).toBe(1);
+    expect(el.querySelector('.trash')).toBeNull();
   });
 
   it('opens the pets screen from the header when a character reported pets, and returns on Escape', async () => {

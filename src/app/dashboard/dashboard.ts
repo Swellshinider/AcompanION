@@ -37,6 +37,8 @@ export class Dashboard {
   readonly updateFailed = signal(false);
   /** `server:name` of the character whose detail is open. */
   readonly selected = signal<string | null>(null);
+  /** `server:name` of the roster card asking "Remove?". */
+  readonly confirming = signal<string | null>(null);
   /** The screen: the roster (and a character's detail), the Pets screen, the combat Meter or Settings. */
   readonly screen = signal<'roster' | 'pets' | 'meter' | 'settings'>('roster');
   readonly resetHour = String(DAILY_RESET_HOUR_UTC).padStart(2, '0');
@@ -58,6 +60,12 @@ export class Dashboard {
 
   /** The open character; null (back to the roster) when none is selected or it left the list. */
   readonly open = computed(() => this.rows().find(r => r.key === this.selected()) ?? null);
+
+  /** Removing needs the capture thread, which exists only while capture runs. */
+  readonly canForget = computed(() => {
+    const s = this.chars.status().id;
+    return s === 'running' || s === 'save_failed';
+  });
 
   /** The account's pets; null until a character reported them. */
   readonly pets = computed(() => {
@@ -103,6 +111,10 @@ export class Dashboard {
   }
 
   back(): void {
+    if (this.confirming() !== null) {
+      this.confirming.set(null);
+      return;
+    }
     if (this.screen() !== 'roster') {
       this.screen.set('roster');
       return;
@@ -120,6 +132,12 @@ export class Dashboard {
   roster(): void {
     this.screen.set('roster');
     this.selected.set(null);
+  }
+
+  /** The roster drops the character when the capture thread confirms the removal. */
+  forget(r: CharacterRow): void {
+    this.confirming.set(null);
+    this.chars.forget(r.c).catch(() => {});
   }
 
   async restart(): Promise<void> {

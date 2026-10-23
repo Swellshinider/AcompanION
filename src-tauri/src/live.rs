@@ -8,6 +8,8 @@ use std::time::{Duration, Instant};
 #[cfg(windows)]
 use std::net::{Ipv4Addr, UdpSocket};
 #[cfg(windows)]
+use std::sync::Mutex;
+#[cfg(windows)]
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use anyhow::Result;
@@ -103,6 +105,13 @@ impl Engine {
         self.dirty = true;
         self.meter_dirty = true;
         self.meter_sent = u64::MAX; // never equals `closed()`, so the update carries the (now empty) history
+    }
+
+    /// Remove a saved character; the next save writes the file without it.
+    pub fn forget(&mut self, key: &Key) -> bool {
+        let removed = self.state.remove(key);
+        self.dirty |= removed;
+        removed
     }
 
     /// The radar as JSON when it changed and `RADAR_EVERY` has passed since the last one handed out.
@@ -262,6 +271,8 @@ pub fn default_device(npcap: &Npcap) -> Result<String> {
 /// `on_meter` gets `Engine::meter_update` whenever the meter changed (at most every `METER_EVERY`).
 /// `clear` is raised by the app to empty the saved fights; the loop lowers it and calls `Engine::clear_meter`
 /// (the engine belongs to this thread).
+/// `forget` is the queue of characters the app asked to remove; the loop drains it, calls `Engine::forget` and hands
+/// `on_change` the keys that are gone (`State::get` finds nothing for them).
 /// A failed save is logged and retried; whatever ends the loop, the engine is flushed before
 /// returning (the loop's error wins over the flush's).
 // ponytail: six callbacks as separate arguments; fold them into one observer trait if another appears.
@@ -273,6 +284,7 @@ pub fn run(
     engine: &mut Engine,
     stop: &AtomicBool,
     clear: &AtomicBool,
+    forget: &Mutex<Vec<Key>>,
     on_start: impl FnOnce(),
     mut on_change: impl FnMut(&State, &[Key]),
     mut on_save: impl FnMut(Result<(), &anyhow::Error>),
@@ -292,7 +304,7 @@ pub fn run(
     }
     on_start();
     let looped =
-        capture_loop(&mut cap, engine, stop, clear, &mut on_change, &mut on_save, &mut on_game, &mut on_radar, &mut on_meter);
+        capture_loop(&mut cap, engine, stop, clear, forget, &mut on_change, &mut on_save, &mut on_game, &mut on_radar, &mut on_meter);
     let flushed = engine.flush();
     looped.and(flushed)
 }
@@ -304,6 +316,7 @@ fn capture_loop(
     engine: &mut Engine,
     stop: &AtomicBool,
     clear: &AtomicBool,
+    forget: &Mutex<Vec<Key>>,
     on_change: &mut impl FnMut(&State, &[Key]),
     on_save: &mut impl FnMut(Result<(), &anyhow::Error>),
     on_game: &mut impl FnMut(bool),
@@ -314,6 +327,11 @@ fn capture_loop(
     while !stop.load(Ordering::Relaxed) {
         if clear.swap(false, Ordering::Relaxed) {
             engine.clear_meter();
+        }
+        let asked = std::mem::take(&mut *forget.lock().unwrap());
+        let gone: Vec<Key> = asked.into_iter().filter(|k| engine.forget(k)).collect();
+        if !gone.is_empty() {
+            on_change(&engine.state, &gone);
         }
         // `None` is the 100 ms read timeout: the loop's tick
         if let Some((ts_us, frame)) = cap.next_packet()? {
@@ -602,6 +620,29 @@ mod tests {
         assert_eq!(after["fights"], 0);
         e.flush().unwrap();
         assert!(engine(Some(path)).meter.history_json().as_array().unwrap().is_empty());
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn a_forgotten_character_is_saved_without_and_a_new_identity_brings_it_back() {
+        let dir = temp_dir();
+        let path = dir.join("characters.json");
+        let mut e = engine(Some(path.clone()));
+        e.push(1, &eth(true, 99, true, false, &[]));
+        let data = identity("Alpha", 7, 40);
+        e.push(2, &eth(true, 100, false, false, &data));
+        e.flush().unwrap();
+        let alpha = (7, "Alpha".to_string());
+        assert!(!e.forget(&(7, "Nobody".to_string())));
+        assert!(e.forget(&alpha));
+        assert!(e.state.get(&alpha).is_none());
+        // the connection is still bound to Alpha: its next counter does not re-create it
+        let next = 100 + data.len() as u32;
+        assert!(e.push(3, &eth(true, next, false, false, &counter(5, 1))).is_empty());
+        e.flush().unwrap();
+        assert!(State::load(&path).unwrap().get(&alpha).is_none());
+        e.push(4, &eth(true, next + counter(5, 1).len() as u32, false, false, &data));
+        assert!(e.state.get(&alpha).is_some());
         std::fs::remove_dir_all(dir).unwrap();
     }
 
