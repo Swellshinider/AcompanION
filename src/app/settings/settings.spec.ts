@@ -49,7 +49,7 @@ describe('Settings', () => {
   it('remembers reconnect and tells Rust', async () => {
     const { flip, invoke } = render();
     await flip('reconnect', false);
-    expect(stored()).toEqual({ closeToTray: false, reconnect: false });
+    expect(stored()).toEqual({ closeToTray: false, reconnect: false, language: 'auto' });
     expect(calls(invoke, 'app_settings').at(-1)![1]).toEqual({ closeToTray: false, reconnect: false });
   });
 
@@ -64,6 +64,22 @@ describe('Settings', () => {
     expect(input('closeToTray').checked).toBe(false);
     f.detectChanges();
     expect(el.querySelector('[role="alert"]')).not.toBeNull();
+  });
+
+  it('remembers the language and asks for a restart only when it changed', async () => {
+    const { f, el } = render();
+    const pick = el.querySelector<HTMLSelectElement>('select[name="language"]')!;
+    expect(pick.value).toBe('auto');
+    expect(el.querySelector('[role="status"].note')).toBeNull();
+    pick.value = 'pt-BR';
+    pick.dispatchEvent(new Event('change'));
+    f.detectChanges();
+    expect(stored().language).toBe('pt-BR');
+    expect(el.querySelector('[role="status"].note')!.textContent).toContain('Restart');
+    pick.value = 'auto';
+    pick.dispatchEvent(new Event('change'));
+    f.detectChanges();
+    expect(el.querySelector('[role="status"].note')).toBeNull();
   });
 
   it('shows the current version', async () => {

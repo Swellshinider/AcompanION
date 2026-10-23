@@ -7,7 +7,7 @@
         <target>Abrir</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app-settings.ts</context>
-          <context context-type="linenumber">57</context>
+          <context context-type="linenumber">63</context>
         </context-group>
       </trans-unit>
       <trans-unit id="trayQuit" datatype="html">
@@ -15,7 +15,7 @@
         <target>Sair</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app-settings.ts</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="back" datatype="html">
@@ -1639,12 +1639,36 @@
           <context context-type="linenumber">27,30</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="settingsLanguage" datatype="html">
+        <source>Language</source>
+        <target>Idioma</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">31,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsLanguageAuto" datatype="html">
+        <source>Automatic (follow Windows)</source>
+        <target>Automático (seguir o Windows)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">33,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsLanguageRestart" datatype="html">
+        <source>Restart AcompanION to apply the new language.</source>
+        <target>Reinicie o AcompanION para aplicar o novo idioma.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">39,42</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="settingsNote" datatype="html">
         <source>Capture and the combat meter keep running while the window is hidden or minimized.</source>
         <target>A captura e o medidor de combate continuam funcionando enquanto a janela está oculta ou minimizada.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">30,33</context>
+          <context context-type="linenumber">42,45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsUpdates" datatype="html">
@@ -1652,7 +1676,7 @@
         <target>Atualizações</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">34,35</context>
+          <context context-type="linenumber">46,47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsVersion" datatype="html">
@@ -1660,7 +1684,7 @@
         <target>Versão atual: <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ v }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">36,38</context>
+          <context context-type="linenumber">48,50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsCheckUpdate" datatype="html">
@@ -1668,7 +1692,7 @@
         <target>Verificar atualizações agora</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">39,40</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsChecking" datatype="html">
@@ -1676,7 +1700,7 @@
         <target>Verificando…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">42,43</context>
+          <context context-type="linenumber">54,55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsUpToDate" datatype="html">
@@ -1684,7 +1708,7 @@
         <target>Você está atualizado.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">43,44</context>
+          <context context-type="linenumber">55,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsUpdateFound" datatype="html">
@@ -1692,7 +1716,7 @@
         <target>A versão <x id="INTERPOLATION" equiv-text="{{ found() }}"/> está disponível.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">44</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsCheckFailed" datatype="html">
@@ -1700,7 +1724,7 @@
         <target>Não foi possível verificar as atualizações.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">45,47</context>
+          <context context-type="linenumber">57,59</context>
         </context-group>
       </trans-unit>
     </body>

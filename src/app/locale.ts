@@ -1,5 +1,6 @@
 import { registerLocaleData } from '@angular/common';
 import { loadTranslations } from '@angular/localize';
+import { loadAppSettings } from './app-settings';
 
 /** Translated locales by language; the source language (English) needs no entry. */
 const TRANSLATED: Record<string, string> = { pt: 'pt-BR' };
@@ -23,11 +24,12 @@ export function parseXlf(xml: string): Record<string, string> {
 }
 
 /**
- * Picks the UI locale from the system language and, for a translated one, loads its strings before
- * the app starts. Returns the locale for `LOCALE_ID`; any failure leaves the English source text.
- * ponytail: no in-app language switch; add a setting that overrides `navigator.language` if asked.
+ * Picks the UI locale (the Settings choice, or the system language when it is `auto`) and, for a
+ * translated one, loads its strings before the app starts. Returns the locale for `LOCALE_ID`; any
+ * failure leaves the English source text. The main and overlay windows share the saved choice.
  */
-export async function initLocale(language = navigator.language): Promise<string> {
+export async function initLocale(system = navigator.language, chosen = loadAppSettings().language): Promise<string> {
+  const language = chosen === 'auto' ? system : chosen;
   const locale = TRANSLATED[language.toLowerCase().split('-')[0]];
   if (!locale) return 'en-US';
   try {

@@ -32,6 +32,22 @@ describe('locale', () => {
     expect($localize`:@@a:Open`).toBe('Abrir');
   });
 
+  it('uses the language chosen in Settings over the system one', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(XLF));
+    expect(await initLocale('pt-BR', 'en')).toBe('en-US');
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(await initLocale('en-US', 'pt-BR')).toBe('pt-BR');
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('reads the saved choice when none is passed', async () => {
+    localStorage.setItem('acompanion.app', JSON.stringify({ language: 'en' }));
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
+    expect(await initLocale('pt-BR')).toBe('en-US');
+    expect(fetchSpy).not.toHaveBeenCalled();
+    localStorage.clear();
+  });
+
   it('falls back to English when the file cannot be loaded', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('', { status: 404 }));

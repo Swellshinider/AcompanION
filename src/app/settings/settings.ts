@@ -1,6 +1,6 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, computed, inject, output, signal } from '@angular/core';
 import { getVersion } from '@tauri-apps/api/app';
-import { AppSettings, applyAppSettings, loadAppSettings, saveAppSettings } from '../app-settings';
+import { AppSettings, LANGUAGES, applyAppSettings, loadAppSettings, saveAppSettings } from '../app-settings';
 import { CharactersService } from '../characters.service';
 import { OverlayPanel } from '../overlay-panel/overlay-panel';
 
@@ -17,6 +17,9 @@ export class Settings {
   /** A newer version was found: the dashboard shows its "Update and restart" banner. */
   readonly update = output<string>();
   readonly s = signal(loadAppSettings());
+  private readonly startLanguage = this.s().language;
+  /** The language differs from the one this run started with: it applies after a restart. */
+  readonly languageChanged = computed(() => this.s().language !== this.startLanguage);
   /** The tray icon could not be created, so closing the window still quits. */
   readonly trayFailed = signal(false);
   readonly check = signal<'idle' | 'checking' | 'current' | 'found' | 'failed'>('idle');
@@ -40,6 +43,11 @@ export class Settings {
         this.trayFailed.set(true);
       }
     }
+  }
+
+  setLanguage(e: Event): void {
+    const language = LANGUAGES.find(l => l === (e.target as HTMLSelectElement).value);
+    if (language) this.save({ ...this.s(), language });
   }
 
   async checkNow(): Promise<void> {
