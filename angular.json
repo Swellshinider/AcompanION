@@ -30,6 +30,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "messages.*.xlf",
+                "input": "src/locale",
+                "output": "locale"
               }
             ],
             "styles": ["src/styles.scss"],
