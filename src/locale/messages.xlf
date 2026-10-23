@@ -10,7 +10,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">10,11</context>
+          <context context-type="linenumber">17,18</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
@@ -29,7 +29,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">183</context>
         </context-group>
       </trans-unit>
       <trans-unit id="levelLabel" datatype="html">
@@ -482,223 +482,377 @@
           <context context-type="linenumber">5,6</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="meterWon" datatype="html">
+        <source>Victory</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterAttempt" datatype="html">
+        <source>Attempt <x id="INTERPOLATION" equiv-text="{{ r.attempt }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="meterTitle" datatype="html">
         <source>Meter</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">15,16</context>
+          <context context-type="linenumber">22,23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterSaved" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {No saved fights} =1 {1 saved fight} other {<x id="INTERPOLATION"/> saved fights}}</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">16,17</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="meterFight" datatype="html">
-        <source>Fight</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/meter/meter.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterLatest" datatype="html">
-        <source>Latest fight</source>
+      <trans-unit id="meterLiveCard" datatype="html">
+        <source>Live meter</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">25,26</context>
+          <context context-type="linenumber">30,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterLiveCardHint" datatype="html">
+        <source>The fight in progress, or the last one</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterCardGroup" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ short(c.dps) }}"/>/s group</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterCardYou" datatype="html">
+        <source>you <x id="INTERPOLATION" equiv-text="{{ short(m.dps) }}"/>/s</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterClearAsk" datatype="html">
         <source>Delete every saved fight?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">34,35</context>
+          <context context-type="linenumber">53,54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterClearYes" datatype="html">
         <source>Delete</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">35,36</context>
+          <context context-type="linenumber">54,55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterClearNo" datatype="html">
         <source>Cancel</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">36,38</context>
+          <context context-type="linenumber">55,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterClear" datatype="html">
         <source>Clear history</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">38,40</context>
+          <context context-type="linenumber">57,59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterInFight" datatype="html">
         <source>In a fight</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">46,47</context>
+          <context context-type="linenumber">68,69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">97,98</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterLastFight" datatype="html">
         <source>Last fight</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">47,48</context>
+          <context context-type="linenumber">69,70</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">98,99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterStagger" datatype="html">
         <source>Stagger <x id="INTERPOLATION" equiv-text="{{ t.stagger | percent:&apos;1.0-0&apos; }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">54,55</context>
+          <context context-type="linenumber">76,77</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterStatClass" datatype="html">
-        <source>Class</source>
+      <trans-unit id="meterNowLabel" datatype="html">
+        <source>now</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">90,91</context>
+          <context context-type="linenumber">103,104</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterColDamage" datatype="html">
-        <source>Damage</source>
+      <trans-unit id="meterCapTaken" datatype="html">
+        <source>Group damage taken per second (average)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">94</context>
+          <context context-type="linenumber">108,109</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="meterCapHealing" datatype="html">
+        <source>Group healing per second (average)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">111,112</context>
+          <context context-type="linenumber">109,110</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="meterCapDealt" datatype="html">
+        <source>Group DPS (average)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">110,111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterSumTotal" datatype="html">
+        <source>Total</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterSumTime" datatype="html">
+        <source>Time</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">116</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterDead" datatype="html">
+        <source>Dead</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">127</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterMetricLabel" datatype="html">
+        <source>Ranking</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">136,137</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterMetricTaken" datatype="html">
+        <source>Damage taken</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterColDps" datatype="html">
-        <source>DPS</source>
+      <trans-unit id="meterMetricHealing" datatype="html">
+        <source>Healing</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">141,142</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterColCrit" datatype="html">
-        <source>Crit</source>
+      <trans-unit id="meterMetricDealt" datatype="html">
+        <source>Damage dealt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">96</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">113,114</context>
+          <context context-type="linenumber">142,143</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterStatHits" datatype="html">
-        <source>Hits</source>
+      <trans-unit id="meterColPlayer" datatype="html">
+        <source>Player</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">97</context>
+          <context context-type="linenumber">151,152</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterColTaken" datatype="html">
         <source>Taken</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">154,155</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterColHealing" datatype="html">
         <source>Healing</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">99</context>
+          <context context-type="linenumber">155,156</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">191</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterStatOverheal" datatype="html">
-        <source>Overheal</source>
+      <trans-unit id="meterColDamage" datatype="html">
+        <source>Damage</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">100</context>
+          <context context-type="linenumber">156,157</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">186</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">206,207</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">237,238</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterStatReceived" datatype="html">
-        <source>Healing received</source>
+      <trans-unit id="meterColNow" datatype="html">
+        <source>Now</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">159,160</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterSkills" datatype="html">
-        <source>Skills</source>
+      <trans-unit id="meterColDps" datatype="html">
+        <source>DPS</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">105,106</context>
+          <context context-type="linenumber">160</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">187</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="meterColSkill" datatype="html">
-        <source>Skill</source>
+      <trans-unit id="meterColPerSec" datatype="html">
+        <source>Per sec</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">110,111</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="meterColHits" datatype="html">
-        <source>Hits</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">112,113</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">141,142</context>
+          <context context-type="linenumber">160,161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterColShare" datatype="html">
         <source>Share</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">114,115</context>
+          <context context-type="linenumber">161,163</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">209,210</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterStatClass" datatype="html">
+        <source>Class</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">182,183</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColCrit" datatype="html">
+        <source>Crit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">188</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">208,209</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterStatHits" datatype="html">
+        <source>Hits</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">189</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterStatOverheal" datatype="html">
+        <source>Overheal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">192</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterStatReceived" datatype="html">
+        <source>Healing received</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">193</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterSkills" datatype="html">
+        <source>Skills</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">200</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColSkill" datatype="html">
+        <source>Skill</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">205,206</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColHits" datatype="html">
+        <source>Hits</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">207,208</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">238,239</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterSkillN" datatype="html">
         <source>Skill <x id="INTERPOLATION" equiv-text="{{ s.id }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">121</context>
+          <context context-type="linenumber">218</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterTargets" datatype="html">
         <source>Targets</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">134,135</context>
+          <context context-type="linenumber">231</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterColTarget" datatype="html">
         <source>Target</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">139,140</context>
+          <context context-type="linenumber">236,237</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterNote" datatype="html">
         <source>Healing and damage taken count only inside the fight, so they can differ from other meters&apos; session totals.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">162,165</context>
+          <context context-type="linenumber">260,262</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meterEmpty" datatype="html">
         <source>No fight yet. Hit something with capture running and it appears here.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
-          <context context-type="linenumber">165,167</context>
+          <context context-type="linenumber">263,265</context>
         </context-group>
       </trans-unit>
       <trans-unit id="overlayPanelTitle" datatype="html">

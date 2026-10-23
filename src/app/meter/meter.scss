@@ -72,31 +72,6 @@ kbd {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
-  margin-top: 16px;
-}
-
-.grow {
-  flex: 1;
-}
-
-.pick {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  color: var(--muted);
-  font-size: 12.5px;
-
-  select {
-    max-width: 100%;
-    height: 34px;
-    padding: 0 8px;
-    background: var(--panel);
-    border: 1px solid var(--gold-line);
-    border-radius: 4px;
-    color: var(--text);
-    font: inherit;
-  }
 }
 
 .ask {
@@ -138,6 +113,9 @@ kbd {
 }
 
 .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--muted);
   font: 600 11px var(--ui);
   letter-spacing: 0.08em;
@@ -197,15 +175,24 @@ kbd {
     height: 18px;
   }
 
-  .v, .s {
+  .v, .s, .now {
     text-align: right;
     font-variant-numeric: tabular-nums;
+  }
+
+  .now {
+    color: var(--accent);
   }
 
   .s {
     min-width: 3ch;
     color: var(--muted);
   }
+}
+
+// while the fight is open the overlay also shows the current rate
+.with-now .row {
+  grid-template-columns: 18px minmax(0, 1fr) auto auto auto;
 }
 
 .fill {
@@ -217,9 +204,8 @@ kbd {
   pointer-events: none;
 }
 
-// the local player: a gold outline, whatever the class colour
-.row.me,
-.me .line {
+// the local player in the overlay: a gold outline, whatever the class colour
+.row.me {
   box-shadow: inset 0 0 0 1px var(--accent);
 }
 
@@ -227,36 +213,365 @@ kbd {
   font-weight: 600;
 }
 
-// the main window's ranking: one line per player, opened for the details
-.board {
-  margin: 12px 0 0;
-  padding: 0;
-  list-style: none;
+// the main window: the fights on the left, the picked one on the right
+.layout {
   display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  margin-top: 16px;
+
+  &.solo {
+    display: block;
+    margin-top: 0;
+  }
+}
+
+.main {
+  min-width: 0;
+}
+
+.fights {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.cards {
+  display: grid;
+  gap: 6px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.day {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font: 600 11px var(--ui);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.entry {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 9px 11px;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: var(--panel-2);
+  }
+
+  &.on {
+    background: color-mix(in oklch, var(--accent) 10%, var(--well));
+    border-color: var(--gold-line);
+  }
+
+  .top {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .boss {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .at {
+    flex: none;
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .sub {
+    color: var(--muted);
+    font-size: 12.5px;
+
+    b {
+      color: var(--text);
+      font-weight: 600;
+    }
+  }
+}
+
+.badge {
+  flex: none;
+  padding: 1px 7px;
+  background: color-mix(in oklch, var(--accent) 16%, transparent);
+  border: 1px solid var(--gold-line);
+  border-radius: 999px;
+  color: var(--accent);
+  font: 600 11px/1.5 var(--ui);
+
+  &.won {
+    background: color-mix(in oklch, var(--ok) 16%, transparent);
+    border-color: color-mix(in oklch, var(--ok) 45%, transparent);
+    color: var(--ok);
+  }
+}
+
+// the top of the fight: the group's rate, big
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 18px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in oklch, var(--accent) 14%, transparent), transparent 60%),
+    var(--panel);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+
+  .big {
+    display: grid;
+    gap: 2px;
+  }
+
+  .rate {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 6px;
+
+    > b {
+      font: 600 44px/1.1 var(--display);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .unit {
+      color: var(--muted);
+      font-size: 18px;
+    }
+  }
+
+  .nowrate {
+    margin-left: 12px;
+    padding: 2px 10px;
+    background: color-mix(in oklch, var(--accent) 14%, transparent);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 13px;
+
+    b {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .cap {
+    color: var(--muted);
+    font: 600 11px var(--ui);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+}
+
+.pulse {
+  width: 8px;
+  height: 8px;
+  background: var(--ok);
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--ok) 60%, transparent); }
+  50% { box-shadow: 0 0 0 5px transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+  }
+}
+
+.sums {
+  display: flex;
+  gap: 24px;
+  margin: 0;
+
+  div {
+    display: grid;
+    gap: 2px;
+    text-align: right;
+  }
+
+  dt {
+    color: var(--muted);
+    font: 600 11px var(--ui);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 0;
+    font: 600 20px var(--ui);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.boss-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin-top: 10px;
+
+  .name {
+    font-size: 15px;
+  }
+}
+
+.hp {
+  position: relative;
+  flex: 1 1 200px;
+  height: 18px;
+  overflow: hidden;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+
+  .hp-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: linear-gradient(90deg, color-mix(in oklch, var(--bad) 80%, black), var(--bad));
+    transition: width 0.25s;
+  }
+
+  .hp-text {
+    position: relative;
+    display: block;
+    font: 600 11px/16px var(--ui);
+    text-align: center;
+    text-shadow: 0 1px 2px #000a;
+  }
+
+  &.dead .hp-text {
+    color: var(--muted);
+  }
+}
+
+.stagger-bar {
+  flex: 0 1 120px;
+  height: 4px;
+  overflow: hidden;
+  background: var(--well);
+  border-radius: 2px;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.25s;
+  }
+}
+
+.tabs {
+  display: flex;
   gap: 4px;
+  width: fit-content;
+  margin-top: 14px;
+  padding: 3px;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+
+  button {
+    padding: 5px 14px;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    color: var(--muted);
+    font: 600 13px var(--ui);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &.on {
+      background: color-mix(in oklch, var(--accent) 18%, transparent);
+      color: var(--accent);
+    }
+  }
+}
+
+// the ranking: one line per player, opened for the details
+.board {
+  --cols: 2ch 28px minmax(0, 1fr) 7ch 9ch 7ch;
+  margin-top: 10px;
+
+  &.with-now {
+    --cols: 2ch 28px minmax(0, 1fr) 7ch 9ch 9ch 7ch;
+  }
+
+  ol {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: var(--cols);
+  gap: 4px 14px;
+  padding: 0 13px 4px;
+  color: var(--muted);
+  font: 600 11px var(--ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  .num {
+    text-align: right;
+  }
 }
 
 .line {
   position: relative;
   display: grid;
-  grid-template-columns: 2ch 28px minmax(0, 1fr) auto auto auto;
+  grid-template-columns: var(--cols);
   gap: 4px 14px;
   align-items: center;
   width: 100%;
-  min-height: 38px;
+  min-height: 40px;
   padding: 4px 12px;
   overflow: hidden;
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 5px;
   color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background 0.15s;
 
   &:hover,
   &[aria-expanded="true"] {
+    background: var(--panel-2);
     border-color: var(--gold-line);
   }
 
@@ -265,12 +580,15 @@ kbd {
   }
 
   .fill {
+    background: linear-gradient(90deg, color-mix(in oklch, var(--c, var(--accent)) 72%, transparent), color-mix(in oklch, var(--c, var(--accent)) 26%, transparent));
     border-radius: 0;
+    transition: width 0.25s;
   }
 
   .rank {
-    color: var(--muted);
+    color: color-mix(in oklch, var(--text) 60%, transparent);
     font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 2px #0008;
   }
 
   .ico {
@@ -282,27 +600,31 @@ kbd {
     overflow: hidden;
     font-weight: 600;
     text-overflow: ellipsis;
+    text-shadow: 0 1px 2px #0008;
     white-space: nowrap;
   }
 
-  .amt, .rate, .pct {
+  .amt, .now, .rate, .pct {
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
 
   .amt {
-    min-width: 6ch;
     font-weight: 600;
   }
 
-  .rate {
-    min-width: 8ch;
-    color: var(--muted);
+  .now {
+    color: var(--accent);
   }
 
-  .pct {
-    min-width: 6ch;
+  .rate {
+    color: color-mix(in oklch, var(--text) 70%, transparent);
   }
+}
+
+// the local player: a gold outline and a soft glow
+.me .line {
+  box-shadow: inset 0 0 0 1px var(--accent), 0 0 14px color-mix(in oklch, var(--accent) 18%, transparent);
 }
 
 small {
@@ -318,11 +640,14 @@ small {
 .detail {
   margin: 4px 0 8px;
   padding: 14px 14px 10px;
-  background: var(--well);
+  background:
+    linear-gradient(180deg, color-mix(in oklch, var(--c, var(--accent)) 10%, transparent), transparent 90px),
+    var(--well);
   border: 1px solid var(--line);
   border-radius: 4px;
 }
 
+// one tile per figure, each with its own colour
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
@@ -330,12 +655,23 @@ small {
   margin: 0;
 
   div {
+    --k: var(--muted);
     display: grid;
     gap: 2px;
     padding: 8px 10px;
-    background: var(--panel);
+    background: color-mix(in oklch, var(--k) 9%, var(--panel));
+    border-top: 2px solid color-mix(in oklch, var(--k) 70%, transparent);
     border-radius: 4px;
   }
+
+  .k-class { --k: var(--c, var(--accent)); }
+  .k-dmg { --k: var(--c, var(--accent)); }
+  .k-dps { --k: var(--accent); }
+  .k-crit { --k: oklch(0.78 0.15 55); }
+  .k-hits { --k: oklch(0.74 0.09 240); }
+  .k-bad { --k: var(--bad); }
+  .k-ok { --k: var(--ok); }
+  .k-dim { --k: oklch(0.72 0.07 160); }
 
   dt {
     color: var(--muted);
@@ -346,8 +682,24 @@ small {
 
   dd {
     margin: 0;
+    color: color-mix(in oklch, var(--k) 55%, var(--text));
     font: 600 18px var(--ui);
     font-variant-numeric: tabular-nums;
+  }
+}
+
+// the damage split by skill, one slice per skill in its own colour
+.mix {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 4px;
+
+  span {
+    min-width: 2px;
+    background: oklch(0.66 0.13 var(--h));
   }
 }
 
@@ -382,6 +734,73 @@ table {
   }
 }
 
+// rows with a bar behind them: the share of the top row (`--p`, in %), in the skill's colour
+.ranked {
+  tbody tr {
+    --h: 75;
+    background: linear-gradient(90deg, oklch(0.5 0.1 var(--h) / 0.34) calc(var(--p) * 1%), transparent calc(var(--p) * 1%));
+    transition: background-color 0.15s;
+
+    &:hover {
+      background-color: color-mix(in oklch, var(--text) 5%, transparent);
+    }
+  }
+
+  tbody th {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 28px;
+    border-bottom: 0;
+    font-weight: 600;
+  }
+
+  tbody td {
+    border-bottom: 0;
+  }
+
+  .amount {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .crit {
+    color: var(--muted);
+
+    &.hot {
+      color: oklch(0.8 0.15 70);
+      font-weight: 600;
+    }
+  }
+
+  .share {
+    color: color-mix(in oklch, var(--text) 75%, transparent);
+  }
+}
+
+// a skill's picture, or its initial in its colour
+.sk {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+span.sk {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, oklch(0.46 0.1 var(--h)), oklch(0.3 0.07 var(--h)));
+  border: 1px solid oklch(0.62 0.13 var(--h));
+  color: oklch(0.92 0.06 var(--h));
+  font: 700 14px var(--ui);
+
+  &::before {
+    content: attr(data-l);
+  }
+}
+
 .tables {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
@@ -391,12 +810,31 @@ table {
   h3 {
     margin: 0;
     font: 600 18px var(--display);
+
+    small {
+      margin-left: 4px;
+      padding: 0 7px;
+      background: color-mix(in oklch, var(--c, var(--accent)) 20%, transparent);
+      border-radius: 999px;
+      color: var(--text);
+      font: 600 12px/1.6 var(--ui);
+    }
   }
 }
 
 .empty {
   margin: 16px 0 0;
   color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .layout:not(.solo) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cards {
+    max-height: 30vh;
+  }
 }
 
 @media (max-width: 480px) {

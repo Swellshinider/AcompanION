@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import { pushRecent } from './fight';
 
 /** Wire shapes from `src-tauri` (`Character::to_json`, `app::Status::to_json`). Times are capture µs since the epoch. */
 export interface CounterValue { id: number; value: number; ms: boolean; updated_us: number }
@@ -65,6 +66,8 @@ export class CharactersService {
   readonly meter = signal<Meter | null>(null);
   /** Every finished fight, oldest first (`meter://update` sends it only when a fight closed). */
   readonly fights = signal<Fight[]>([]);
+  /** The open fight's last few seconds of snapshots, for the current DPS (`recentRates`). */
+  readonly recent = signal<Fight[]>([]);
   private statusSeen = false;
   private gameSeen = false;
   private radarSeen = false;
@@ -95,6 +98,7 @@ export class CharactersService {
         const { history, ...meter } = e.payload;
         this.meterSeen = true;
         this.meter.set(meter);
+        this.recent.update(r => pushRecent(r, meter.current));
         if (history) {
           this.fightsSeen = true;
           this.fights.set(history);
