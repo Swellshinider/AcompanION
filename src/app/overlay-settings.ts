@@ -6,7 +6,7 @@ export interface OverlaySettings {
   opacity: number;
   onTop: boolean;
   clickThrough: boolean;
-  /** Hide the window while the game is closed or (radar) the player is in a map the radar does not know and was in none before. */
+  /** Hide the window while the game is closed. */
   autoHide: boolean;
   /** Physical pixels `[x, y, width, height]` of the window when it was last moved or resized. */
   bounds: [number, number, number, number] | null;

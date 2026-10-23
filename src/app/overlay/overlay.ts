@@ -26,23 +26,11 @@ export class Overlay {
   /** What the game shows around the player; null while the game is not running. */
   readonly radar = computed(() => (this.chars.game() ? this.chars.radar() : null));
 
-  /** Whether the window is shown: always, or (auto-hide) only while the game runs (and, for the radar, the player is in or was last seen in a known region). */
-  readonly shown = computed(() => {
-    const s = this.settings();
-    if (!s.autoHide) return true;
-    // only the radar needs a map: the dailies and the meter just need the game being up
-    if (s.view !== 'radar') return this.chars.game();
-    const gd = this.gamedata();
-    // an app started with the game already running has not seen a map yet: the last known region stands in
-    return gd !== null && (currentRegion(gd, this.radar()) ?? this.lastKnown(gd)) !== null;
-  });
+  /** Whether the window is shown: always, or (auto-hide) only while the game runs, whatever the view. */
+  readonly shown = computed(() => !this.settings().autoHide || this.chars.game());
 
-  /** The region the player was last seen in (kept across runs), while it is still a region. */
+  /** The region the player was last seen in (kept across runs): the radar's map until the game says where the player is. */
   readonly lastRegion = signal(loadLastRegion());
-  private lastKnown(gd: GameData): string | null {
-    const key = this.lastRegion();
-    return key !== null && key in gd.pet_regions ? key : null;
-  }
 
   readonly pets = computed(() => {
     const gd = this.gamedata();
