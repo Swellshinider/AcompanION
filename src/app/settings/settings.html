@@ -27,6 +27,18 @@
       <span i18n="@@settingsReconnect">Reconnect automatically when capture stops</span>
     </label>
 
+    <label class="field">
+      <span i18n="@@settingsLanguage">Language</span>
+      <select name="language" [value]="s().language" (change)="setLanguage($event)">
+        <option value="auto" i18n="@@settingsLanguageAuto">Automatic (follow Windows)</option>
+        <option value="en">English</option>
+        <option value="pt-BR">Português (Brasil)</option>
+      </select>
+    </label>
+    @if (languageChanged()) {
+      <p class="note" role="status" i18n="@@settingsLanguageRestart">Restart AcompanION to apply the new language.</p>
+    }
+
     <p class="note" i18n="@@settingsNote">Capture and the combat meter keep running while the window is hidden or minimized.</p>
   </section>
 

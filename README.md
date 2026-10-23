@@ -19,7 +19,7 @@ Working today (from source):
 - **Pets.** The account's pet collection (souls, levels, closest to the next level), a farm map of the monsters that drop pet souls, a live radar of the monsters in view and your last known position, and a suggested farm route for the pets you have not maxed.
 - **Overlay.** A movable, resizable, translucent window with the radar, the dailies or the DPS meter. Opacity, always on top and click-through are settings.
 - **DPS meter.** Fights ranked by damage with DPS, share, crits, healing and damage taken, a per-player detail (skills, targets) and a saved history.
-- **Translatable UI.** Every user-facing string is extracted for translation (English first).
+- **Translatable UI.** Every user-facing string is extracted for translation. English and Brazilian Portuguese ship today, picked in Settings (or from the system language); a change to text is translated into every language in the same change (see [`docs/development.md`](docs/development.md), Translations).
 
 ## How it works
 

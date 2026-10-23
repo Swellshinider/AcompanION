@@ -5,17 +5,22 @@ import { TrayIcon } from '@tauri-apps/api/tray';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 
 /** The app's own preferences (the overlay has its own, `OverlaySettings`). Stored here; Rust gets them through `app_settings`. */
+export type Language = 'auto' | 'en' | 'pt-BR';
+export const LANGUAGES: Language[] = ['auto', 'en', 'pt-BR'];
+
 export interface AppSettings {
   /** The window's close button hides it to a tray icon instead of quitting. */
   closeToTray: boolean;
   /** Reopen capture when it stops because the network adapter went away. */
   reconnect: boolean;
+  /** The interface language; `auto` follows the system. It applies at the next start (translations load before the app does). */
+  language: Language;
 }
 
 const KEY = 'acompanion.app';
 const TRAY = 'main-tray';
 
-export const DEFAULTS: AppSettings = { closeToTray: false, reconnect: true };
+export const DEFAULTS: AppSettings = { closeToTray: false, reconnect: true, language: 'auto' };
 
 /** Whatever is stored, with every field checked: a missing, old or corrupt value falls back to its default. */
 export function parse(raw: unknown): AppSettings {
@@ -23,6 +28,7 @@ export function parse(raw: unknown): AppSettings {
   return {
     closeToTray: o['closeToTray'] === true,
     reconnect: typeof o['reconnect'] === 'boolean' ? o['reconnect'] : DEFAULTS.reconnect,
+    language: LANGUAGES.find(l => l === o['language']) ?? DEFAULTS.language,
   };
 }
 

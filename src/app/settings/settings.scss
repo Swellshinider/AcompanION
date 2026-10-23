@@ -87,6 +87,25 @@ input[type="checkbox"] {
   accent-color: var(--accent);
 }
 
+.field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  min-height: 30px;
+  margin-top: 6px;
+
+  select {
+    height: 30px;
+    padding: 0 8px;
+    background: var(--panel-2);
+    border: 1px solid var(--gold-line);
+    border-radius: 4px;
+    color: var(--text);
+    font: inherit;
+  }
+}
+
 .row {
   display: flex;
   flex-wrap: wrap;

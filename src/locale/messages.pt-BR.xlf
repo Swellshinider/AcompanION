@@ -1,0 +1,1732 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" target-language="pt-BR" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="trayOpen" datatype="html">
+        <source>Open</source>
+        <target>Abrir</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app-settings.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="trayQuit" datatype="html">
+        <source>Quit</source>
+        <target>Sair</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app-settings.ts</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="back" datatype="html">
+        <source>Back</source>
+        <target>Voltar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">17,18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="classCode" datatype="html">
+        <source>Class <x id="INTERPOLATION" equiv-text="{{ row().c.class_code }}"/></source>
+        <target>Classe <x id="INTERPOLATION" equiv-text="{{ row().c.class_code }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">183</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="levelLabel" datatype="html">
+        <source>Level <x id="INTERPOLATION" equiv-text="{{ row().c.level }}"/></source>
+        <target>Nível <x id="INTERPOLATION" equiv-text="{{ row().c.level }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">17,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="lastSeen" datatype="html">
+        <source>Last seen <x id="INTERPOLATION" equiv-text="{{ ago(row().c.last_seen_us) }}"/> ago</source>
+        <target>Visto há <x id="INTERPOLATION" equiv-text="{{ ago(row().c.last_seen_us) }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">111,112</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="colPower" datatype="html">
+        <source>Combat power</source>
+        <target>Poder de combate</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">23,24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">103,104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gs" datatype="html">
+        <source>GS</source>
+        <target>GS</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">27,28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">107,108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="spendFirst" datatype="html">
+        <source>Spend first</source>
+        <target>Gastar primeiro</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">33,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="wastingNote" datatype="html">
+        <source>Full, so refills are being wasted.</source>
+        <target>Cheio, então as recargas estão sendo desperdiçadas.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">40,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nothingWasting" datatype="html">
+        <source>Nothing is wasting refills right now.</source>
+        <target>Nada está desperdiçando recargas agora.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">42,45</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="charFilter" datatype="html">
+        <source>Show</source>
+        <target>Mostrar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsFilterAll" datatype="html">
+        <source>All</source>
+        <target>Todos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">48,49</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">73,74</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">97,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="charFilterWasting" datatype="html">
+        <source>Wasting</source>
+        <target>Desperdiçando</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">49,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="charFilterTickets" datatype="html">
+        <source>Tickets</source>
+        <target>Tickets</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">50,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="charFilterWeekly" datatype="html">
+        <source>Weekly</source>
+        <target>Semanais</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">51,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="charFilterDaily" datatype="html">
+        <source>Daily</source>
+        <target>Diárias</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">52,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="secTickets" datatype="html">
+        <source>Tickets and energy</source>
+        <target>Tickets e energia</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ticketsMeta" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ wasting().length }}"/> full · <x id="INTERPOLATION_1" equiv-text="{{ tickets().length - wasting().length }}"/> refilling</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ wasting().length }}"/> cheios · <x id="INTERPOLATION_1" equiv-text="{{ tickets().length - wasting().length }}"/> recarregando</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">59,60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="secWeekly" datatype="html">
+        <source>Weekly</source>
+        <target>Semanais</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">75,76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetsIn" datatype="html">
+        <source>Resets in <x id="INTERPOLATION" equiv-text="{{ until(weeklyReset()) }}"/></source>
+        <target>Reinicia em <x id="INTERPOLATION" equiv-text="{{ until(weeklyReset()) }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">76,77</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">90,91</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="secDaily" datatype="html">
+        <source>Daily</source>
+        <target>Diárias</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">89,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dailyEmpty" datatype="html">
+        <source>Daily tasks are not decoded yet.</source>
+        <target>As tarefas diárias ainda não foram decodificadas.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">100,101</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dailyEmptyNote" datatype="html">
+        <source>AcompanION only shows counters it can read from game traffic. Daily tasks appear here once they are mapped; nothing on this page is estimated.</source>
+        <target>O AcompanION só mostra contadores que consegue ler do tráfego do jogo. As tarefas diárias aparecem aqui quando forem mapeadas; nada nesta página é estimado.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">101,104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="rhythm" datatype="html">
+        <source>+<x id="INTERPOLATION" equiv-text="{{ r.amount }}"/> every <x id="INTERPOLATION_1" equiv-text="{{ r.every_ms / hourMs }}"/>h</source>
+        <target>+<x id="INTERPOLATION" equiv-text="{{ r.amount }}"/> a cada <x id="INTERPOLATION_1" equiv-text="{{ r.every_ms / hourMs }}"/>h</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">112,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hoursUnit" datatype="html">
+        <source>h</source>
+        <target>h</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">121</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">121,122</context>
+        </context-group>
+        <note priority="1" from="description">hours unit</note>
+      </trans-unit>
+      <trans-unit id="wasting" datatype="html">
+        <source>Full, wasting refills</source>
+        <target>Cheio, desperdiçando recargas</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">129,130</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="fullIn" datatype="html">
+        <source>full in <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ until(i.fullAt) }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
+        <target>cheio em <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ until(i.fullAt) }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">131,132</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="done" datatype="html">
+        <source>Done</source>
+        <target>Concluído</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/character/character.html</context>
+          <context context-type="linenumber">133,135</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="appTitle" datatype="html">
+        <source>AcompanION</source>
+        <target>AcompanION</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="statusRunning" datatype="html">
+        <source>Network connected</source>
+        <target>Rede conectada</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="statusStarting" datatype="html">
+        <source>Starting</source>
+        <target>Iniciando</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">11,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="statusOff" datatype="html">
+        <source>Capture off</source>
+        <target>Captura desligada</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">12,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gameDetected" datatype="html">
+        <source>Game detected</source>
+        <target>Jogo detectado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">17,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gameNotDetected" datatype="html">
+        <source>Game not detected</source>
+        <target>Jogo não detectado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">18,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="charactersButton" datatype="html">
+        <source>Characters</source>
+        <target>Personagens</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">24,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsButton" datatype="html">
+        <source>Pets</source>
+        <target>Pets</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterButton" datatype="html">
+        <source>DPS Meter</source>
+        <target>Medidor de DPS</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">26,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsButton" datatype="html">
+        <source>Settings</source>
+        <target>Configurações</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">27,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerNotAdmin" datatype="html">
+        <source>Reading game traffic needs administrator rights. Saved characters are shown below.</source>
+        <target>Ler o tráfego do jogo exige direitos de administrador. Os personagens salvos são mostrados abaixo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">36,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="restartAsAdmin" datatype="html">
+        <source>Restart as admin</source>
+        <target>Reiniciar como administrador</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">37,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerNpcapMissing" datatype="html">
+        <source>Npcap is not installed. Install it from npcap.com, then restart AcompanION.</source>
+        <target>O Npcap não está instalado. Instale-o em npcap.com e reinicie o AcompanION.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerNoAdapter" datatype="html">
+        <source>No network adapter carries the default route. Check the connection, then restart AcompanION.</source>
+        <target>Nenhum adaptador de rede carrega a rota padrão. Verifique a conexão e reinicie o AcompanION.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">40,41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerStateUnreadable" datatype="html">
+        <source>The saved character file cannot be read, so capture is paused to keep it intact. Fix or move the file, then restart AcompanION.</source>
+        <target>Não foi possível ler o arquivo de personagens salvo, então a captura foi pausada para mantê-lo intacto. Corrija ou mova o arquivo e reinicie o AcompanION.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">41,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerStateInUse" datatype="html">
+        <source>Another instance is saving this character file. Saved characters are shown below. Close the other instance, then reopen this window to capture.</source>
+        <target>Outra instância está salvando este arquivo de personagens. Os personagens salvos são mostrados abaixo. Feche a outra instância e reabra esta janela para capturar.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">42,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerReconnecting" datatype="html">
+        <source>Capture stopped. Trying to reconnect…</source>
+        <target>A captura parou. Tentando reconectar…</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerSaveFailed" datatype="html">
+        <source>Capture is running, but changes could not be saved. AcompanION will keep retrying. Keep this window open until this warning clears to avoid losing unsaved changes.</source>
+        <target>A captura está em andamento, mas não foi possível salvar as alterações. O AcompanION continuará tentando. Mantenha esta janela aberta até este aviso sumir para não perder alterações não salvas.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerError" datatype="html">
+        <source>Capture stopped with an error.</source>
+        <target>A captura parou com um erro.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">45,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerUpdate" datatype="html">
+        <source>Version <x id="INTERPOLATION" equiv-text="{{ version }}"/> is available.</source>
+        <target>A versão <x id="INTERPOLATION" equiv-text="{{ version }}"/> está disponível.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">52,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="installUpdate" datatype="html">
+        <source>Update and restart</source>
+        <target>Atualizar e reiniciar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">53,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerUpdateFailed" datatype="html">
+        <source>The update failed. Try again later.</source>
+        <target>A atualização falhou. Tente novamente mais tarde.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">54,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bannerGamedata" datatype="html">
+        <source>Game data could not be loaded.</source>
+        <target>Não foi possível carregar os dados do jogo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">58,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="rosterTitle" datatype="html">
+        <source>Roster</source>
+        <target>Lista de personagens</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">74,75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="rosterCount" datatype="html">
+        <source>{VAR_PLURAL, plural, =1 {1 character} other {<x id="INTERPOLATION"/> characters}}</source>
+        <target>{VAR_PLURAL, plural, =1 {1 personagem} other {<x id="INTERPOLATION"/> personagens}}</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">76,77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="rosterSort" datatype="html">
+        <source>sorted by what is left</source>
+        <target>ordenados pelo que resta</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">78,79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="emptyTitle" datatype="html">
+        <source>No characters yet.</source>
+        <target>Nenhum personagem ainda.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">85,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="emptyBody" datatype="html">
+        <source>Log in with capture running and they appear here.</source>
+        <target>Entre no jogo com a captura ativa e eles aparecerão aqui.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">86,88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forgetAsk" datatype="html">
+        <source>Remove <x id="INTERPOLATION" equiv-text="{{ r.c.name }}"/> from AcompanION? It comes back if it logs in again.</source>
+        <target>Remover <x id="INTERPOLATION" equiv-text="{{ r.c.name }}"/> do AcompanION? Ele volta se entrar no jogo novamente.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">116,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forgetYes" datatype="html">
+        <source>Remove</source>
+        <target>Remover</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">118,119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forgetNo" datatype="html">
+        <source>Cancel</source>
+        <target>Cancelar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">119,120</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forget" datatype="html">
+        <source>Remove character</source>
+        <target>Remover personagem</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">124</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">124,125</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dailyResetIn" datatype="html">
+        <source>Daily reset in <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ until(r.daily) }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
+        <target>Reinício diário em <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ until(r.daily) }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">140,141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="weeklyResetIn" datatype="html">
+        <source>Weekly reset in <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ until(r.weekly) }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
+        <target>Reinício semanal em <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ until(r.weekly) }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">141,142</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footerResets" datatype="html">
+        <source>All resets at <x id="INTERPOLATION" equiv-text="{{ resetHour }}"/>:00 UTC · weekly on <x id="INTERPOLATION_1" equiv-text="{{ weekday() }}"/></source>
+        <target>Todos os reinícios às <x id="INTERPOLATION" equiv-text="{{ resetHour }}"/>:00 UTC · semanal: <x id="INTERPOLATION_1" equiv-text="{{ weekday() }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">144,145</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="levelShort" datatype="html">
+        <source>LV</source>
+        <target>NV</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/emblem/emblem.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterUnknownPlayer" datatype="html">
+        <source>Unknown player</source>
+        <target>Jogador desconhecido</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterMonsterN" datatype="html">
+        <source>Monster <x id="INTERPOLATION" equiv-text="{{ template }}"/></source>
+        <target>Monstro <x id="INTERPOLATION" equiv-text="{{ template }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterUnknownMonster" datatype="html">
+        <source>Unknown monster</source>
+        <target>Monstro desconhecido</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">5,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterWon" datatype="html">
+        <source>Victory</source>
+        <target>Vitória</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterAttempt" datatype="html">
+        <source>Attempt <x id="INTERPOLATION" equiv-text="{{ r.attempt }}"/></source>
+        <target>Tentativa <x id="INTERPOLATION" equiv-text="{{ r.attempt }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterTitle" datatype="html">
+        <source>Meter</source>
+        <target>Medidor</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterSaved" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {No saved fights} =1 {1 saved fight} other {<x id="INTERPOLATION"/> saved fights}}</source>
+        <target>{VAR_PLURAL, plural, =0 {Nenhuma luta salva} =1 {1 luta salva} other {<x id="INTERPOLATION"/> lutas salvas}}</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">23,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterLiveCard" datatype="html">
+        <source>Live meter</source>
+        <target>Medidor ao vivo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">30,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterLiveCardHint" datatype="html">
+        <source>The fight in progress, or the last one</source>
+        <target>A luta em andamento, ou a última</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterCardGroup" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ short(c.dps) }}"/>/s group</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ short(c.dps) }}"/>/s grupo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterCardYou" datatype="html">
+        <source>you <x id="INTERPOLATION" equiv-text="{{ short(m.dps) }}"/>/s</source>
+        <target>você <x id="INTERPOLATION" equiv-text="{{ short(m.dps) }}"/>/s</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterClearAsk" datatype="html">
+        <source>Delete every saved fight?</source>
+        <target>Apagar todas as lutas salvas?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">53,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterClearYes" datatype="html">
+        <source>Delete</source>
+        <target>Apagar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">54,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterClearNo" datatype="html">
+        <source>Cancel</source>
+        <target>Cancelar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">55,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterClear" datatype="html">
+        <source>Clear history</source>
+        <target>Limpar histórico</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">57,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterInFight" datatype="html">
+        <source>In a fight</source>
+        <target>Em luta</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">68,69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">97,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterLastFight" datatype="html">
+        <source>Last fight</source>
+        <target>Última luta</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">69,70</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">98,99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterStagger" datatype="html">
+        <source>Stagger <x id="INTERPOLATION" equiv-text="{{ t.stagger | percent:&apos;1.0-0&apos; }}"/></source>
+        <target>Atordoamento <x id="INTERPOLATION" equiv-text="{{ t.stagger | percent:&apos;1.0-0&apos; }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">76,77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterNowLabel" datatype="html">
+        <source>now</source>
+        <target>agora</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">103,104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterCapTaken" datatype="html">
+        <source>Group damage taken per second (average)</source>
+        <target>Dano recebido pelo grupo por segundo (média)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">108,109</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterCapHealing" datatype="html">
+        <source>Group healing per second (average)</source>
+        <target>Cura do grupo por segundo (média)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">109,110</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterCapDealt" datatype="html">
+        <source>Group DPS (average)</source>
+        <target>DPS do grupo (média)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">110,111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterSumTotal" datatype="html">
+        <source>Total</source>
+        <target>Total</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterSumTime" datatype="html">
+        <source>Time</source>
+        <target>Tempo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">116</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterDead" datatype="html">
+        <source>Dead</source>
+        <target>Morto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">127</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterMetricLabel" datatype="html">
+        <source>Ranking</source>
+        <target>Ranking</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">136,137</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterMetricTaken" datatype="html">
+        <source>Damage taken</source>
+        <target>Dano recebido</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">140,141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterMetricHealing" datatype="html">
+        <source>Healing</source>
+        <target>Cura</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">141,142</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterMetricDealt" datatype="html">
+        <source>Damage dealt</source>
+        <target>Dano causado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">142,143</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColPlayer" datatype="html">
+        <source>Player</source>
+        <target>Jogador</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">151,152</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColTaken" datatype="html">
+        <source>Taken</source>
+        <target>Recebido</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">154,155</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">190</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColHealing" datatype="html">
+        <source>Healing</source>
+        <target>Cura</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">155,156</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">191</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColDamage" datatype="html">
+        <source>Damage</source>
+        <target>Dano</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">156,157</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">186</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">206,207</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">237,238</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColNow" datatype="html">
+        <source>Now</source>
+        <target>Agora</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">159,160</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColDps" datatype="html">
+        <source>DPS</source>
+        <target>DPS</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">160</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">187</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColPerSec" datatype="html">
+        <source>Per sec</source>
+        <target>Por seg</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">160,161</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColShare" datatype="html">
+        <source>Share</source>
+        <target>Parte</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">161,163</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">209,210</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterStatClass" datatype="html">
+        <source>Class</source>
+        <target>Classe</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">182,183</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColCrit" datatype="html">
+        <source>Crit</source>
+        <target>Crít.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">188</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">208,209</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterStatHits" datatype="html">
+        <source>Hits</source>
+        <target>Golpes</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">189</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterStatOverheal" datatype="html">
+        <source>Overheal</source>
+        <target>Cura excedente</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">192</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterStatReceived" datatype="html">
+        <source>Healing received</source>
+        <target>Cura recebida</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">193</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterSkills" datatype="html">
+        <source>Skills</source>
+        <target>Habilidades</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">200</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColSkill" datatype="html">
+        <source>Skill</source>
+        <target>Habilidade</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">205,206</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColHits" datatype="html">
+        <source>Hits</source>
+        <target>Golpes</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">207,208</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">238,239</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterSkillN" datatype="html">
+        <source>Skill <x id="INTERPOLATION" equiv-text="{{ s.id }}"/></source>
+        <target>Habilidade <x id="INTERPOLATION" equiv-text="{{ s.id }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">218</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterTargets" datatype="html">
+        <source>Targets</source>
+        <target>Alvos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">231</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterColTarget" datatype="html">
+        <source>Target</source>
+        <target>Alvo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">236,237</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterNote" datatype="html">
+        <source>Healing and damage taken count only inside the fight, so they can differ from other meters&apos; session totals.</source>
+        <target>Cura e dano recebido contam apenas dentro da luta, então podem diferir dos totais de sessão de outros medidores.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">260,262</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meterEmpty" datatype="html">
+        <source>No fight yet. Hit something with capture running and it appears here.</source>
+        <target>Nenhuma luta ainda. Ataque algo com a captura ativa e ela aparecerá aqui.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/meter/meter.html</context>
+          <context context-type="linenumber">263,265</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayPanelTitle" datatype="html">
+        <source>Overlay</source>
+        <target>Overlay</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">2,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayShow" datatype="html">
+        <source>Show overlay</source>
+        <target>Mostrar overlay</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">6,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayView" datatype="html">
+        <source>View</source>
+        <target>Exibição</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayRadar" datatype="html">
+        <source>Radar</source>
+        <target>Radar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">13,15</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay/overlay.html</context>
+          <context context-type="linenumber">6,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayDailies" datatype="html">
+        <source>Dailies</source>
+        <target>Diárias</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">17,19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay/overlay.html</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayMeter" datatype="html">
+        <source>Meter</source>
+        <target>Medidor</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">21,23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay/overlay.html</context>
+          <context context-type="linenumber">7,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayOpacity" datatype="html">
+        <source>Opacity</source>
+        <target>Opacidade</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">26,27</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay/overlay.html</context>
+          <context context-type="linenumber">16,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayOnTop" datatype="html">
+        <source>Keep above other windows</source>
+        <target>Manter acima de outras janelas</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">33,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayClickThrough" datatype="html">
+        <source>Let clicks pass through</source>
+        <target>Deixar os cliques passarem</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">38,41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayAutoHide" datatype="html">
+        <source>Hide when the game is closed or the map is unknown</source>
+        <target>Ocultar quando o jogo for fechado ou o mapa for desconhecido</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">43,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayNote" datatype="html">
+        <source>With clicks passing through, the overlay cannot be moved or closed: turn it off here. It shows over the game only in windowed or borderless mode; on another monitor any mode works.</source>
+        <target>Com os cliques passando, o overlay não pode ser movido nem fechado: desative-o aqui. Ele aparece sobre o jogo apenas em modo janela ou sem bordas; em outro monitor qualquer modo funciona.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayFailed" datatype="html">
+        <source>The overlay could not be opened.</source>
+        <target>Não foi possível abrir o overlay.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">48,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayClose" datatype="html">
+        <source>Close overlay</source>
+        <target>Fechar overlay</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay/overlay.html</context>
+          <context context-type="linenumber">11,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayNoCharacter" datatype="html">
+        <source>No character yet. Log in with capture running.</source>
+        <target>Nenhum personagem ainda. Entre no jogo com a captura ativa.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay/overlay.html</context>
+          <context context-type="linenumber">28,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsTitle" datatype="html">
+        <source>Pets</source>
+        <target>Pets</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsUpdated" datatype="html">
+        <source>Updated <x id="INTERPOLATION" equiv-text="{{ ago(c.updatedUs) }}"/> ago</source>
+        <target>Atualizado há <x id="INTERPOLATION" equiv-text="{{ ago(c.updatedUs) }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">10,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsTabs" datatype="html">
+        <source>Pets views</source>
+        <target>Telas de pets</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">15,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsTabCollection" datatype="html">
+        <source>Collection</source>
+        <target>Coleção</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">16,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsTabMap" datatype="html">
+        <source>Map</source>
+        <target>Mapa</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">18,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsObtained" datatype="html">
+        <source>Obtained</source>
+        <target>Obtidos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">26,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsLevelN" datatype="html">
+        <source>Level <x id="INTERPOLATION" equiv-text="{{ l }}"/></source>
+        <target>Nível <x id="INTERPOLATION" equiv-text="{{ l }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">31,32</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">103</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">179</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">209</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">267</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsSoulsToMax" datatype="html">
+        <source>Souls to max all</source>
+        <target>Almas para maximizar todos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">36,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsActive" datatype="html">
+        <source>Active pets</source>
+        <target>Pets ativos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsClosest" datatype="html">
+        <source>Closest to the next level</source>
+        <target>Mais perto do próximo nível</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsClosestMeta" datatype="html">
+        <source>souls missing</source>
+        <target>almas faltando</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">59,61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsAll" datatype="html">
+        <source>All pets</source>
+        <target>Todos os pets</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">71,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsFilter" datatype="html">
+        <source>Filter by level</source>
+        <target>Filtrar por nível</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">72,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsFilterLocked" datatype="html">
+        <source>Locked</source>
+        <target>Bloqueados</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">76,77</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">102,103</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">177,178</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">266,267</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmTitle" datatype="html">
+        <source>Where to farm</source>
+        <target>Onde farmar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">92,93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmUnpick" datatype="html">
+        <source>Show all pets again</source>
+        <target>Mostrar todos os pets novamente</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmFilter" datatype="html">
+        <source>Pets on the map</source>
+        <target>Pets no mapa</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">96,97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmNotMax" datatype="html">
+        <source>Not maxed</source>
+        <target>Não maximizados</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">98,99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmClosest" datatype="html">
+        <source>Closest</source>
+        <target>Mais próximos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">99,100</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmRegions" datatype="html">
+        <source>Region</source>
+        <target>Região</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">113,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmHint" datatype="html">
+        <source>Scroll to zoom, drag to move, click a monster to find it.</source>
+        <target>Role para ampliar, arraste para mover, clique em um monstro para encontrá-lo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">119,120</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmCenterMe" datatype="html">
+        <source>Centre on me</source>
+        <target>Centralizar em mim</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">121,123</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmZoomIn" datatype="html">
+        <source>Zoom in</source>
+        <target>Ampliar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">123,124</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmZoomOut" datatype="html">
+        <source>Zoom out</source>
+        <target>Reduzir</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">124,125</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmRoute" datatype="html">
+        <source>Route</source>
+        <target>Rota</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">125,126</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmLegend" datatype="html">
+        <source>Legend</source>
+        <target>Legenda</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">126,127</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmReset" datatype="html">
+        <source>Reset</source>
+        <target>Redefinir</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">127,128</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmExitFill" datatype="html">
+        <source>Exit fill</source>
+        <target>Sair do preenchimento</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">130,131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmFill" datatype="html">
+        <source>Fill</source>
+        <target>Preencher</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">131,132</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmMap" datatype="html">
+        <source>Spawn points of the monsters listed below</source>
+        <target>Pontos de surgimento dos monstros listados abaixo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">138,139</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsMax" datatype="html">
+        <source>Max</source>
+        <target>Máx.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">178,179</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">208,209</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">275,276</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">291,292</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmInView" datatype="html">
+        <source>In view: <x id="INTERPOLATION" equiv-text="{{ live().length }}"/></source>
+        <target>À vista: <x id="INTERPOLATION" equiv-text="{{ live().length }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">192,193</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmFix" datatype="html">
+        <source>Your last position: <x id="INTERPOLATION" equiv-text="{{ fixAge(p.us) }}"/> ago</source>
+        <target>Sua última posição: há <x id="INTERPOLATION" equiv-text="{{ fixAge(p.us) }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">193,194</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmRouteNext" datatype="html">
+        <source>Next: <x id="INTERPOLATION" equiv-text="{{ n.monsters }}"/></source>
+        <target>Próximo: <x id="INTERPOLATION" equiv-text="{{ n.monsters }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">199,200</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmRouteNone" datatype="html">
+        <source>No open pets to farm here.</source>
+        <target>Nenhum pet em aberto para farmar aqui.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">201,203</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmLevel" datatype="html">
+        <source>Lv <x id="INTERPOLATION" equiv-text="{{ a.level }}"/></source>
+        <target>Nv <x id="INTERPOLATION" equiv-text="{{ a.level }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">214</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">287</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmNeeds" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ a.toNext }}"/> to go</source>
+        <target>faltam <x id="INTERPOLATION" equiv-text="{{ a.toNext }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">215</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">290</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmMonsters" datatype="html">
+        <source>Monsters</source>
+        <target>Monstros</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">222,223</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmInRegion" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ r.monsters.length }}"/> in region</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ r.monsters.length }}"/> na região</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">223,224</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmEmpty" datatype="html">
+        <source>No monsters on the map for this selection.</source>
+        <target>Nenhum monstro no mapa para esta seleção.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">233,235</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmDungeons" datatype="html">
+        <source>Only in dungeons</source>
+        <target>Apenas em masmorras</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">236,237</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsEmpty" datatype="html">
+        <source>No pets yet.</source>
+        <target>Nenhum pet ainda.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">247,248</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsEmptyNote" datatype="html">
+        <source>Pets are read when a character enters the world. Log in with capture running and they appear here.</source>
+        <target>Os pets são lidos quando um personagem entra no mundo. Entre no jogo com a captura ativa e eles aparecerão aqui.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">248,252</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="genusCogni" datatype="html">
+        <source>Cogni</source>
+        <target>Cogni</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">258,259</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="genusFera" datatype="html">
+        <source>Fera</source>
+        <target>Fera</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">259,260</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="genusNatura" datatype="html">
+        <source>Natura</source>
+        <target>Natura</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">260,261</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="genusVarian" datatype="html">
+        <source>Varian</source>
+        <target>Varian</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">261,262</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="genusSpecial" datatype="html">
+        <source>Special</source>
+        <target>Especial</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">262,264</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsShowOnMap" datatype="html">
+        <source>Show on map</source>
+        <target>Mostrar no mapa</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">280</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsTitle" datatype="html">
+        <source>Settings</source>
+        <target>Configurações</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">8,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsGeneral" datatype="html">
+        <source>General</source>
+        <target>Geral</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsCloseToTray" datatype="html">
+        <source>Keep running in the tray when the window is closed</source>
+        <target>Continuar em execução na bandeja ao fechar a janela</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsTrayFailed" datatype="html">
+        <source>The tray icon could not be created, so closing the window still quits.</source>
+        <target>Não foi possível criar o ícone da bandeja, então fechar a janela ainda encerra o aplicativo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">22,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsReconnect" datatype="html">
+        <source>Reconnect automatically when capture stops</source>
+        <target>Reconectar automaticamente quando a captura parar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">27,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsLanguage" datatype="html">
+        <source>Language</source>
+        <target>Idioma</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">31,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsLanguageAuto" datatype="html">
+        <source>Automatic (follow Windows)</source>
+        <target>Automático (seguir o Windows)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">33,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsLanguageRestart" datatype="html">
+        <source>Restart AcompanION to apply the new language.</source>
+        <target>Reinicie o AcompanION para aplicar o novo idioma.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">39,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsNote" datatype="html">
+        <source>Capture and the combat meter keep running while the window is hidden or minimized.</source>
+        <target>A captura e o medidor de combate continuam funcionando enquanto a janela está oculta ou minimizada.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">42,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsUpdates" datatype="html">
+        <source>Updates</source>
+        <target>Atualizações</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">46,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsVersion" datatype="html">
+        <source>Current version: <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ v }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
+        <target>Versão atual: <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ v }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">48,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsCheckUpdate" datatype="html">
+        <source>Check for updates now</source>
+        <target>Verificar atualizações agora</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">51,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsChecking" datatype="html">
+        <source>Checking…</source>
+        <target>Verificando…</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">54,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsUpToDate" datatype="html">
+        <source>You are up to date.</source>
+        <target>Você está atualizado.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">55,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsUpdateFound" datatype="html">
+        <source>Version <x id="INTERPOLATION" equiv-text="{{ found() }}"/> is available.</source>
+        <target>A versão <x id="INTERPOLATION" equiv-text="{{ found() }}"/> está disponível.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsCheckFailed" datatype="html">
+        <source>Could not check for updates.</source>
+        <target>Não foi possível verificar as atualizações.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">57,59</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
