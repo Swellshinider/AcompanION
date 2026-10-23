@@ -19,6 +19,7 @@ The top section is the next version, named by the patch bump of the last release
 - Settings: a **Check for updates now** button that tells you whether you are up to date.
 - Settings: capture reopens by itself when the network connection drops and comes back. You can turn this off.
 - You can remove a character from the roster: hover its card and click the red trash can (for example after deleting it in the game). It comes back only if you log in with it again. Needs capture running.
+- The installer checks for Npcap, which AcompanION needs to read game traffic. If it is missing, you can let the installer download and run the official Npcap installer, or open its download page.
 
 ### Improved
 
