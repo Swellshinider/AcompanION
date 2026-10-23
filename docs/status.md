@@ -8,6 +8,7 @@ Where things stand and what comes next. Update it at the end of every working se
 - **Live engine:** done. `state.rs` keeps one session per client connection and a state per character, saved as JSON at most every 5 s under a single-writer lock; `live.rs` drives capture or replay; `re live` runs it headless.
 - **Desktop app:** done. Roster of character cards, detail screen per character (tickets and energy with refill rhythm, weeklies and dailies as done/cap, GS, combat power), header badges for capture and game detection, reset countdowns, banners for each capture failure, "Restart as admin".
 - **Pets:** the account's collection (obtained, per level, souls to max, closest pets); a farm map of the monsters that drop pet souls with zoom, pan and filters; a live radar of the monsters in view and the player's last exact position; a farm route over the remaining pets for the current region (`src/app/route.ts`).
+- **Settings:** a screen (replaces the Overlay popover) with the overlay controls, close to the tray (tray icon with Open and Quit), automatic reconnection of capture when the adapter drops, and a "Check for updates now" button.
 - **Overlay:** a transparent, frameless second window with the radar (minimap of the current region), the dailies or the meter; opacity, always on top, click-through, saved position, auto-hide when the game is closed (the radar also when no region is known; it falls back to the last region the player was seen in, kept in `localStorage`, so an app started with the game already running still opens the Verteron map).
 - **Combat meter:** damage hits and ticks, crits, summons credited to their owner, players in view, heals, overheal, damage taken and the fight's target; fights close after 10 s without a counted hit, each boss gets its own fight, a Spiritmaster's spirits count for their owner, and the last 50 are kept in `meter.json`. UI: a Meter screen (ranking, player detail with skills and targets, Clear history) and the overlay view.
 
@@ -15,6 +16,7 @@ Where things stand and what comes next. Update it at the end of every working se
 
 These have unit tests or browser checks, but no one has watched them in a real elevated `task app` session:
 
+- [ ] Settings in a real session: close to tray (X hides, tray icon Open and Quit, overlay stays up, state saved on Quit), reconnection (disable and enable the adapter during capture: banner appears and clears, the meter and characters carry on), and "Check for updates now" against a published release.
 - [ ] Overlay: the real transparent window, dragging and edge resizing, opacity, click-through reaching the game, always on top, reopening in place, centring after a monitor is unplugged, hiding and showing itself with the game, the app exiting with the overlay open.
 - [ ] Overlay radar following a moving player, and a map change hiding it; the radar discs and the player ring in Verteron against a live game; the 250 ms update rate in a crowded zone.
 - [ ] Footer "last soul gain" after a real kill; a live soul gain or level-up moving a Pets row.

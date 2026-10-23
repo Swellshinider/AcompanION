@@ -100,6 +100,26 @@ describe('Dashboard', () => {
     expect(el.querySelectorAll('.card').length).toBe(1);
   });
 
+  it('opens the settings screen from the header, marks it, and returns on Escape', async () => {
+    const { f, el } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)]);
+    el.querySelector<HTMLButtonElement>('.settings-btn')!.click();
+    f.detectChanges();
+    expect(el.querySelector('app-settings h2')?.textContent).toContain('Settings');
+    expect(el.querySelector('app-settings app-overlay-panel')).not.toBeNull();
+    expect(el.querySelector('.settings-btn')!.getAttribute('aria-current')).toBe('page');
+    expect(el.querySelectorAll('.card').length).toBe(0);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    f.detectChanges();
+    expect(el.querySelector('app-settings')).toBeNull();
+    expect(el.querySelectorAll('.card').length).toBe(1);
+  });
+
+  it('says capture is reconnecting while the adapter is gone', async () => {
+    const { el } = await render({ id: 'reconnecting', detail: 'No network adapter' }, [ch('Alpha', 1)]);
+    expect(el.querySelector('.banner')?.textContent).toContain('Trying to reconnect');
+    expect(el.querySelector('.banner .detail')?.textContent).toContain('No network adapter');
+  });
+
   it('always offers the pets screen and explains when no pets were seen yet', async () => {
     const { f, el } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)]);
     el.querySelector<HTMLButtonElement>('.pets-btn')!.click();

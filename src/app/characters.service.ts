@@ -42,7 +42,7 @@ export interface MeterTarget {
 export interface Fight { start_us: number; end_us: number; me: number | null; players: MeterPlayer[]; target: MeterTarget | null }
 /** What `meter://update` carries without `history`. */
 export interface Meter { me: number | null; current: Fight | null; fights: number }
-export type StatusId = 'starting' | 'running' | 'save_failed' | 'not_admin' | 'npcap_missing' | 'no_adapter' | 'state_unreadable' | 'state_in_use' | 'error';
+export type StatusId = 'starting' | 'running' | 'save_failed' | 'not_admin' | 'npcap_missing' | 'no_adapter' | 'state_unreadable' | 'state_in_use' | 'reconnecting' | 'error';
 export interface CaptureStatus { id: StatusId; detail: string | null }
 
 const key = (c: Character) => `${c.server}\u0000${c.name}`;

@@ -80,7 +80,7 @@ capture thread (main.rs)            Tauri main thread                 Angular wi
                                    commands: characters, capture_status, restart_as_admin  <---
 ```
 
-**Capture thread.** Spawned at setup if the state file loaded and its writer lock was acquired. It owns the `Engine` and calls `live::run` with `on_start` (publishes `running`) and `on_change` (copies `State::to_json()["characters"]` into `Shared` and emits the changed characters). A `live::run` error is classified once and published. On exit the stop flag is set and the thread is joined, so the engine flushes to disk. An unreadable state file publishes `state_unreadable` and never starts capture: the engine would overwrite it on its first save.
+**Capture thread.** Spawned at setup if the state file loaded and its writer lock was acquired. It owns the `Engine` and calls `live::run` with `on_start` (publishes `running`) and `on_change` (copies `State::to_json()["characters"]` into `Shared` and emits the changed characters). A `live::run` error is classified and published; with the reconnect option on, `no_adapter` and `error` (`app::retryable`) publish `reconnecting` and `live::run` is called again after 5 s on the same `Engine` (the decoder resyncs over the gap), anything else ends the thread. On exit the stop flag is set and the thread is joined, so the engine flushes to disk. An unreadable state file publishes `state_unreadable` and never starts capture: the engine would overwrite it on its first save.
 
 **One writer per state file.** The app and `re live` acquire an exclusive standard-library file lock on `<state path>.lock` before loading writable state and hold its handle through the final flush. The lock file stays in place; closing the handle releases ownership, including after a process exit. The app releases it before publishing a capture failure, so a UAC replacement can start. A second window shows a saved snapshot with `state_in_use` and never captures or saves; reopen it after the other writer closes. The CLI rejects contention, including replays with `--state`; different output files remain independent.
 
@@ -99,6 +99,8 @@ capture thread (main.rs)            Tauri main thread                 Angular wi
 | command | `meter_history` | every finished fight, oldest first (the saved ones before capture runs) |
 | command | `meter_clear` | empties the fight history; does nothing while capture is not running |
 | command | `overlay` | `(open, onTop, clickThrough, bounds)`: opens, closes or updates the overlay window; `bounds` is `[x, y, w, h]` or `null` |
+| command | `app_settings` | `(closeToTray, reconnect)`: the preferences Rust acts on, sent by the frontend at start and on change |
+| command | `quit` | closes the overlay and exits (the tray's Quit; with close-to-tray on, the window's own X only hides it) |
 | event | `overlay://closed` | to the main window when the overlay window went away (not while the app quits) |
 | event | `characters://update` | `[Character JSON]`, only the changed characters |
 | event | `capture://status` | `{"id", "detail"}` |
@@ -121,7 +123,8 @@ Status ids: `starting`, `running`, `save_failed`, `not_admin`, `npcap_missing`, 
 | `src/app/emblem/` + `src/app/glyph.ts` | Diamond emblem and class icons: the game's own images (`public/classes/<class>.png`) and a mask-painted generic glyph (`unknown.svg`) |
 | `src/app/pets/` + `src/app/route.ts` | Pets screen: collection, farm map, live radar layer and the farm route (`farmRoute`, pure) |
 | `src/app/meter/` + `src/app/fight.ts` | Meter screen and overlay view; `fight.ts` is pure (skill folding, DPS window, current rate over the last 5 s from the service's `recent` snapshots, boss result, player and skill rows) |
-| `src/app/overlay/`, `overlay-panel/`, `overlay-settings.ts` | The overlay page, its control panel in the main window and the persisted preferences |
+| `src/app/overlay/`, `overlay-panel/`, `overlay-settings.ts`, `overlay-control.ts` | The overlay page, its control panel and the persisted preferences; `restoreOverlay` reopens it at start |
+| `src/app/settings/` + `app-settings.ts` | Settings screen (overlay panel, close to tray, reconnect, update check) and the app preferences; `applyAppSettings` creates or removes the tray icon and tells Rust |
 | `public/gamedata.json` | Hand-curated game facts: counter names, caps, reset kind, refills, classes, pets, farm regions and spawns, skill and monster names. Counter ids not in it are hidden |
 | `src/locale/messages.xlf` | `ng extract-i18n` output; every user-facing string has an `@@` id |
 
