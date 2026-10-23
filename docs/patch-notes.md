@@ -21,6 +21,7 @@ The top section is the next version, named by the patch bump of the last release
 - You can remove a character from the roster: hover its card and click the red trash can (for example after deleting it in the game). It comes back only if you log in with it again. Needs capture running.
 - AcompanION now speaks Brazilian Portuguese: the whole app, with the class and counter names, shows in Portuguese. Pet, monster and skill names are still in English for now.
 - Settings: a **Language** option: Automatic (follows Windows, the default), English or Português (Brasil). A new choice applies after you restart AcompanION.
+- The installer checks for Npcap, which AcompanION needs to read game traffic. If it is missing, you can let the installer download and run the official Npcap installer, or open its download page.
 
 ### Improved
 

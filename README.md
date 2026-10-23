@@ -29,7 +29,7 @@ Working today (from source):
 
 ## Install
 
-Download `AcompanION_<version>_x64-setup.exe` from the [latest release](https://github.com/Swellshinider/AcompanION/releases/latest) and run it. It installs for the current user (no administrator prompt) and you remove it in Settings > Apps. You still need the [Npcap](https://npcap.com/) runtime, and capture needs administrator rights (the app offers "Restart as admin").
+Download `AcompanION_<version>_x64-setup.exe` from the [latest release](https://github.com/Swellshinider/AcompanION/releases/latest) and run it. It installs for the current user (no administrator prompt) and you remove it in Settings > Apps. The installer checks for the [Npcap](https://npcap.com/) runtime and, if it is missing, offers to download and run Npcap's official installer (you click through its wizard) or to open its download page. Capture needs administrator rights (the app offers "Restart as admin").
 
 On start the app checks the latest release; when a newer one exists, a banner offers "Update and restart".
 
