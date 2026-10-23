@@ -288,8 +288,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="appTitle" datatype="html">
-        <source>AcompanION</source>
-        <target>AcompanION</target>
+        <source>A<x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;dim&quot;&gt;"/>compan<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>ION</source>
+        <target>A<x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;dim&quot;&gt;"/>compan<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>ION</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
           <context context-type="linenumber">4,6</context>
