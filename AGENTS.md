@@ -30,7 +30,7 @@ pnpm i18n                                                            # extract s
 uv run --with lz4 python tools/re/aion_re.py <chain|hist|findstr|findint|frame> ...
 ```
 
-Expected today: Rust 172 tests pass (plus 2 in the `re` bin), 2 ignored; frontend 210 tests pass; clippy clean. Keep all true. The app needs an elevated terminal to capture; `pnpm ng build`, `pnpm i18n` and `pnpm tauri build --no-bundle` pass (the installer needs the updater signing key and is built by `.github/workflows/release.yml` on a `vX.Y.Z` tag; see README, Releasing).
+Expected today: Rust 173 tests pass (plus 2 in the `re` bin), 2 ignored; frontend 210 tests pass; clippy clean. Keep all true. The app needs an elevated terminal to capture; `pnpm ng build`, `pnpm i18n` and `pnpm tauri build --no-bundle` pass (the installer needs the updater signing key and is built by `.github/workflows/release.yml` on a `vX.Y.Z` tag; see README, Releasing).
 
 ## Hard rules
 

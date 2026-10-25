@@ -572,14 +572,18 @@ mod tests {
         assert_eq!(monsters(&mut e), Some(serde_json::json!([])));
     }
 
-    /// A `04 38` hit by entity 0 (the test identity's own entity) on entity 5, `amount` below 128.
+    /// A `04 38` hit by entity 0 (the test identity's own entity) on entity 5, `amount` below 128,
+    /// after the stagger gauge (`05 e0`) that makes 5 a boss: only a hit on a boss opens a fight.
     fn hit(amount: u8) -> Vec<u8> {
+        let mut g = vec![0x05, 0xe0, 0x05, 0x03, 0x01];
+        g.extend([240u32, 240].iter().flat_map(|v| v.to_le_bytes()));
+        g.push(0x02);
         let mut b = vec![0x04, 0x38, 0x05, 0x04, 0x00, 0x00];
         b.extend(14_090_130u32.to_le_bytes());
         b.extend([0x40, 0x02]);
         b.extend(1_400_000_000u32.to_le_bytes());
         b.extend([1, 0, 0, 0, 0xca, 0x61, amount, 0x01, 0x00]);
-        frame(&b)
+        [frame(&g), frame(&b)].concat()
     }
 
     #[test]

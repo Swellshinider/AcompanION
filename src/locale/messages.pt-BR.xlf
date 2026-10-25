@@ -1020,8 +1020,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meterEmpty" datatype="html">
-        <source>No fight yet. Hit something with capture running and it appears here.</source>
-        <target>Nenhuma luta ainda. Ataque algo com a captura ativa e ela aparecerá aqui.</target>
+        <source>No fight yet. Hit a boss with capture running and it appears here.</source>
+        <target>Nenhuma luta ainda. Ataque um chefe com a captura ativa e ela aparecerá aqui.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/meter/meter.html</context>
           <context context-type="linenumber">263,265</context>
