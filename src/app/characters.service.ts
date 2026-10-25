@@ -151,6 +151,11 @@ export class CharactersService {
     return invoke<boolean>('restart_as_admin');
   }
 
+  /** Asks the instance saving the character file to close and captures here; rejects when it does not close. */
+  takeOver(): Promise<void> {
+    return invoke<void>('take_over');
+  }
+
   /** The newer version on GitHub Releases, or null when up to date. */
   checkUpdate(): Promise<string | null> {
     return invoke<string | null>('check_update');

@@ -121,6 +121,59 @@ fn restart_as_admin(handle: AppHandle) -> Result<bool, String> {
     Ok(accepted)
 }
 
+/// How long `take_over` waits for the other instance to close and release the character file.
+const TAKE_OVER_WAIT: Duration = Duration::from_secs(10);
+
+/// Spawn the capture thread, and a watcher that quits this app when another instance asks (`app::quit_path`).
+/// ponytail: polls every 500 ms; a request is only seen while capture runs, which is when this app owns the lock.
+fn start_capture(handle: &AppHandle, state: State, path: PathBuf, guard: File) {
+    let app = handle.state::<AppState>();
+    let quit_file = acompanion::app::quit_path(&path);
+    // a request left by an earlier takeover would close this instance at once
+    let _ = std::fs::remove_file(&quit_file);
+    let (h, shared, stop, clear, forget, reconnect) = (handle.clone(), app.shared.clone(), app.stop.clone(), app.clear.clone(), app.forget.clone(), app.reconnect.clone());
+    let thread = std::thread::spawn(move || capture(h, shared, stop, clear, forget, reconnect, state, path, guard));
+    *app.capture.lock().unwrap() = Some(thread);
+    let handle = handle.clone();
+    std::thread::spawn(move || {
+        let running = |h: &AppHandle| h.state::<AppState>().capture.lock().unwrap().as_ref().is_some_and(|t| !t.is_finished());
+        while running(&handle) {
+            if quit_file.exists() {
+                return quit(handle);
+            }
+            std::thread::sleep(Duration::from_millis(500));
+        }
+    });
+}
+
+/// Ask the instance that owns the character file to close, then capture here instead.
+/// Off the main thread: it waits for the other instance.
+#[tauri::command(async)]
+fn take_over(handle: AppHandle) -> Result<(), String> {
+    let path = acompanion::state::default_path().ok_or("APPDATA is not set")?;
+    let quit_file = acompanion::app::quit_path(&path);
+    std::fs::write(&quit_file, b"").map_err(|e| e.to_string())?;
+    let until = Instant::now() + TAKE_OVER_WAIT;
+    let loaded = loop {
+        match acompanion::app::load_state(&path) {
+            Ok((state, Some(guard))) => break Ok((state, guard)),
+            Ok(_) if Instant::now() < until => std::thread::sleep(Duration::from_millis(200)),
+            Ok(_) => break Err("the other instance did not close".to_string()),
+            Err(e) => break Err(format!("{e:#}")),
+        }
+    };
+    let _ = std::fs::remove_file(&quit_file);
+    let (state, guard) = loaded?;
+    let app = handle.state::<AppState>();
+    // what the other instance saved on its way out
+    let characters = state.to_json()["characters"].clone();
+    app.shared.lock().unwrap().characters = characters.clone();
+    let _ = handle.emit("characters://update", characters);
+    set_status(&handle, &app.shared, Status::new("starting"));
+    start_capture(&handle, state, path, guard);
+    Ok(())
+}
+
 /// The newer version published on GitHub Releases, if any. Dev builds never ask.
 #[tauri::command]
 async fn check_update(handle: AppHandle, pending: tauri::State<'_, PendingUpdate>) -> Result<Option<String>, String> {
@@ -326,14 +379,12 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(PendingUpdate(Mutex::new(None)))
-        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, forget_character, overlay, elevated, restart_as_admin, check_update, install_update, app_settings, quit])
+        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, forget_character, overlay, elevated, restart_as_admin, check_update, install_update, app_settings, quit, take_over])
         .setup(move |app| {
-            let reconnect_flag = reconnect.clone();
-            let thread = start.map(|(state, path, guard)| {
-                let (handle, shared, stop, clear, forget) = (app.handle().clone(), shared.clone(), stop.clone(), clear.clone(), forget.clone());
-                std::thread::spawn(move || capture(handle, shared, stop, clear, forget, reconnect, state, path, guard))
-            });
-            app.manage(AppState { shared, stop, clear, forget, capture: Mutex::new(thread), quitting: AtomicBool::new(false), close_to_tray: AtomicBool::new(false), reconnect: reconnect_flag });
+            app.manage(AppState { shared, stop, clear, forget, capture: Mutex::new(None), quitting: AtomicBool::new(false), close_to_tray: AtomicBool::new(false), reconnect });
+            if let Some((state, path, guard)) = start {
+                start_capture(app.handle(), state, path, guard);
+            }
             Ok(())
         })
         .build(tauri::generate_context!())

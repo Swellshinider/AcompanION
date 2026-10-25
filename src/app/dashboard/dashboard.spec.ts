@@ -17,7 +17,7 @@ const ch = (name: string, left: number, classCode = 3): Character => ({
   counters: [{ id: 1, value: left, ms: false, updated_us: nowUs }], last_seen_us: nowUs,
 });
 
-async function render(status: CaptureStatus, chars: Character[], game = false, update: string | null = null, elevated = true) {
+async function render(status: CaptureStatus, chars: Character[], game = false, update: string | null = null, elevated = true, takeOver = vi.fn(async () => {})) {
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => gd })));
   const restartAsAdmin = vi.fn(async () => false);
   const isElevated = vi.fn(async () => elevated);
@@ -25,7 +25,7 @@ async function render(status: CaptureStatus, chars: Character[], game = false, u
   const installUpdate = vi.fn(async () => {});
   const forget = vi.fn(async () => {});
   TestBed.configureTestingModule({
-    providers: [{ provide: CharactersService, useValue: { characters: signal(chars), status: signal(status), game: signal(game), radar: signal(null), meter: signal(null), fights: signal([]), restartAsAdmin, isElevated, checkUpdate, installUpdate, forget } }],
+    providers: [{ provide: CharactersService, useValue: { characters: signal(chars), status: signal(status), game: signal(game), radar: signal(null), meter: signal(null), fights: signal([]), restartAsAdmin, isElevated, checkUpdate, installUpdate, forget, takeOver } }],
   });
   const f = TestBed.createComponent(Dashboard);
   await new Promise(r => setTimeout(r)); // let loadGamedata and checkUpdate resolve
@@ -243,13 +243,24 @@ describe('Dashboard', () => {
     expect(el.querySelector('.empty')).not.toBeNull();
   });
 
-  it('shows saved characters without offering capture when the state is in use', async () => {
-    const { el } = await render({ id: 'state_in_use', detail: null }, [ch('Alpha', 1)], true);
+  it('shows saved characters and offers to take over when the state is in use', async () => {
+    const takeOver = vi.fn(async () => {});
+    const { el } = await render({ id: 'state_in_use', detail: null }, [ch('Alpha', 1)], true, null, true, takeOver);
     expect(el.querySelector('.banner')?.textContent).toContain('Another instance is saving');
     expect(el.querySelector('.pill')?.textContent).toContain('Capture off');
     expect(el.querySelectorAll('.pill').length).toBe(1); // no game badge without capture
-    expect(el.querySelector('.banner button')).toBeNull();
     expect(cardNames(el)).toEqual(['Alpha']);
+    el.querySelector<HTMLButtonElement>('.banner button')!.click();
+    expect(takeOver).toHaveBeenCalledOnce();
+  });
+
+  it('says so when the other instance does not close', async () => {
+    const takeOver = vi.fn(async () => { throw new Error('the other instance did not close'); });
+    const { f, el } = await render({ id: 'state_in_use', detail: null }, [ch('Alpha', 1)], true, null, true, takeOver);
+    el.querySelector<HTMLButtonElement>('.banner button')!.click();
+    await new Promise(r => setTimeout(r));
+    f.detectChanges();
+    expect(el.querySelector('.banner [role=alert]')?.textContent).toContain('did not close');
   });
 
   it('keeps capturing and shows cards until a save failure recovers', async () => {

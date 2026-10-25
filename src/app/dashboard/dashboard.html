@@ -39,7 +39,11 @@
       @case ('npcap_missing') { <p i18n="@@bannerNpcapMissing">Npcap is not installed. Install it from npcap.com, then restart AcompanION.</p> }
       @case ('no_adapter') { <p i18n="@@bannerNoAdapter">No network adapter carries the default route. Check the connection, then restart AcompanION.</p> }
       @case ('state_unreadable') { <p i18n="@@bannerStateUnreadable">The saved character file cannot be read, so capture is paused to keep it intact. Fix or move the file, then restart AcompanION.</p> }
-      @case ('state_in_use') { <p i18n="@@bannerStateInUse">Another instance is saving this character file. Saved characters are shown below. Close the other instance, then reopen this window to capture.</p> }
+      @case ('state_in_use') {
+        <p i18n="@@bannerStateInUse">Another instance is saving this character file. Saved characters are shown below.</p>
+        <button type="button" class="btn" (click)="takeOver()" [disabled]="takingOver()" i18n="@@takeOver">Close it and capture here</button>
+        @if (takeOverFailed()) { <p role="alert" i18n="@@takeOverFailed">The other instance did not close. Close it yourself, then try again.</p> }
+      }
       @case ('reconnecting') { <p i18n="@@bannerReconnecting">Capture stopped. Trying to reconnect…</p> }
       @case ('save_failed') { <p i18n="@@bannerSaveFailed">Capture is running, but changes could not be saved. AcompanION will keep retrying. Keep this window open until this warning clears to avoid losing unsaved changes.</p> }
       @default { <p i18n="@@bannerError">Capture stopped with an error.</p> }

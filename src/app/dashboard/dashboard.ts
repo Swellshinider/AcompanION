@@ -32,6 +32,8 @@ export class Dashboard {
   readonly gamedata = signal<GameData | null>(null);
   readonly gamedataFailed = signal(false);
   readonly restarting = signal(false);
+  readonly takingOver = signal(false);
+  readonly takeOverFailed = signal(false);
   /** Starts true so nothing shows without a backend. */
   readonly elevated = signal(true);
   /** The newer version on GitHub Releases; null while unknown, up to date or offline. */
@@ -150,6 +152,18 @@ export class Dashboard {
       await this.chars.restartAsAdmin(); // on success this window closes
     } finally {
       this.restarting.set(false);
+    }
+  }
+
+  async takeOver(): Promise<void> {
+    this.takingOver.set(true);
+    this.takeOverFailed.set(false);
+    try {
+      await this.chars.takeOver(); // on success the status changes and the banner goes away
+    } catch {
+      this.takeOverFailed.set(true);
+    } finally {
+      this.takingOver.set(false);
     }
   }
 

@@ -13,6 +13,10 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.2.2 (next)
 
+### New
+
+- When another AcompanION window is already open, the banner now has a **Close it and capture here** button that closes the other one and takes over.
+
 ## v0.2.1 (2026-10-25)
 
 ### New
