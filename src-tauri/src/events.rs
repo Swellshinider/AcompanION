@@ -151,8 +151,9 @@ pub enum Event {
     Spawn { entity: u32, template: u32, x: i32, y: i32, max_hp: Option<u64> },
     /// An entity owned by a player came into view (a summon): its hits are the owner's damage.
     Summon { entity: u32, owner: u32 },
-    /// Another player came into view (`class_code` as in `Identity`). Leaving the view is a `Gone`.
-    PlayerSpawn { entity: u32, name: String, class_code: u32 },
+    /// Another player came into view (`class_code` as in `Identity`; `combat_power` read off the
+    /// frame's tail, `None` when the tail does not fit). Leaving the view is a `Gone`.
+    PlayerSpawn { entity: u32, name: String, class_code: u32, combat_power: Option<u32> },
     /// An entity moved.
     Pos { entity: u32, x: i32, y: i32 },
     /// A skill frame led by `entity`. When it is the player's own (the identity's) the position is
@@ -215,8 +216,8 @@ impl Event {
                 json!({"type": "spawn", "entity": entity, "template": template, "x": x, "y": y, "max_hp": max_hp})
             }
             Event::Summon { entity, owner } => json!({"type": "summon", "entity": entity, "owner": owner}),
-            Event::PlayerSpawn { entity, name, class_code } => {
-                json!({"type": "player_spawn", "entity": entity, "name": name, "class_code": class_code})
+            Event::PlayerSpawn { entity, name, class_code, combat_power } => {
+                json!({"type": "player_spawn", "entity": entity, "name": name, "class_code": class_code, "combat_power": combat_power})
             }
             Event::Pos { entity, x, y } => json!({"type": "pos", "entity": entity, "x": x, "y": y}),
             Event::Cast { entity, x, y } => json!({"type": "cast", "entity": entity, "x": x, "y": y}),
@@ -501,12 +502,13 @@ impl Opcodes {
             }
             Kind::MonsterGone => Some(Event::Gone { entity: c.varint()? }),
             Kind::PlayerSpawn => {
-                // [varint entity][5 bytes][u8 n][name][u32 class], then over 1 KiB not read
+                // [varint entity][5 bytes][u8 n][name][u32 class], then over 1 KiB not read but the combat power at the tail
                 let entity = c.varint()?;
                 c.take(5)?;
                 let n = usize::from(c.u8()?);
                 let name = String::from_utf8(c.take(n)?.to_vec()).ok()?;
-                Some(Event::PlayerSpawn { entity, name, class_code: c.u32()? })
+                let class_code = c.u32()?;
+                Some(Event::PlayerSpawn { entity, name, class_code, combat_power: tail_power(frame, c.i) })
             }
             Kind::SkillPos => {
                 // the frame's last 12 bytes are a position (x, y, z); the first entity's only when it is the player
@@ -657,6 +659,20 @@ fn summon_owner(rest: &[u8]) -> Option<u32> {
     rest.windows(21)
         .find(|w| w[..2] == [1, 2] && w[14..17] == [7, 2, 6])
         .and_then(|w| Some(u32::from_le_bytes(w[17..].try_into().ok()?)))
+}
+
+/// The combat power in the tail of a `45 36`: a u32 at `len - 9`, or at `len - 10` when the frame has
+/// one more trailing byte; the u32 before it is a small count (< 64) or the item level (800 to 2000).
+/// `from`: where the unread middle starts.
+/// ponytail: found on one capture (36 spawns, 4 values checked against the party window); the extra
+/// byte is not understood. Re-check this rule after a game patch.
+fn tail_power(frame: &[u8], from: usize) -> Option<u32> {
+    let u32_at = |at: usize| Some(u32::from_le_bytes(frame.get(at..at + 4)?.try_into().ok()?));
+    [9, 10].into_iter().find_map(|back| {
+        let at = frame.len().checked_sub(back)?;
+        let before = u32_at(at.checked_sub(4).filter(|&b| b >= from)?)?;
+        if before < 64 || (800..=2000).contains(&before) { u32_at(at) } else { None }
+    })
 }
 
 /// Bounds-checked little-endian cursor.
@@ -1121,16 +1137,45 @@ mod tests {
         f.extend(b"Testname");
         f.extend(u32s(&[25]));
         f.extend([0x01, 0x02, 0x80, 0x12]); // the rest is not read
-        let want = Event::PlayerSpawn { entity: 4990, name: "Testname".into(), class_code: 25 };
+        let want = Event::PlayerSpawn { entity: 4990, name: "Testname".into(), class_code: 25, combat_power: None };
         assert_eq!(ops().parse(&f), Some(want.clone()));
         for n in 0..f.len() - 4 {
             assert_eq!(ops().parse(&f[..n]), None, "prefix {n}"); // the class ends 4 bytes early
         }
         assert_eq!(
             want.to_json(),
-            json!({"type": "player_spawn", "entity": 4990, "name": "Testname", "class_code": 25})
+            json!({"type": "player_spawn", "entity": 4990, "name": "Testname", "class_code": 25, "combat_power": null})
         );
         assert_eq!(ops().parse(&[0x47, 0x36, 0xfe, 0x26, 0x01, 0x00]), Some(Event::Gone { entity: 4990 }));
+    }
+
+    #[test]
+    fn a_player_spawn_tail_carries_the_combat_power() {
+        let head = |tail: &[u8]| {
+            let mut f = vec![0x45, 0x36, 0xfe, 0x26, 0x01, 0x20, 0xa4, 0x00, 0x07, 8];
+            f.extend(b"Testname");
+            f.extend(u32s(&[25]));
+            f.extend([0xffu8; 20]); // the unread middle
+            f.extend(tail);
+            f
+        };
+        let power = |f: &[u8]| match ops().parse(f) {
+            Some(Event::PlayerSpawn { combat_power, .. }) => combat_power,
+            e => panic!("{e:?}"),
+        };
+        // [item level][count][power][5 bytes]
+        let mut tail = u32s(&[1204, 19, 56_070]);
+        tail.extend([0; 5]);
+        assert_eq!(power(&head(&tail)), Some(56_070));
+        // one more trailing byte: the power moves to len - 10
+        tail.push(1);
+        assert_eq!(power(&head(&tail)), Some(56_070));
+        // no count field (a low level): [item level][power][5 bytes]
+        let mut low = u32s(&[1034, 8_124]);
+        low.extend([0; 5]);
+        assert_eq!(power(&head(&low)), Some(8_124));
+        // a tail that does not fit
+        assert_eq!(power(&head(&[7; 9])), None);
     }
 
     #[test]
