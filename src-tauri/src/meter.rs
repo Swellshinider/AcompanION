@@ -131,9 +131,11 @@ struct Fight {
 
 impl Fight {
     /// Keep the target while it lives; when it dies (HP 0), or at the first hit, take the living foe
-    /// the players dealt the most damage to. A pick made at this instant is redone, so the frames
-    /// of one packet count together. Ties go to the highest entity. When no foe lives, a target picked before
-    /// stays, else the most damaged foe is taken (one killed by its first hit, its HP 0 coming first).
+    /// the players dealt the most damage to. Only bosses (foes with a stagger gauge) are taken while the
+    /// fight has one, so a boss that dies stays the target and its adds never replace it. A pick made at
+    /// this instant is redone, so the frames of one packet count together. Ties go to the highest entity.
+    /// When no such foe lives, a target picked before stays, else the most damaged foe is taken (one
+    /// killed by its first hit, its HP 0 coming first).
     /// ponytail: a reference meter picked a less damaged foe in two fights of one capture, for a reason
     /// not found. Record a fight with several monsters at once if the meter shows the wrong one.
     fn pick(&mut self, ts_us: u64) {
@@ -141,8 +143,10 @@ impl Fight {
         if self.picked_us != ts_us && self.target.is_some_and(|t| self.foes.get(&t).is_some_and(alive)) {
             return;
         }
+        let bosses = self.foes.values().any(|f| f.stagger.is_some());
         let best = |living: bool| {
-            self.foes.iter().filter(|(_, f)| !living || alive(f)).max_by_key(|(_, f)| f.dealt).map(|(&e, _)| e)
+            let eligible = |f: &Foe| (!living || alive(f)) && (!bosses || f.stagger.is_some());
+            self.foes.iter().filter(|(_, f)| eligible(f)).max_by_key(|(_, f)| f.dealt).map(|(&e, _)| e)
         };
         let keep = self.target.is_some() && self.picked_us != ts_us;
         if let Some(e) = best(true).or_else(|| if keep { None } else { best(false) }) {
@@ -762,7 +766,7 @@ mod tests {
     }
 
     #[test]
-    fn the_target_is_the_most_damaged_living_foe_kept_until_it_dies() {
+    fn the_target_is_the_most_damaged_living_boss_kept_until_it_dies() {
         let hp = |entity: u32, hp: u64| Event::Hp { entity, hp: Some(hp), max: None };
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
@@ -786,17 +790,15 @@ mod tests {
         assert!(m.apply(&at(3 * S, Event::Stagger { entity: 5, state: 3, value: None, max: None })));
         assert_eq!(m.to_json()["current"]["target"]["entity"], 5);
         assert_eq!(m.to_json()["current"]["target"]["stagger"], json!({"state": 3, "value": null, "max": null}));
-        // 5 dies: the living 6 is the target until the fight closes with its boss
+        // 5 (the boss) dies: the living add 6 does not replace it, 5 stays the target
         assert!(m.apply(&at(4 * S, hp(5, 0))));
-        assert_eq!(m.to_json()["current"]["target"]["entity"], 6);
-        // 6 dies and despawns before the fight closes: it stays that finished fight's target
+        assert_eq!(m.to_json()["current"]["target"]["entity"], 5);
+        // 6 dies and despawns before the fight closes: the finished fight still shows the boss
         m.apply(&at(4 * S + 500_000, hp(6, 0)));
         m.apply(&at(4 * S + 600_000, Event::Gone { entity: 6 }));
         m.advance(6 * S);
-        assert_eq!(
-            m.history_json()[0]["target"],
-            json!({"entity": 6, "template": 2_100_026, "hp": 0, "max_hp": 500, "stagger": null})
-        );
+        let t = m.history_json()[0]["target"].clone();
+        assert_eq!((t["entity"].clone(), t["template"].clone(), t["hp"].clone()), (json!(5), json!(2_100_025), json!(0)));
     }
 
     #[test]
@@ -812,9 +814,9 @@ mod tests {
         m.apply(&at(2 * S, Event::Hp { entity: 6, hp: Some(0), max: None }));
         m.apply(&at(2 * S, hit(6, 77, 1, 50)));
         assert_eq!(m.to_json()["current"]["target"]["entity"], 5);
-        // a living foe takes over
+        // a living add does not take over from a boss
         m.apply(&at(3 * S, hit(7, 77, 1, 1)));
-        assert_eq!(m.to_json()["current"]["target"]["entity"], 7);
+        assert_eq!(m.to_json()["current"]["target"]["entity"], 5);
     }
 
     #[test]
