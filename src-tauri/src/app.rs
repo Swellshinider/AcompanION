@@ -106,6 +106,21 @@ pub fn on_screen(bounds: Rect, monitors: &[Rect]) -> bool {
     monitors.iter().any(|&(mx, my, mw, mh)| px >= mx && px < mx + mw && py >= my && py < my + mh)
 }
 
+/// Where a window of `size` sits in a corner of the `work` area, `margin` pixels in from the edges.
+/// `None` for anything but `top-left`, `top-right`, `bottom-left` and `bottom-right`.
+pub fn corner_pos(work: Rect, size: (i32, i32), corner: &str, margin: i32) -> Option<(i32, i32)> {
+    let (x, y, w, h) = work;
+    let (left, top) = (x + margin, y + margin);
+    let (right, bottom) = (x + w - size.0 - margin, y + h - size.1 - margin);
+    match corner {
+        "top-left" => Some((left, top)),
+        "top-right" => Some((right, top)),
+        "bottom-left" => Some((left, bottom)),
+        "bottom-right" => Some((right, bottom)),
+        _ => None,
+    }
+}
+
 /// PowerShell that relaunches `exe` through UAC; it exits non-zero when the prompt is declined.
 pub fn runas_script(exe: &str) -> String {
     format!("Start-Process -FilePath '{}' -Verb RunAs -ErrorAction Stop", exe.replace('\'', "''"))
@@ -153,6 +168,18 @@ mod tests {
         assert!(!on_screen((2000, 50, 420, 420), &[main]), "second monitor unplugged");
         assert!(!on_screen((100, -300, 420, 420), &[main]), "title bar above the screen");
         assert!(!on_screen((100, 100, 420, 420), &[]));
+    }
+
+    #[test]
+    fn the_alert_sits_in_the_chosen_corner_of_the_work_area() {
+        // a work area that does not start at the origin (a taskbar on the left and top)
+        let work = (60, 40, 1860, 1040);
+        let size = (320, 84);
+        assert_eq!(corner_pos(work, size, "top-left", 16), Some((76, 56)));
+        assert_eq!(corner_pos(work, size, "top-right", 16), Some((1860 + 60 - 320 - 16, 56)));
+        assert_eq!(corner_pos(work, size, "bottom-left", 16), Some((76, 1040 + 40 - 84 - 16)));
+        assert_eq!(corner_pos(work, size, "bottom-right", 16), Some((1860 + 60 - 320 - 16, 1040 + 40 - 84 - 16)));
+        assert_eq!(corner_pos(work, size, "centre", 16), None);
     }
 
     #[test]

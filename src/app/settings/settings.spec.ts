@@ -93,6 +93,64 @@ describe('Settings', () => {
     expect(el.querySelector('[role="status"].note')).toBeNull();
   });
 
+  describe('Shugo Festival alert', () => {
+    const shugo = () => JSON.parse(localStorage.getItem('acompanion.shugo')!);
+    const field = (el: HTMLElement, name: string) => el.querySelector<HTMLInputElement & HTMLSelectElement>(`[name="${name}"]`)!;
+
+    it('starts with the defaults', () => {
+      const { el, input } = render();
+      expect(input('shugoEnabled').checked).toBe(true);
+      expect(field(el, 'shugoCorner').value).toBe('bottom-right');
+      expect(field(el, 'shugoSeconds').value).toBe('10');
+      expect(input('shugoClickToClose').checked).toBe(true);
+      expect(input('shugoSound').checked).toBe(true);
+    });
+
+    it('remembers each option', async () => {
+      const { el, flip } = render();
+      await flip('shugoSound', false);
+      await flip('shugoClickToClose', false);
+      const corner = field(el, 'shugoCorner');
+      corner.value = 'top-left';
+      corner.dispatchEvent(new Event('change'));
+      expect(shugo()).toEqual({ enabled: true, corner: 'top-left', seconds: 10, clickToClose: false, sound: false });
+    });
+
+    it('keeps the time between 3 and 300 seconds and shows what was kept', () => {
+      const { f, el } = render();
+      const secs = field(el, 'shugoSeconds');
+      for (const [typed, kept] of [['1', 3], ['9999', 300], ['45', 45]] as const) {
+        secs.value = typed;
+        secs.dispatchEvent(new Event('change'));
+        f.detectChanges();
+        expect(shugo().seconds).toBe(kept);
+        expect(secs.value).toBe(String(kept));
+      }
+      secs.value = '';
+      secs.dispatchEvent(new Event('change'));
+      expect(shugo().seconds).toBe(45);
+      expect(secs.value).toBe('45');
+    });
+
+    it('turns the other controls off with the alert', async () => {
+      const { el, flip } = render();
+      await flip('shugoEnabled', false);
+      expect(shugo().enabled).toBe(false);
+      for (const n of ['shugoCorner', 'shugoSeconds', 'shugoClickToClose', 'shugoSound', 'shugoTest']) expect(field(el, n).disabled).toBe(true);
+    });
+
+    it('shows a test alert in the chosen corner, with clicks passing through when click to close is off', async () => {
+      const { el, invoke, flip } = render();
+      el.querySelector<HTMLButtonElement>('button[name="shugoTest"]')!.click();
+      await tick();
+      expect(calls(invoke, 'shugo_alert').at(-1)![1]).toEqual({ corner: 'bottom-right', clickThrough: false });
+      await flip('shugoClickToClose', false);
+      el.querySelector<HTMLButtonElement>('button[name="shugoTest"]')!.click();
+      await tick();
+      expect(calls(invoke, 'shugo_alert').at(-1)![1]).toEqual({ corner: 'bottom-right', clickThrough: true });
+    });
+  });
+
   it('shows the current version', async () => {
     const { f, el } = render(undefined, vi.fn(async (cmd: unknown) => (cmd === 'plugin:app|version' ? '1.2.3' : undefined)));
     await tick();

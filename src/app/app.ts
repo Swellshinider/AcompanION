@@ -4,23 +4,28 @@ import { Dashboard } from './dashboard/dashboard';
 import { Overlay } from './overlay/overlay';
 import { OverlayView, VIEWS } from './overlay-settings';
 import { overlayLabel } from './overlay-control';
+import { SHUGO_LABEL } from './shugo';
+import { ShugoAlert } from './shugo-alert/shugo-alert';
 
-/** The overlays are more windows on the same page; the window's label tells which view one shows. */
-function overlayView(): OverlayView | null {
+/** The window's label, which tells the overlays (and the alert) from the main window; null outside the Tauri window (plain `ng serve`). */
+function windowLabel(): string | null {
   try {
-    const label = getCurrentWindow().label;
-    return VIEWS.find(v => overlayLabel(v) === label) ?? null;
+    return getCurrentWindow().label;
   } catch {
-    return null; // outside the Tauri window (plain `ng serve`)
+    return null;
   }
 }
 
 @Component({
   selector: 'app-root',
-  imports: [Dashboard, Overlay],
+  imports: [Dashboard, Overlay, ShugoAlert],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  readonly overlay = overlayView();
+  private readonly label = windowLabel();
+  /** The overlays are more windows on the same page; the label tells which view one shows. */
+  readonly overlay: OverlayView | null = VIEWS.find(v => overlayLabel(v) === this.label) ?? null;
+  /** The Shugo Festival pop-up is one more window on the same page. */
+  readonly alert = this.label === SHUGO_LABEL;
 }

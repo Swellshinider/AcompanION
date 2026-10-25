@@ -16,6 +16,7 @@ The top section is the next version, named by the patch bump of the last release
 ### New
 
 - When another AcompanION window is already open, the banner now has a **Close it and capture here** button that closes the other one and takes over.
+- **Shugo Festival alert**: a pop-up in the corner of your choice tells you when the festival starts (every hour, on the hour) while the game is running. In Settings you can turn it on or off, pick the corner, set how many seconds it stays (3 to 300), choose whether a click closes it, and mute its sound. A button shows a test alert.
 
 ## v0.2.1 (2026-10-25)
 
