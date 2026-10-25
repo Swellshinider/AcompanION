@@ -64,17 +64,26 @@
     @if (fight(); as f) {
       @if (compact()) {
         <div class="head">
-          <span class="tag" [class.live]="live()">
-            @if (live()) { <ng-container i18n="@@meterInFight">In a fight</ng-container> }
-            @else { <ng-container i18n="@@meterLastFight">Last fight</ng-container> }
-          </span>
-          <span class="meta">{{ length() }} · {{ short(damage()) }} · {{ short(damageRate()) }}/s</span>
-          @if (target(); as t) {
-            <span class="foe">
-              <ng-container [ngTemplateOutlet]="foe" [ngTemplateOutletContext]="{ name: t.name, template: t.template }" />
-              @if (t.hp !== null) { <b>{{ t.hp | percent:'1.0-0' }}</b> }
-              @if (t.stagger !== null) { <span class="stagger" i18n="@@meterStagger">Stagger {{ t.stagger | percent:'1.0-0' }}</span> }
+          <div class="line1">
+            <span class="tag" [class.live]="live()">
+              @if (live()) { <ng-container i18n="@@meterInFight">In a fight</ng-container> }
+              @else { <ng-container i18n="@@meterLastFight">Last fight</ng-container> }
+              · {{ length() }}
             </span>
+            <span class="meta">{{ short(damage()) }} · {{ short(damageRate()) }}/s</span>
+          </div>
+          @if (target(); as t) {
+            <div class="line2">
+              <b class="foe"><ng-container [ngTemplateOutlet]="foe" [ngTemplateOutletContext]="{ name: t.name, template: t.template }" /></b>
+              @if (t.stagger !== null) { <span class="stagger" i18n="@@meterStagger">Stagger {{ t.stagger | percent:'1.0-0' }}</span> }
+              @if (t.hp !== null) { <span class="hpnum">{{ t.cur | number }} / {{ t.max | number }}</span> }
+            </div>
+            @if (t.hp !== null) {
+              <div class="line3">
+                <span class="hpbar" [class.dead]="t.dead" role="img" [attr.aria-label]="(t.hp | percent:'1.0-0')"><span [style.width.%]="t.hp * 100"></span></span>
+                <b class="hppct">{{ t.hp | percent:'1.0-0' }}</b>
+              </div>
+            }
           }
         </div>
 
@@ -82,11 +91,11 @@
           @for (r of rows(); track r.p.entity) {
             <li class="row" [class.me]="r.me" [style.--c]="tint(r.p)">
               <span class="fill" [style.width.%]="r.top * 100"></span>
-              <span class="ico" [appGlyph]="icon(r.p)" aria-hidden="true"></span>
+              <span class="disc"><span class="ico" [appGlyph]="icon(r.p)" aria-hidden="true"></span></span>
               <span class="n"><ng-container [ngTemplateOutlet]="who" [ngTemplateOutletContext]="{ $implicit: r.p }" /></span>
-              @if (r.now !== null) { <span class="now">{{ short(r.now) }}/s</span> }
-              <span class="v">{{ short(r.dps) }}/s</span>
-              <span class="s">{{ r.share | percent:'1.0-0' }}</span>
+              @if (r.now !== null) { <span class="now">{{ r.now | number:'1.0-0' }}/s</span> }
+              <span class="v">{{ r.dps | number:'1.0-0' }}/s</span>
+              <span class="s">{{ r.share | percent:'1.1-1' }}</span>
             </li>
           }
         </ol>

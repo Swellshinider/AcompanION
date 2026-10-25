@@ -12,6 +12,11 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.1.4 (next)
 
+### Improved
+
+- Meter overlay: a new look with rounded bars per player, a health bar for the boss and the full damage per second. It has no background, and the opacity setting now fades only the bars.
+- Overlay: the border and title bar only show when the mouse is over it, and the thin white window border is gone.
+
 ### Fixed
 
 - Pets overlay: "Next" now names a single monster instead of listing every monster at that spot.

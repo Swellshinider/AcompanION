@@ -86,6 +86,8 @@ export class Meter {
     return {
       template: t.template,
       name: monsterName(gd, t.template, this.lang),
+      cur: t.hp,
+      max: t.max_hp,
       hp: t.hp !== null && t.max_hp ? Math.min(1, t.hp / t.max_hp) : null,
       stagger: t.stagger && t.stagger.max > 0 ? Math.min(1, t.stagger.value / t.stagger.max) : null,
       dead: t.hp === 0,

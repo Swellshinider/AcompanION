@@ -105,11 +105,17 @@ kbd {
 }
 
 .head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
+  display: grid;
+  gap: 2px;
   margin-top: 16px;
+
+  .line1, .line2 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0 12px;
+  }
 }
 
 .tag {
@@ -127,23 +133,57 @@ kbd {
 }
 
 .foe {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 2px 8px;
+  color: var(--accent);
   font-weight: 600;
+}
 
-  b {
-    color: var(--accent);
+.hpnum {
+  margin-left: auto;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+// the boss's health: the bar, with its percentage beside it
+.line3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.hpbar {
+  flex: 1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+
+  span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, color-mix(in oklch, var(--bad) 80%, black), var(--bad));
+    opacity: var(--bar-a, 1);
+    border-radius: inherit;
+    transition: width 0.25s;
   }
+}
+
+.hppct {
+  min-width: 4ch;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 .stagger {
   color: var(--muted);
+  font-size: 12px;
   font-weight: 400;
 }
 
 // the overlay: one bar per player, filled to the share of the best
 .list {
+  display: grid;
+  gap: 3px;
   margin: 8px 0 0;
   padding: 0;
   list-style: none;
@@ -152,16 +192,18 @@ kbd {
 .row {
   position: relative;
   display: grid;
-  grid-template-columns: 18px minmax(0, 1fr) auto auto;
+  grid-template-columns: 24px minmax(0, 1fr) auto auto;
   gap: 8px;
   align-items: center;
-  height: 24px;
-  padding: 0 6px;
+  height: 30px;
+  padding: 0 10px 0 3px;
   overflow: hidden;
+  border-radius: 999px;
 
   .n {
     overflow: hidden;
     text-overflow: ellipsis;
+    text-shadow: 0 1px 2px #0008;
     white-space: nowrap;
   }
 
@@ -170,9 +212,20 @@ kbd {
     position: relative;
   }
 
+  // a round badge ringed in the class colour; the icon (`.glyph`, sized to fit) sits inside
+  .disc {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    background: var(--well);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px color-mix(in oklch, var(--c, var(--accent)) 70%, transparent);
+  }
+
   .ico {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 
   .v, .s, .now {
@@ -185,22 +238,25 @@ kbd {
   }
 
   .s {
-    min-width: 3ch;
-    color: var(--muted);
+    min-width: 5ch;
+    color: var(--accent);
+    font-weight: 600;
   }
 }
 
 // while the fight is open the overlay also shows the current rate
 .with-now .row {
-  grid-template-columns: 18px minmax(0, 1fr) auto auto auto;
+  grid-template-columns: 24px minmax(0, 1fr) auto auto auto;
 }
 
 .fill {
   position: absolute;
   inset: 0 auto 0 0;
-  // the class colour (`--c`, from the game data), the accent when the class is not listed
-  background: color-mix(in oklch, var(--c, var(--accent)) 55%, transparent);
-  border-radius: 3px;
+  // the class colour (`--c`, from the game data), the accent when the class is not listed; solid, faded by the overlay's opacity (`--bar-a`)
+  background: linear-gradient(90deg, var(--c, var(--accent)), color-mix(in oklch, var(--c, var(--accent)) 45%, black));
+  opacity: var(--bar-a, 1);
+  border-radius: 999px;
+  transition: width 0.25s;
   pointer-events: none;
 }
 

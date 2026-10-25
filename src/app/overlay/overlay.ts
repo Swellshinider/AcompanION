@@ -26,6 +26,9 @@ export class Overlay {
   /** What the game shows around the player; null while the game is not running. */
   readonly radar = computed(() => (this.chars.game() ? this.chars.radar() : null));
 
+  /** The meter has no background: the opacity setting fades only its bars (`--bar-a`), never its text. */
+  readonly bare = computed(() => this.settings().view === 'meter');
+
   /** Whether the window is shown: always, or (auto-hide) only while the game runs, whatever the view. */
   readonly shown = computed(() => !this.settings().autoHide || this.chars.game());
 
