@@ -24,7 +24,7 @@
       <button type="button" class="tab roster-btn" [attr.aria-current]="screen() === 'roster' ? 'page' : null" (click)="roster()" i18n="@@charactersButton">Characters</button>
       <button type="button" class="tab pets-btn" [attr.aria-current]="screen() === 'pets' ? 'page' : null" (click)="screen.set('pets')" i18n="@@petsButton">Pets</button>
       <button type="button" class="tab meter-btn" [attr.aria-current]="screen() === 'meter' ? 'page' : null" (click)="screen.set('meter')" i18n="@@meterButton">DPS Meter</button>
-      <button type="button" class="tab settings-btn" [attr.aria-current]="screen() === 'settings' ? 'page' : null" (click)="screen.set('settings')" i18n="@@settingsButton">Settings</button>
+      <button type="button" class="tab settings-btn" [attr.aria-current]="screen() === 'settings' || screen() === 'whatsnew' ? 'page' : null" (click)="screen.set('settings')" i18n="@@settingsButton">Settings</button>
     </nav>
   }
 </header>
@@ -64,7 +64,9 @@
   } @else if (screen() === 'meter') {
     <app-meter [gamedata]="gamedata()" (back)="back()" />
   } @else if (screen() === 'settings') {
-    <app-settings (back)="back()" (update)="update.set($event)" />
+    <app-settings (back)="back()" (update)="update.set($event)" (notes)="screen.set('whatsnew')" />
+  } @else if (screen() === 'whatsnew') {
+    <app-whats-new (back)="back()" />
   } @else if (open(); as r) {
     @if (resets(); as t) {
       <app-character [row]="r" [now]="now()" [dailyReset]="t.daily" [weeklyReset]="t.weekly" (back)="back()" />

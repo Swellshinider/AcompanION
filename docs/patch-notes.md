@@ -7,10 +7,15 @@ How to write a line:
 - Say what the player sees, not how it was done: no module names, opcodes, commit hashes or jargon.
 - One short sentence per change, filed under **New**, **Improved** or **Fixed**.
 - Changes nobody would notice (tests, refactors, docs) get no line.
+- Every line also goes into [patch-notes.pt-BR.md](patch-notes.pt-BR.md), translated, in the same place: the app shows this file in Settings › See what's in your version.
 
 The top section is the next version, named by the patch bump of the last release (`v0.1.3` is out, so `v0.1.4`; a bigger change may rename it to the minor or major it needs). When the release is cut, put its date on the heading and open a section for the version after it. Released versions stay below, newest first.
 
 ## v0.2.1 (next)
+
+### New
+
+- Settings: a **See what's in your version** button lists the changes of every version.
 
 ## v0.2.0 (2026-10-25)
 

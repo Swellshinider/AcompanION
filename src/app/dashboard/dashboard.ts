@@ -10,10 +10,11 @@ import { applyAppSettings, loadAppSettings } from '../app-settings';
 import { restoreOverlay } from '../overlay-control';
 import { Pets } from '../pets/pets';
 import { Settings } from '../settings/settings';
+import { WhatsNew } from '../whats-new/whats-new';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DecimalPipe, CharacterDetail, Emblem, Glyph, Meter, Pets, Settings],
+  imports: [DecimalPipe, CharacterDetail, Emblem, Glyph, Meter, Pets, Settings, WhatsNew],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   host: { '(document:keydown.escape)': 'back()' },
@@ -39,8 +40,8 @@ export class Dashboard {
   readonly selected = signal<string | null>(null);
   /** `server:name` of the roster card asking "Remove?". */
   readonly confirming = signal<string | null>(null);
-  /** The screen: the roster (and a character's detail), the Pets screen, the combat Meter or Settings. */
-  readonly screen = signal<'roster' | 'pets' | 'meter' | 'settings'>('roster');
+  /** The screen: the roster (and a character's detail), the Pets screen, the combat Meter, Settings or its What's new page. */
+  readonly screen = signal<'roster' | 'pets' | 'meter' | 'settings' | 'whatsnew'>('roster');
   readonly resetHour = String(DAILY_RESET_HOUR_UTC).padStart(2, '0');
 
   readonly rows = computed<CharacterRow[]>(() => {
@@ -116,7 +117,7 @@ export class Dashboard {
       return;
     }
     if (this.screen() !== 'roster') {
-      this.screen.set('roster');
+      this.screen.set(this.screen() === 'whatsnew' ? 'settings' : 'roster');
       return;
     }
     const key = this.selected();
