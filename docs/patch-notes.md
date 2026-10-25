@@ -17,6 +17,7 @@ The top section is the next version, named by the patch bump of the last release
 
 - A banner tells you when AcompanION is not running as administrator and offers **Restart as admin**.
 - Settings: a **See what's in your version** button lists the changes of every version.
+- Meter: your combat power now shows next to your name, in the meter and in its overlay. Other players do not show one yet.
 
 ## v0.2.0 (2026-10-25)
 

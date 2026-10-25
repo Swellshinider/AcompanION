@@ -51,6 +51,13 @@ describe('Meter', () => {
     expect(el.querySelector('table')).toBeNull();
   });
 
+  for (const compact of [false, true]) {
+    it(`shows a known combat power after the name (${compact ? 'overlay list' : 'page'})`, () => {
+      const { el } = render({ current: fight(0, [other, { ...mine, combat_power: 12345 }]), compact });
+      expect([...el.querySelectorAll('.cp')].map(n => n.textContent?.trim())).toEqual(['12,345']);
+    });
+  }
+
   it('lists the players of the open fight by damage, the local one marked, with unknown names covered', () => {
     const { el } = render({ current: fight(0, [other, mine], { target: golem }) });
     expect(names(el)).toEqual(['Alpha', 'Unknown player']);

@@ -8,6 +8,7 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 - Um aviso informa quando o AcompanION não está sendo executado como administrador e oferece **Reiniciar como administrador**.
 - Configurações: um botão **Ver o que há na sua versão** lista as mudanças de cada versão.
+- Medidor: seu poder de combate agora aparece ao lado do seu nome, no medidor e no overlay dele. Os outros jogadores ainda não mostram o deles.
 
 ## v0.2.0 (2026-10-25)
 

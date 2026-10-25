@@ -60,7 +60,8 @@ Layouts and evidence for everything decoded are in [protocol.md](protocol.md).
 1. Manual pass of the overlay, radar and meter in a real session (the checklist above), fixing what it finds.
 2. Real dailies: curate more of `public/gamedata.json` and decode attendance once its recording exists.
 3. Name more skills, monsters and class specialisations as recordings allow.
-4. Later, each with its own spec: build and macro suggestions, and opt-in input automation (separate, heavy ban-risk warnings).
+4. Other players' combat power in the meter (only the local player's is shown). Record joining a party and inspecting a player, noting the CP the game shows, then search the capture for those values (likely the party list and inspect frames).
+5. Later, each with its own spec: build and macro suggestions, and opt-in input automation (separate, heavy ban-risk warnings).
 
 ## Deferred issues
 

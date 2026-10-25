@@ -269,6 +269,33 @@ kbd {
   font-weight: 600;
 }
 
+// the combat power after the name, in the game's cyan plate with the crossed swords
+.cp {
+  --cp: #5fd8f2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 1px 9px 1px 5px;
+  font-size: 0.85em;
+  font-weight: 600;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  color: var(--cp);
+  text-shadow: 0 0 6px color-mix(in oklch, var(--cp) 55%, transparent);
+  vertical-align: middle;
+  background: linear-gradient(180deg, #14384a, #0a1d29);
+  box-shadow: inset 0 0 0 1px #6f8a96aa;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+
+  svg {
+    width: 1.15em;
+    height: 1.15em;
+    flex: none;
+    filter: drop-shadow(0 0 3px color-mix(in oklch, var(--cp) 70%, transparent));
+  }
+}
+
 // the main window: the fights on the left, the picked one on the right
 .layout {
   display: grid;

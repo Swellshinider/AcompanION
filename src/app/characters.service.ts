@@ -31,6 +31,8 @@ export interface SkillTally extends Tally { id: number }
 export interface TargetTally extends Tally { template: number }
 export interface MeterPlayer {
   entity: number; name: string | null; class_code: number | null;
+  /** Only the local player's is known; absent in fights saved before it was carried. */
+  combat_power?: number | null;
   dealt: Tally; taken: Small; healing: Small; overheal: number; healing_received: Small;
   skills: SkillTally[]; targets: TargetTally[];
 }
