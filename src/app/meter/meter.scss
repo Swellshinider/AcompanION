@@ -11,6 +11,10 @@
 
   .head {
     margin-top: 0;
+    padding: 6px 10px 8px;
+    // a panel behind the boss so its text reads over the game; faded by the overlay's opacity like the bars
+    background: color-mix(in oklch, var(--well) calc(var(--bar-a, 1) * 85%), transparent);
+    border-radius: 8px;
   }
 }
 

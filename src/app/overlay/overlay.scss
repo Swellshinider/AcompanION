@@ -23,6 +23,11 @@
   // the meter paints only its own bars over the game
   &.bare {
     background: transparent;
+
+    // the title bar (26px, only there when not click-through) sits above the meter instead of over its boss panel
+    header + main {
+      padding-top: 34px;
+    }
   }
 }
 

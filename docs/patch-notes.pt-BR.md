@@ -10,6 +10,11 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 - Configurações: um botão **Ver o que há na sua versão** lista as mudanças de cada versão.
 - Medidor: seu poder de combate agora aparece ao lado do seu nome, no medidor e no overlay dele. Os outros jogadores ainda não mostram o deles.
 
+### Melhorado
+
+- Overlay do medidor: o chefe agora tem um fundo escuro atrás dele, para ficar mais fácil de ler sobre o jogo.
+- Overlay do medidor: a barra de título que aparece com o mouse em cima não cobre mais as informações do chefe.
+
 ## v0.2.0 (2026-10-25)
 
 ### Melhorado
