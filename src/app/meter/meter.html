@@ -1,5 +1,6 @@
 <ng-template #who let-p>
   @if (p.name) { {{ p.name }} } @else { <ng-container i18n="@@meterUnknownPlayer">Unknown player</ng-container> }
+  @if (p.combat_power) { <span class="cp" title="Combat power" i18n-title="@@colPower"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 2.5l8.5 8.5M13 2.5L4.5 11M2.5 12.5l2-2M13.5 12.5l-2-2M9 13l2-2M7 13l-2-2" /></svg>{{ p.combat_power | number:'1.0-0' }}</span> }
 </ng-template>
 <ng-template #foe let-name="name" let-template="template">
   @if (name) { {{ name }} } @else if (template) { <ng-container i18n="@@meterMonsterN">Monster {{ template }}</ng-container> } @else { <ng-container i18n="@@meterUnknownMonster">Unknown monster</ng-container> }

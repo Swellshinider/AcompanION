@@ -150,8 +150,9 @@ impl Fight {
         }
     }
 
-    /// `me`: the player's own entity when the fight is shown or closed (entity ids are per session).
-    fn to_json(&self, me: Option<u32>) -> Value {
+    /// `me`: the player's own entity when the fight is shown or closed (entity ids are per session);
+    /// `power` is their combat power.
+    fn to_json(&self, me: Option<u32>, power: Option<u32>) -> Value {
         let players: Vec<Value> = self
             .who
             .iter()
@@ -160,6 +161,7 @@ impl Fight {
                     "entity": entity,
                     "name": w.name,
                     "class_code": w.class_code,
+                    "combat_power": if me == Some(*entity) { power } else { None },
                     "dealt": w.dealt.to_json(),
                     "taken": w.taken.plain(),
                     "skills": w.skills.iter().map(|(&id, &t)| keyed(t, "id", id)).collect::<Vec<_>>(),
@@ -189,6 +191,9 @@ fn keyed(t: Tally, key: &str, id: u32) -> Value {
 pub struct Meter {
     /// The player's own entity, from the last identity.
     me: Option<u32>,
+    /// The player's own combat power, as last sent.
+    /// ponytail: other players' combat power is not decoded yet, so only the own row carries it.
+    power: Option<u32>,
     /// `entity -> (name, class code)` of the players in view, the player's own included.
     /// Another player's hits count only on `engaged` targets.
     players: BTreeMap<u32, (String, u32)>,
@@ -255,6 +260,7 @@ impl Meter {
                 self.add_player(entity, name, class_code);
             }
             Event::PlayerSpawn { entity, ref name, class_code } => self.add_player(entity, name, class_code),
+            Event::CombatPower(p) => self.power = Some(p),
             Event::Spawn { entity, template, max_hp, .. } => {
                 if self.templates.len() >= MAX_ENTITIES {
                     self.templates.clear();
@@ -363,7 +369,7 @@ impl Meter {
         if self.history.len() == MAX_HISTORY {
             self.history.pop_front();
         }
-        self.history.push_back(f.to_json(self.me));
+        self.history.push_back(f.to_json(self.me, self.power));
         self.closed += 1;
     }
 
@@ -463,7 +469,7 @@ impl Meter {
 
     /// The meter as ids and raw values; finished fights come through `history_json`.
     pub fn to_json(&self) -> Value {
-        json!({"me": self.me, "current": self.fight.as_ref().map(|f| f.to_json(self.me)), "fights": self.history.len()})
+        json!({"me": self.me, "current": self.fight.as_ref().map(|f| f.to_json(self.me, self.power)), "fights": self.history.len()})
     }
 
     pub fn history_json(&self) -> Value {
@@ -583,6 +589,19 @@ mod tests {
         assert_eq!(p["skills"], json!([{"id": 14_170_037, "amount": 40, "hits": 1, "direct": 1, "crits": 0}]));
         m.apply(&at(2 * S, Event::Gone { entity: 500 }));
         assert!(!m.apply(&at(3 * S, hit(5, 500, 14_170_037, 40)))); // a stranger now
+    }
+
+    #[test]
+    fn the_own_row_carries_the_combat_power_and_the_others_do_not() {
+        let mut m = Meter::default();
+        m.apply(&at(0, Event::CombatPower(12_345)));
+        m.apply(&at(0, identity(77)));
+        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(0, stagger(5)));
+        m.apply(&at(S, hit(5, 77, 1, 10)));
+        m.apply(&at(S, hit(5, 88, 2, 30)));
+        let ps = m.to_json()["current"]["players"].clone();
+        assert_eq!((ps[0]["combat_power"].clone(), ps[1]["combat_power"].clone()), (json!(12_345), Value::Null));
     }
 
     #[test]
