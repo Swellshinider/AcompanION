@@ -15,5 +15,5 @@ Notes:
 - Only server → client frames are searched (client → server is encrypted).
 - `frame` hex-dumps one flattened frame by the index that `findstr`/`findint` print.
 - `findint` tries the value as u8/u16/u32/u64, little- and big-endian, inside decompressed inner frames; `--at/--within` restrict to a time window (in seconds) around an absolute capture time in microseconds (a `t_us` from `re decode`).
-- Captures must contain the TCP handshake; a mid-stream capture has no framing anchor.
+- A mid-stream capture decodes too: the script anchors on the first server ping that chains to the end. Starting the recording before login is still better, as it also records the handshake.
 - The Rust `re dump` is the reference reassembler; for the opcodes in `events.rs` it has been superseded by `re decode`; this script stays the tool for ad-hoc searching (`findstr`/`findint`/`frame`).

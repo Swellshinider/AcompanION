@@ -8,7 +8,7 @@ How to write a line:
 - One short sentence per change, filed under **New**, **Improved** or **Fixed**.
 - Changes nobody would notice (tests, refactors, docs) get no line.
 
-The top section is the next version, named by the patch bump of the last release (`v0.1.1` is out, so `v0.1.2`; a bigger change may rename it to the minor or major it needs). When the release is cut, put its date on the heading and open a section for the version after it. Released versions stay below, newest first.
+The top section is the next version, named by the patch bump of the last release (`v0.1.3` is out, so `v0.1.4`; a bigger change may rename it to the minor or major it needs). When the release is cut, put its date on the heading and open a section for the version after it. Released versions stay below, newest first.
 
 ## v0.1.4 (next)
 

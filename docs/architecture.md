@@ -37,6 +37,7 @@ All under `src-tauri/src/`, in one crate (`acompanion` library plus the `re` and
 | `tcp.rs` | Ethernet/IPv4/TCP parsing and per-direction stream reassembly |
 | `decode.rs` | Server → client framing, own LZ4 block decoder, resync, `Decoder` (one framer per connection) |
 | `events.rs` | `opcodes.json` table, `Event` types and their layouts, JSON form (ids and raw values only) |
+| `lib.rs` | Declares the modules; `app` and `npcap` are compiled on Windows only |
 | `state.rs` | `State`/`Character`, session binding, JSON persistence at `%APPDATA%\AcompanION\characters.json` |
 | `live.rs` | `Engine` (frames in; state, radar and meter out; throttled save) and `run` (Npcap capture loop) |
 | `radar.rs` | Transient radar state: pet monsters in view, the player's last exact position, the map id |
@@ -101,16 +102,20 @@ capture thread (main.rs)            Tauri main thread                 Angular wi
 | command | `overlay` | `(open, onTop, clickThrough, bounds)`: opens, closes or updates the overlay window; `bounds` is `[x, y, w, h]` or `null` |
 | command | `app_settings` | `(closeToTray, reconnect)`: the preferences Rust acts on, sent by the frontend at start and on change |
 | command | `quit` | closes the overlay and exits (the tray's Quit; with close-to-tray on, the window's own X only hides it) |
+| command | `forget_character` | `(server, name)`: removes a character from the roster and the state file; needs capture running |
+| command | `check_update` | `string \| null`: the newer version, or `null` when up to date (always `null` in dev builds) |
+| command | `install_update` | downloads the update, stops capture, runs the installer and restarts |
 | event | `overlay://closed` | to the main window when the overlay window went away (not while the app quits) |
 | event | `characters://update` | `[Character JSON]`, only the changed characters |
+| event | `characters://removed` | `[{server, name}]`, after `forget_character` |
 | event | `capture://status` | `{"id", "detail"}` |
 | event | `capture://game` | `bool`, on each flip of game detection |
 | event | `radar://update` | the radar snapshot, at most every 250 ms |
 | event | `meter://update` | `{me, current, fights, history?}`, at most every 250 ms; `history` only when a fight closed |
 
-Status ids: `starting`, `running`, `save_failed`, `not_admin`, `npcap_missing`, `no_adapter`, `state_unreadable`, `state_in_use`, `error`. `classify` finds the typed markers `npcap::NotInstalled` and `live::NoAdapter` with `downcast_ref`, asks `npcap::is_elevated` rather than parsing messages, and falls back to `not_admin` (not elevated) or `error`. "Restart as admin" only relaunches our own exe through `powershell.exe -Verb RunAs`.
+Status ids: `starting`, `running`, `reconnecting`, `save_failed`, `not_admin`, `npcap_missing`, `no_adapter`, `state_unreadable`, `state_in_use`, `error`. `classify` finds the typed markers `npcap::NotInstalled` and `live::NoAdapter` with `downcast_ref`, asks `npcap::is_elevated` rather than parsing messages, and falls back to `not_admin` (not elevated) or `error`. "Restart as admin" only relaunches our own exe through `powershell.exe -Verb RunAs`.
 
-**Overlay.** A second window (label `overlay`, transparent, no frame, off the taskbar) that Rust creates on demand (hidden: the overlay shows or hides itself, see the auto-hide option in its spec) and the same Angular page renders as `Overlay` instead of `Dashboard`, told apart by the window label. It reuses `Pets` (`overlay` input: the filled map), `CharacterDetail` (`compact` input) and the meter and has its own `CharactersService`. Its preferences (`overlay-settings.ts`: open, view, opacity, always on top, click-through, bounds) live in `localStorage`, shared by both windows; the controls are a popover in the main window (`overlay-panel/`), because a click-through overlay gets no input. Saved bounds are applied only if `app::on_screen` finds them on a connected monitor.
+**Overlay.** A second window (label `overlay`, transparent, no frame, off the taskbar) that Rust creates on demand (hidden: the overlay shows or hides itself, see the auto-hide option in its spec) and the same Angular page renders as `Overlay` instead of `Dashboard`, told apart by the window label. It reuses `Pets` (`overlay` input: the filled map), `CharacterDetail` (`compact` input) and the meter and has its own `CharactersService`. Its preferences (`overlay-settings.ts`: open, view, opacity, always on top, click-through, auto-hide, bounds) live in `localStorage`, shared by both windows; the controls are the `overlay-panel/` inside the Settings screen of the main window, because a click-through overlay gets no input. Saved bounds are applied only if `app::on_screen` finds them on a connected monitor. The window is created without a shadow (Windows would draw a thin white border), and its border and title bar (drag handle, close button) show only while the mouse is over it. In the meter view there is no background and the opacity setting fades only the bars; the radar and dailies views fade the whole window.
 
 **Frontend.** Angular 21, standalone components, signals, zoneless, Vitest; `templateUrl` + `styleUrl` only.
 
@@ -118,7 +123,8 @@ Status ids: `starting`, `running`, `save_failed`, `not_admin`, `npcap_missing`, 
 | --- | --- |
 | `src/app/characters.service.ts` | Wire types, `merge` by `(server, name)`, `CharactersService`: subscribes to both events first, then reads the snapshots, so later updates win |
 | `src/app/gamedata.ts` | `GameData` types, `loadGamedata`, and the pure reset/refill math (`lastReset`, `nextReset`, `leftNow`, `fullAt`, `span`, `summarize` with `Summary.items`, `pick`) |
-| `src/app/dashboard/` | The one page: header (status pill, reset countdowns), failure banner, roster of cards or the open character; keyboard-focusable cards |
+| `src/app/app.ts` | Root component: renders `Overlay` or `Dashboard` by the window label |
+| `src/app/dashboard/` | The main window's page: header (status pill, reset countdowns), failure banner, roster of cards or the open character, and the switch to Pets, Meter and Settings; keyboard-focusable cards |
 | `src/app/character/` | Detail screen for one character (`CharacterRow`) |
 | `src/app/emblem/` + `src/app/glyph.ts` | Diamond emblem and class icons: the game's own images (`public/classes/<class>.png`) and a mask-painted generic glyph (`unknown.svg`) |
 | `src/app/pets/` + `src/app/route.ts` | Pets screen: collection, farm map, live radar layer and the farm route (`farmRoute`, pure) |
@@ -132,4 +138,4 @@ Status ids: `starting`, `running`, `save_failed`, `not_admin`, `npcap_missing`, 
 
 **Time math.** A daily reset is 07:00 UTC and the weekly one is the `weekly_reset_day` at that hour. Refills land on `07:00 UTC + k * every_ms`, not on the time of the last update. Both are measured, with a `ponytail:` in `gamedata.ts` (fixed hour; use the game's next reset once decoded). Counters with `"ms": true` hold milliseconds in value and cap; the wire's own `ms` flag (mask bit0 of a `0b 61`/`0c 61` record) is not trusted for display; gamedata decides.
 
-**Security surface.** `capabilities/default.json` grants `core:default` to the main window and nothing else. The CSP is `default-src 'self'` with `'unsafe-inline'` for styles only (Angular injects component styles at runtime).
+**Security surface.** Two capability files in `src-tauri/capabilities/`: `default.json` grants the main window `core:default`, the default window icon (tray) and window show, unminimize and set-focus; `overlay.json` grants the overlay window `core:default` and window start-dragging, show and hide. The updater runs from Rust only and needs no frontend permission. The CSP is `default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost`; `'unsafe-inline'` is for styles only (Angular injects component styles at runtime) and `dangerousDisableAssetCspModification: ["style-src"]` stops Tauri from rewriting it.
