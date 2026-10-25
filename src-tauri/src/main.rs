@@ -9,7 +9,7 @@ use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
 use anyhow::Context;
-use acompanion::app::{Rect, Shared, Status, classify, on_screen, save_status};
+use acompanion::app::{Rect, Shared, Status, classify, corner_pos, on_screen, save_status};
 use acompanion::events::Opcodes;
 use acompanion::live::Engine;
 use acompanion::state::{Key, State};
@@ -260,6 +260,67 @@ fn overlay(handle: AppHandle, view: String, open: bool, on_top: bool, click_thro
     win.set_ignore_cursor_events(click_through).map_err(|e| e.to_string())
 }
 
+/// The Shugo Festival alert is one more `overlay-` window, so quitting closes it with the others.
+const SHUGO_LABEL: &str = "overlay-shugo";
+/// Logical pixels.
+const SHUGO_SIZE: (f64, f64) = (320.0, 84.0);
+const SHUGO_MARGIN: f64 = 16.0;
+
+/// Size it, put it in `corner` of the primary monitor's work area (clear of the taskbar) and show it without taking focus.
+/// ponytail: always the primary monitor, as the game's monitor is not known; follow the game's window if that bothers anyone.
+fn place_alert(win: &WebviewWindow, corner: &str, click_through: bool) -> anyhow::Result<()> {
+    let monitor = win.primary_monitor()?.context("no monitor")?;
+    let scale = monitor.scale_factor();
+    let work = monitor.work_area();
+    let area = (work.position.x, work.position.y, work.size.width as i32, work.size.height as i32);
+    let size = ((SHUGO_SIZE.0 * scale).round() as i32, (SHUGO_SIZE.1 * scale).round() as i32);
+    let (x, y) = corner_pos(area, size, corner, (SHUGO_MARGIN * scale).round() as i32)
+        .with_context(|| format!("unknown corner: {corner}"))?;
+    // position first, as in `open_overlay`
+    win.set_position(PhysicalPosition::new(x, y))?;
+    win.set_size(PhysicalSize::new(size.0 as u32, size.1 as u32))?;
+    win.set_ignore_cursor_events(click_through)?;
+    win.show()?;
+    Ok(())
+}
+
+/// Show the Shugo Festival alert in `corner`, or close it (`corner` is `None`). Clicks pass through when `click_through`.
+/// Returns whether this call created the window; an alert already up is only moved, and the caller restarts it.
+/// Async: Windows deadlocks when a window is built on the main thread.
+#[tauri::command(async)]
+fn shugo_alert(handle: AppHandle, corner: Option<String>, click_through: bool) -> Result<bool, String> {
+    let existing = handle.get_webview_window(SHUGO_LABEL);
+    let Some(corner) = corner else {
+        return existing.map_or(Ok(false), |w| w.close().map(|()| false)).map_err(|e| e.to_string());
+    };
+    let created = existing.is_none();
+    let win = match existing {
+        Some(w) => w,
+        None => WebviewWindowBuilder::new(&handle, SHUGO_LABEL, WebviewUrl::App("index.html".into()))
+            .title("AcompanION alert")
+            .inner_size(SHUGO_SIZE.0, SHUGO_SIZE.1)
+            .resizable(false)
+            .decorations(false)
+            .transparent(true)
+            .shadow(false)
+            .skip_taskbar(true)
+            .always_on_top(true)
+            // an alert over the game must never take the keyboard from it
+            .focusable(false)
+            .focused(false)
+            .visible(false)
+            .build()
+            .map_err(|e| e.to_string())?,
+    };
+    if let Err(e) = place_alert(&win, &corner, click_through) {
+        if created {
+            let _ = win.close();
+        }
+        return Err(format!("{e:#}"));
+    }
+    Ok(created)
+}
+
 fn set_status(handle: &AppHandle, shared: &Mutex<Shared>, status: Status) {
     let json = status.to_json();
     {
@@ -379,7 +440,7 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(PendingUpdate(Mutex::new(None)))
-        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, forget_character, overlay, elevated, restart_as_admin, check_update, install_update, app_settings, quit, take_over])
+        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, forget_character, overlay, shugo_alert, elevated, restart_as_admin, check_update, install_update, app_settings, quit, take_over])
         .setup(move |app| {
             app.manage(AppState { shared, stop, clear, forget, capture: Mutex::new(None), quitting: AtomicBool::new(false), close_to_tray: AtomicBool::new(false), reconnect });
             if let Some((state, path, guard)) = start {
@@ -405,7 +466,9 @@ fn main() {
                     close_overlays(handle);
                 }
                 RunEvent::WindowEvent { label, event: WindowEvent::Destroyed, .. } => {
+                    // the alert window is also `overlay-` but is no view: nothing to remember as off
                     if let Some(view) = label.strip_prefix(OVERLAY_PREFIX)
+                        && OVERLAY_VIEWS.contains(&view)
                         && !handle.state::<AppState>().quitting.load(Ordering::Relaxed)
                     {
                         let _ = handle.emit_to("main", "overlay://closed", view);

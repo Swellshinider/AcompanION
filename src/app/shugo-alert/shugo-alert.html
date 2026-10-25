@@ -1,0 +1,6 @@
+<div class="shell" [class.click]="s().clickToClose" role="alert" (click)="click()">
+  <p class="title" i18n="@@shugoAlertTitle">The Shugo Festival has started!</p>
+  @for (r of [round()]; track r) {
+    <div class="bar" [style.--secs]="s().seconds + 's'"></div>
+  }
+</div>

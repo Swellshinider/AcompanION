@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0 18px;
+  background: var(--panel);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  color: var(--text);
+  overflow: hidden;
+  user-select: none;
+
+  &.click {
+    cursor: pointer;
+  }
+}
+
+.title {
+  margin: 0;
+  font: 600 16px var(--display);
+}
+
+// shrinks over the time the alert stays up
+.bar {
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: var(--accent);
+  transform-origin: left;
+  animation: drain var(--secs) linear forwards;
+}
+
+@keyframes drain {
+  to {
+    transform: scaleX(0);
+  }
+}

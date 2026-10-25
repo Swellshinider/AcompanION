@@ -113,6 +113,22 @@ input[type="checkbox"] {
     color: var(--text);
     font: inherit;
   }
+
+  input[type="number"] {
+    box-sizing: border-box;
+    width: 80px;
+    height: 30px;
+    padding: 0 8px;
+    background: var(--panel-2);
+    border: 1px solid var(--gold-line);
+    border-radius: 4px;
+    color: var(--text);
+    font: inherit;
+  }
+}
+
+.check + .row {
+  margin-top: 6px;
 }
 
 .row {

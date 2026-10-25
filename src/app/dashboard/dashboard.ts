@@ -10,6 +10,7 @@ import { applyAppSettings, loadAppSettings } from '../app-settings';
 import { restoreOverlay } from '../overlay-control';
 import { Pets } from '../pets/pets';
 import { Settings } from '../settings/settings';
+import { startShugoAlert } from '../shugo';
 import { WhatsNew } from '../whats-new/whats-new';
 
 @Component({
@@ -99,10 +100,12 @@ export class Dashboard {
     // send Rust the saved preferences (and bring the tray icon back); no backend: nothing to do
     applyAppSettings(loadAppSettings()).catch(() => {});
     const stopOverlay = restoreOverlay();
+    const stopShugo = startShugoAlert(() => this.game());
     const timer = setInterval(() => this.now.set(Date.now()), 60_000);
     inject(DestroyRef).onDestroy(() => {
       clearInterval(timer);
       stopOverlay();
+      stopShugo();
     });
   }
 

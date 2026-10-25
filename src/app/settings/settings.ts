@@ -4,6 +4,7 @@ import { AppSettings, LANGUAGES, applyAppSettings, loadAppSettings, saveAppSetti
 import { CharactersService } from '../characters.service';
 import { OverlayPanel } from '../overlay-panel/overlay-panel';
 import { VIEWS } from '../overlay-settings';
+import { MAX_SECONDS, MIN_SECONDS, ShugoSettings, loadShugoSettings, parse as parseShugo, saveShugoSettings, showShugoAlert } from '../shugo';
 
 /** The Settings screen: the app's own preferences, the update check and each overlay's controls. */
 @Component({
@@ -16,6 +17,8 @@ export class Settings {
   private readonly chars = inject(CharactersService);
   readonly back = output<void>();
   readonly views = VIEWS;
+  readonly minSeconds = MIN_SECONDS;
+  readonly maxSeconds = MAX_SECONDS;
   /** A newer version was found: the dashboard shows its "Update and restart" banner. */
   readonly update = output<string>();
   /** Open the What's new screen. */
@@ -49,6 +52,28 @@ export class Settings {
     }
   }
 
+  /** The Shugo Festival alert's preferences: checked, kept, and read by the alert window from storage. */
+  readonly shugo = signal(loadShugoSettings());
+
+  toggleShugo(key: 'enabled' | 'clickToClose' | 'sound', e: Event): void {
+    this.saveShugo({ ...this.shugo(), [key]: (e.target as HTMLInputElement).checked });
+  }
+
+  setCorner(e: Event): void {
+    this.saveShugo({ ...this.shugo(), corner: (e.target as HTMLSelectElement).value as ShugoSettings['corner'] });
+  }
+
+  setSeconds(e: Event): void {
+    const box = e.target as HTMLInputElement;
+    if (!Number.isNaN(box.valueAsNumber)) this.saveShugo({ ...this.shugo(), seconds: box.valueAsNumber });
+    box.value = String(this.shugo().seconds); // show what was kept (a value out of range is clamped)
+  }
+
+  /** Without a backend (plain `ng serve`) there is no window to show. */
+  testShugo(): void {
+    showShugoAlert(this.shugo()).catch(() => undefined);
+  }
+
   setLanguage(e: Event): void {
     const language = LANGUAGES.find(l => l === (e.target as HTMLSelectElement).value);
     if (language) this.save({ ...this.s(), language });
@@ -64,6 +89,12 @@ export class Settings {
     } catch {
       this.check.set('failed');
     }
+  }
+
+  private saveShugo(s: ShugoSettings): void {
+    const checked = parseShugo(s);
+    this.shugo.set(checked);
+    saveShugoSettings(checked);
   }
 
   private save(s: AppSettings): void {
