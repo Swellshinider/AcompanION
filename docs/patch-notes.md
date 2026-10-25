@@ -15,6 +15,7 @@ The top section is the next version, named by the patch bump of the last release
 
 ### New
 
+- A banner tells you when AcompanION is not running as administrator and offers **Restart as admin**.
 - Settings: a **See what's in your version** button lists the changes of every version.
 
 ## v0.2.0 (2026-10-25)

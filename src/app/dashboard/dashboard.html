@@ -47,6 +47,12 @@
     @if (status().detail; as detail) { <code class="detail">{{ detail }}</code> }
   </section>
 }
+@if (!elevated() && status().id !== 'not_admin') {
+  <section class="banner" role="status">
+    <p i18n="@@bannerNotElevated">AcompanION is not running as administrator.</p>
+    <button type="button" class="btn" (click)="restart()" [disabled]="restarting()" i18n="@@restartAsAdmin">Restart as admin</button>
+  </section>
+}
 @if (update(); as version) {
   <section class="banner" role="status">
     <p i18n="@@bannerUpdate">Version {{ version }} is available.</p>
