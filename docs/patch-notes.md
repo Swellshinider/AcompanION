@@ -14,6 +14,7 @@ The top section is the next version, named by the patch bump of the last release
 
 ### Improved
 
+- Settings: reorganized. Radar, Dailies and Meter are now separate overlay switches, each with its own opacity, always-on-top, click-through and auto-hide, and all three can be open at the same time.
 - Meter overlay: a new look with rounded bars per player, a health bar for the boss and the full damage per second. It has no background, and the opacity setting now fades only the bars.
 - Overlay: the border and title bar only show when the mouse is over it, and the thin white window border is gone.
 - Meter: only boss fights are counted now. Normal monsters no longer start a fight, so a boss's numbers stay on screen after it dies, until the next boss.
@@ -21,6 +22,7 @@ The top section is the next version, named by the patch bump of the last release
 
 ### Fixed
 
+- Overlays: they reopen at the size and position you left them, instead of shrinking a little each time on a second monitor with a different display scaling.
 - Pets overlay: "Next" now names a single monster instead of listing every monster at that spot.
 - Pets overlay: a soul you collect now shows its pet and its souls (or Max) even when AcompanION was opened after you logged in.
 

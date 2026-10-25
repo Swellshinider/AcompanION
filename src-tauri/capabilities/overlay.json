@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "overlay",
-  "description": "Overlay window: events, dragging by its title bar, and showing or hiding itself",
-  "windows": ["overlay"],
+  "description": "Overlay windows: events, dragging by their title bar, and showing or hiding themselves",
+  "windows": ["overlay-*"],
   "permissions": ["core:default", "core:window:allow-start-dragging", "core:window:allow-show", "core:window:allow-hide"]
 }

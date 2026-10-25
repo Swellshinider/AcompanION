@@ -9,8 +9,6 @@
 </div>
 
 <div class="sections">
-  <app-overlay-panel />
-
   <section class="panel">
     <h3 i18n="@@settingsGeneral">General</h3>
 
@@ -60,3 +58,13 @@
     </div>
   </section>
 </div>
+
+<section class="panel overlays">
+  <h3 i18n="@@settingsOverlays">Overlays</h3>
+  <div class="cards">
+    @for (v of views; track v) {
+      <app-overlay-panel [view]="v" />
+    }
+  </div>
+  <p class="note" i18n="@@overlayNote">With clicks passing through, the overlay cannot be moved or closed: turn it off here. It shows over the game only in windowed or borderless mode; on another monitor any mode works.</p>
+</section>

@@ -3,8 +3,9 @@ import { getVersion } from '@tauri-apps/api/app';
 import { AppSettings, LANGUAGES, applyAppSettings, loadAppSettings, saveAppSettings } from '../app-settings';
 import { CharactersService } from '../characters.service';
 import { OverlayPanel } from '../overlay-panel/overlay-panel';
+import { VIEWS } from '../overlay-settings';
 
-/** The Settings screen: the overlay's controls, the app's own preferences and the update check. */
+/** The Settings screen: the app's own preferences, the update check and each overlay's controls. */
 @Component({
   selector: 'app-settings',
   imports: [OverlayPanel],
@@ -14,6 +15,7 @@ import { OverlayPanel } from '../overlay-panel/overlay-panel';
 export class Settings {
   private readonly chars = inject(CharactersService);
   readonly back = output<void>();
+  readonly views = VIEWS;
   /** A newer version was found: the dashboard shows its "Update and restart" banner. */
   readonly update = output<string>();
   readonly s = signal(loadAppSettings());

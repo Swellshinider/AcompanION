@@ -1,15 +1,15 @@
-import { Component, DestroyRef, LOCALE_ID, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Component, DestroyRef, LOCALE_ID, computed, effect, inject, input, linkedSignal, signal, untracked } from '@angular/core';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Character, CharactersService } from '../characters.service';
 import { CharacterDetail, CharacterRow } from '../character/character';
 import { GameData, currentRegion, loadGamedata, nextReset, petCollection, pick, summarize } from '../gamedata';
 import { OVERLAY_SETTINGS_EVENT, updateOverlay } from '../overlay-control';
-import { MIN_OPACITY, loadLastRegion, loadOverlaySettings, parse, saveLastRegion, saveOverlaySettings } from '../overlay-settings';
+import { MIN_OPACITY, OverlayView, loadLastRegion, loadOverlaySettings, parse, saveLastRegion, saveOverlaySettings } from '../overlay-settings';
 import { Meter } from '../meter/meter';
 import { Pets } from '../pets/pets';
 
-/** The overlay window: the pets radar, the combat meter or the current character's dailies, over the game or on another monitor. */
+/** An overlay window: the pets radar, the combat meter or the current character's dailies (its `view`), over the game or on another monitor. */
 @Component({
   selector: 'app-overlay',
   imports: [CharacterDetail, Meter, Pets],
@@ -19,7 +19,8 @@ import { Pets } from '../pets/pets';
 export class Overlay {
   private readonly chars = inject(CharactersService);
   private readonly lang = inject(LOCALE_ID).split('-')[0];
-  readonly settings = signal(loadOverlaySettings());
+  readonly view = input.required<OverlayView>();
+  readonly settings = linkedSignal(() => loadOverlaySettings(this.view()));
   readonly minOpacity = MIN_OPACITY;
   readonly now = signal(Date.now());
   readonly gamedata = signal<GameData | null>(null);
@@ -27,7 +28,7 @@ export class Overlay {
   readonly radar = computed(() => (this.chars.game() ? this.chars.radar() : null));
 
   /** The meter has no background: the opacity setting fades only its bars (`--bar-a`), never its text. */
-  readonly bare = computed(() => this.settings().view === 'meter');
+  readonly bare = computed(() => this.view() === 'meter');
 
   /** Whether the window is shown: always, or (auto-hide) only while the game runs, whatever the view. */
   readonly shown = computed(() => !this.settings().autoHide || this.chars.game());
@@ -96,7 +97,7 @@ export class Overlay {
           clearTimeout(saveTimer);
           saveTimer = setTimeout(async () => {
             const [p, s] = [await win.outerPosition(), await win.outerSize()];
-            saveOverlaySettings({ ...loadOverlaySettings(), bounds: [p.x, p.y, s.width, s.height] });
+            saveOverlaySettings(this.view(), { ...loadOverlaySettings(this.view()), bounds: [p.x, p.y, s.width, s.height] });
           }, 500);
         };
         unlisten.push(await win.onMoved(remember), await win.onResized(remember));
@@ -110,10 +111,10 @@ export class Overlay {
   fade(e: Event): void {
     const opacity = Number((e.target as HTMLInputElement).value);
     this.settings.update(s => ({ ...s, opacity }));
-    saveOverlaySettings({ ...loadOverlaySettings(), opacity });
+    saveOverlaySettings(this.view(), { ...loadOverlaySettings(this.view()), opacity });
   }
 
   close(): void {
-    void updateOverlay({ open: false });
+    void updateOverlay(this.view(), { open: false });
   }
 }
