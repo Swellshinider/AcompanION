@@ -6,6 +6,7 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ### Novo
 
+- Medidor: quatro nomes de monstros a mais (Draconute Handler, Executor of the Magical Sword, Abyss Rusty Rotan, Dimensional Core) e a dungeon Krao Cave agora são reconhecidos.
 - Medidor: o poder de combate dos outros jogadores agora aparece ao lado do nome deles, no medidor e no overlay dele.
 - Quando outra janela do AcompanION já está aberta, o aviso agora tem um botão **Fechar a outra e capturar aqui**, que fecha a outra e assume a captura.
 - **Alerta do Festival Shugo**: um aviso no canto da tela que você escolher mostra quando o festival começa (toda hora cheia) enquanto o jogo está aberto. Em Configurações você liga ou desliga, escolhe o canto, define por quantos segundos ele fica (de 3 a 300), decide se um clique o fecha e silencia o som. Um botão mostra um alerta de teste.
