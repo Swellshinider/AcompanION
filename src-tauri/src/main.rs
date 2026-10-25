@@ -105,6 +105,12 @@ fn quit(handle: AppHandle) {
     handle.exit(0);
 }
 
+/// Whether this process is elevated; capture needs it unless Npcap was installed to allow everyone.
+#[tauri::command]
+fn elevated() -> bool {
+    acompanion::npcap::is_elevated()
+}
+
 /// Off the main thread: it waits on the UAC prompt.
 #[tauri::command(async)]
 fn restart_as_admin(handle: AppHandle) -> Result<bool, String> {
@@ -320,7 +326,7 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(PendingUpdate(Mutex::new(None)))
-        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, forget_character, overlay, restart_as_admin, check_update, install_update, app_settings, quit])
+        .invoke_handler(tauri::generate_handler![characters, capture_status, game_detected, radar, meter, meter_history, meter_clear, forget_character, overlay, elevated, restart_as_admin, check_update, install_update, app_settings, quit])
         .setup(move |app| {
             let reconnect_flag = reconnect.clone();
             let thread = start.map(|(state, path, guard)| {

@@ -32,6 +32,8 @@ export class Dashboard {
   readonly gamedata = signal<GameData | null>(null);
   readonly gamedataFailed = signal(false);
   readonly restarting = signal(false);
+  /** Starts true so nothing shows without a backend. */
+  readonly elevated = signal(true);
   /** The newer version on GitHub Releases; null while unknown, up to date or offline. */
   readonly update = signal<string | null>(null);
   readonly installing = signal(false);
@@ -89,6 +91,7 @@ export class Dashboard {
 
   constructor() {
     loadGamedata().then(gd => this.gamedata.set(gd), () => this.gamedataFailed.set(true));
+    this.chars.isElevated().then(e => this.elevated.set(e), () => {});
     // offline or no backend: no banner
     this.chars.checkUpdate().then(v => this.update.set(v), () => {});
     // send Rust the saved preferences (and bring the tray icon back); no backend: nothing to do

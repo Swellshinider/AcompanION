@@ -6,6 +6,7 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ### Novo
 
+- Um aviso informa quando o AcompanION não está sendo executado como administrador e oferece **Reiniciar como administrador**.
 - Configurações: um botão **Ver o que há na sua versão** lista as mudanças de cada versão.
 
 ## v0.2.0 (2026-10-25)

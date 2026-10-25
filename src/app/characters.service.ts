@@ -141,6 +141,10 @@ export class CharactersService {
     return invoke<void>('forget_character', { server: c.server, name: c.name });
   }
 
+  isElevated(): Promise<boolean> {
+    return invoke<boolean>('elevated');
+  }
+
   restartAsAdmin(): Promise<boolean> {
     return invoke<boolean>('restart_as_admin');
   }

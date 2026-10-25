@@ -78,7 +78,7 @@ capture thread (main.rs)            Tauri main thread                 Angular wi
                     --on_change--> emit characters://update  ------>  CharactersService (signals)
                     --on_save----> emit capture://status     ------>  Dashboard (save warning)
   failure -> classify()         --> emit capture://status    ------>  Dashboard (roster, banner)
-                                   commands: characters, capture_status, restart_as_admin  <---
+                                   commands: characters, capture_status, elevated, restart_as_admin  <---
 ```
 
 **Capture thread.** Spawned at setup if the state file loaded and its writer lock was acquired. It owns the `Engine` and calls `live::run` with `on_start` (publishes `running`) and `on_change` (copies `State::to_json()["characters"]` into `Shared` and emits the changed characters). A `live::run` error is classified and published; with the reconnect option on, `no_adapter` and `error` (`app::retryable`) publish `reconnecting` and `live::run` is called again after 5 s on the same `Engine` (the decoder resyncs over the gap), anything else ends the thread. On exit the stop flag is set and the thread is joined, so the engine flushes to disk. An unreadable state file publishes `state_unreadable` and never starts capture: the engine would overwrite it on its first save.
@@ -93,6 +93,7 @@ capture thread (main.rs)            Tauri main thread                 Angular wi
 | --- | --- | --- |
 | command | `characters` | `[Character JSON]`, the `Character::to_json` shape |
 | command | `capture_status` | `{"id", "detail"}`; `detail` is the raw error chain or `null` |
+| command | `elevated` | `bool`: this process is elevated (`npcap::is_elevated`) |
 | command | `restart_as_admin` | `bool`: `true` when UAC was accepted (this instance then exits) |
 | command | `game_detected` | `bool`: the game's port carried traffic in the last 5 s |
 | command | `radar` | the radar snapshot (monsters in view, the player's last fix, the map id) |
