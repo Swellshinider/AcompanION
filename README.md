@@ -5,6 +5,10 @@
 </p>
 
 <p align="center">
+  English | <a href="README.pt-BR.md">Português (Brasil)</a>
+</p>
+
+<p align="center">
   A Windows companion for AION 2 that passively reads game traffic and tracks every character you play.
 </p>
 
@@ -104,7 +108,7 @@ The version lives in `src-tauri/Cargo.toml` only. One-time setup: `pnpm tauri si
 
 1. Bump `version` in `src-tauri/Cargo.toml` (and `Cargo.lock`) through a pull request and merge it.
 2. On `main`: `git tag vX.Y.Z && git push origin vX.Y.Z`. The `Release` workflow builds the installer and creates a **draft** release.
-3. Write the release notes into the draft (`gh release edit vX.Y.Z -R Swellshinider/AcompanION --notes-file <file>`), starting from this version's section of `docs/patch-notes.md` (then put the date on its heading and open the next one, in `docs/patch-notes.pt-BR.md` too: the app shows both in Settings). They are for players, not developers: plain language, what is new or fixed in terms of what the user sees, no module names, commit hashes or jargon. Keep the install steps and the SmartScreen note. Do not paste the commit list.
+3. Write the release notes into the draft (`gh release edit vX.Y.Z -R Swellshinider/AcompanION --notes-file <file>`), starting from this version's section of `docs/patch-notes.md` (then put the date on its heading and open the next one, in `docs/patch-notes.pt-BR.md` too: the app shows both in Settings). The notes are written in English and, after a `---` line, again in Portuguese under `## Português (Brasil)`, starting from the version's section of `docs/patch-notes.pt-BR.md`. They are for players, not developers: plain language, what is new or fixed in terms of what the user sees, no module names, commit hashes or jargon. Keep the install steps and the SmartScreen note in both languages. Do not paste the commit list.
 4. Check the draft and publish it. Only then do installed apps see the update.
 
 Hotfix for an old version: `git switch -c release/X.Y vX.Y.Z`, fix, bump the patch version, tag `vX.Y.(Z+1)` on that branch.
