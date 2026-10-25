@@ -1,4 +1,4 @@
-<div class="shell" [style.opacity]="settings().opacity / 100">
+<div class="shell" [class.bare]="bare()" [style.opacity]="bare() ? null : settings().opacity / 100" [style.--bar-a]="bare() ? settings().opacity / 100 : null">
   @if (!settings().clickThrough) {
     <header data-tauri-drag-region>
       <span class="title" data-tauri-drag-region>

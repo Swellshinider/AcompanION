@@ -3,18 +3,34 @@
   height: 100vh;
 }
 
+// the border and the title bar show only while the mouse is over the window
 .shell {
+  position: relative;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
   height: 100%;
   background: var(--bg);
-  border: 1px solid var(--gold-line);
+  border: 1px solid transparent;
   border-radius: 6px;
   overflow: hidden;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--gold-line);
+  }
+
+  // the meter paints only its own bars over the game
+  &.bare {
+    background: transparent;
+  }
 }
 
+// floats over the top of the content (above the map, z-index 20 in pets.scss, and the fade slider)
 header {
-  flex: none;
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 40;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,6 +40,12 @@ header {
   border-bottom: 1px solid var(--line);
   cursor: move;
   user-select: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  .shell:hover & {
+    opacity: 1;
+  }
 }
 
 .title {
@@ -69,7 +91,7 @@ main.map {
 // over the map's top left, opposite the zoom buttons; above the filled map (z-index 20 in pets.scss)
 .fade {
   position: absolute;
-  top: 8px;
+  top: 34px;
   left: 6px;
   z-index: 30;
   width: 72px;

@@ -87,6 +87,14 @@ describe('Overlay', () => {
     expect((await render({ view: 'radar', clickThrough: true })).el.querySelector('input.fade')).toBeNull();
   });
 
+  it('fades only the bars of the meter, not the whole window', async () => {
+    const { el } = await render({ view: 'meter', opacity: 40 });
+    const shell = el.querySelector<HTMLElement>('.shell')!;
+    expect(shell.classList).toContain('bare');
+    expect(shell.style.opacity).toBe('');
+    expect(shell.style.getPropertyValue('--bar-a')).toBe('0.4');
+  });
+
   it('hides the title bar while clicks pass through', async () => {
     const { el } = await render({ clickThrough: true });
     expect(el.querySelector('header')).toBeNull();

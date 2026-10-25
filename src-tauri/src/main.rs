@@ -151,6 +151,8 @@ fn open_overlay(handle: &AppHandle, bounds: Option<[i32; 4]>) -> tauri::Result<W
         .min_inner_size(200.0, 120.0)
         .decorations(false)
         .transparent(true)
+        // Windows gives an undecorated window with a shadow a 1px white border: the overlay draws its own (on hover)
+        .shadow(false)
         .skip_taskbar(true)
         .visible(false)
         .build()?;

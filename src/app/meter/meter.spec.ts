@@ -177,6 +177,13 @@ describe('Meter', () => {
     expect(el.querySelector('.row .v')?.textContent).toBe('60/s');
   });
 
+  it('shows the boss health as numbers, a bar and a percentage in the overlay', () => {
+    const { el } = render({ current: fight(0, [mine], { target: golem }), compact: true });
+    expect(el.querySelector('.line2 .hpnum')?.textContent?.trim()).toBe('50 / 200');
+    expect(el.querySelector<HTMLElement>('.line3 .hpbar span')!.style.width).toBe('25%');
+    expect(el.querySelector('.line3 .hppct')?.textContent?.trim()).toBe('25%');
+  });
+
   it('ranks the players on one short line each, with the extra figures kept for the detail', () => {
     const { el } = render({ current: fight(0, [other, { ...mine, dealt: tally(5_710_000, 40, 16), taken: { amount: 4200, hits: 3 } }]) });
     const line = el.querySelector('.board li')!;
