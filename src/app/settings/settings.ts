@@ -18,6 +18,8 @@ export class Settings {
   readonly views = VIEWS;
   /** A newer version was found: the dashboard shows its "Update and restart" banner. */
   readonly update = output<string>();
+  /** Open the What's new screen. */
+  readonly notes = output<void>();
   readonly s = signal(loadAppSettings());
   private readonly startLanguage = this.s().language;
   /** The language differs from the one this run started with: it applies after a restart. */

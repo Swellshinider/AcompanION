@@ -49,6 +49,14 @@ describe('Settings', () => {
     expect(input('reconnect').checked).toBe(true);
   });
 
+  it('opens the patch notes page', () => {
+    const { f, el } = render();
+    const notes = vi.fn();
+    f.componentInstance.notes.subscribe(notes);
+    el.querySelector<HTMLButtonElement>('button[name="whatsNew"]')!.click();
+    expect(notes).toHaveBeenCalled();
+  });
+
   it('remembers reconnect and tells Rust', async () => {
     const { flip, invoke } = render();
     await flip('reconnect', false);

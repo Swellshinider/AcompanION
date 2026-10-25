@@ -1,0 +1,39 @@
+<button type="button" class="back" (click)="back.emit()">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5" /></svg>
+  <ng-container i18n="@@back">Back</ng-container>
+  <kbd aria-hidden="true">Esc</kbd>
+</button>
+
+<div class="page-h">
+  <h2 i18n="@@whatsNewTitle">What's new</h2>
+</div>
+
+<div class="releases">
+  @for (r of releases; track r.version) {
+    <section class="panel" [class.mine]="r.version === version()">
+      <header>
+        <h3>v{{ r.version }}</h3>
+        @if (r.version === version()) {
+          <span class="badge" i18n="@@whatsNewYours">Your version</span>
+        }
+        <time [attr.datetime]="r.date">{{ date(r.date) }}</time>
+      </header>
+      @for (s of r.sections; track $index) {
+        @if (s.title) {
+          <h4 class="tag" [class]="kind(s.title)">{{ s.title }}</h4>
+        }
+        <ul>
+          @for (item of s.items; track $index) {
+            @let t = splitTopic(item);
+            <li>
+              @if (t.topic) { <span class="topic">{{ t.topic }}</span> }
+              @for (p of parts(t.rest); track $index) {
+                <span [class.bold]="p.bold">{{ p.text }}</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</div>

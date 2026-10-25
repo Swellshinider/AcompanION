@@ -1711,6 +1711,30 @@
           <context context-type="linenumber">57,59</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="whatsNewButton" datatype="html">
+        <source>See what&apos;s in your version</source>
+        <target>Ver o que há na sua versão</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">49,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="whatsNewTitle" datatype="html">
+        <source>What&apos;s new</source>
+        <target>O que há de novo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/whats-new/whats-new.html</context>
+          <context context-type="linenumber">8,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="whatsNewYours" datatype="html">
+        <source>Your version</source>
+        <target>Sua versão</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/whats-new/whats-new.html</context>
+          <context context-type="linenumber">17,19</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

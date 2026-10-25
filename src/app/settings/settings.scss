@@ -57,7 +57,6 @@ kbd {
 .sections {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  align-items: start;
   gap: 16px;
   margin-top: 16px;
 }
@@ -121,6 +120,10 @@ input[type="checkbox"] {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
+}
+
+.row + .row {
+  margin-top: 8px;
 }
 
 .status {

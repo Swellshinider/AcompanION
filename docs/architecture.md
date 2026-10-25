@@ -131,6 +131,7 @@ Status ids: `starting`, `running`, `reconnecting`, `save_failed`, `not_admin`, `
 | `src/app/meter/` + `src/app/fight.ts` | Meter screen and overlay view; `fight.ts` is pure (skill folding, DPS window, current rate over the last 5 s from the service's `recent` snapshots, boss result, player and skill rows) |
 | `src/app/overlay/`, `overlay-panel/`, `overlay-settings.ts`, `overlay-control.ts` | The overlay page, its per-view control card and the persisted preferences; `restoreOverlay` reopens the overlays that were open at start |
 | `src/app/settings/` + `app-settings.ts` | Settings screen (close to tray, reconnect, language, update check, then the overlay cards) and the app preferences; `applyAppSettings` creates or removes the tray icon and tells Rust |
+| `src/app/whats-new/` | The What's new page reached from Settings: `patch-notes.ts` bundles `docs/patch-notes.md` / `patch-notes.pt-BR.md` as text (the `.md` loader in `angular.json`) and parses each released `## vX.Y.Z (date)` section; the `(next)` one is skipped |
 | `public/gamedata.json` | Hand-curated game facts: counter names, caps, reset kind, refills, classes, pets, farm regions and spawns, skill and monster names. Counter ids not in it are hidden |
 | `src/locale/messages.xlf` | `ng extract-i18n` output; every user-facing string has an `@@` id |
 | `src/app/untranslated-names.json`, `src/app/translations.spec.ts` | The guard: every message has a target in each locale file, and every game name has `en` and `pt` or its id is on the list of names still English-only |

@@ -46,6 +46,9 @@
       <p class="current" i18n="@@settingsVersion">Current version: <b>{{ v }}</b></p>
     }
     <div class="row">
+      <button type="button" class="btn" name="whatsNew" (click)="notes.emit()" i18n="@@whatsNewButton">See what's in your version</button>
+    </div>
+    <div class="row">
       <button type="button" class="btn" name="checkUpdate" (click)="checkNow()" [disabled]="check() === 'checking'" i18n="@@settingsCheckUpdate">Check for updates now</button>
       <span class="status" role="status">
         @switch (check()) {

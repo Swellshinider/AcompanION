@@ -39,7 +39,7 @@
             ],
             "styles": ["src/styles.scss"],
             "polyfills": ["@angular/localize/init"],
-            "loader": { ".xlf": "text" }
+            "loader": { ".xlf": "text", ".md": "text" }
           },
           "configurations": {
             "production": {
