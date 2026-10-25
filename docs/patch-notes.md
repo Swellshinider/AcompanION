@@ -16,6 +16,8 @@ The top section is the next version, named by the patch bump of the last release
 
 - Meter overlay: a new look with rounded bars per player, a health bar for the boss and the full damage per second. It has no background, and the opacity setting now fades only the bars.
 - Overlay: the border and title bar only show when the mouse is over it, and the thin white window border is gone.
+- Meter: only boss fights are counted now. Normal monsters no longer start a fight, so a boss's numbers stay on screen after it dies, until the next boss.
+- Meter: it knows more boss names (for example Neikel of the East, Executor Kaira and Zikel's Apparition) instead of showing "Monster 1234".
 
 ### Fixed
 

@@ -53,6 +53,8 @@ export interface GameData {
   /** Skill names by the folded skill id and monster names by template (partial; absent ones fall back to `Skill N` / `Monster N`). A skill's `icon` is a file stem in `public/skills/` (absent: a coloured tile with its initial). */
   skills?: Record<string, { name: Names; icon?: string }>;
   monsters?: Record<string, { name: Names }>;
+  /** Dungeons by the game's map id (the id a fight or `radar.map` carries inside one), with the template ids of the bosses seen in each (partial). */
+  dungeons?: Record<string, { name: Names; mode: 'conquest' | 'transcendence'; bosses: number[] }>;
 }
 /** One curated counter as the dashboard shows it. `left` is what remains now. */
 export interface Item {
