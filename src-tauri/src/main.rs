@@ -171,9 +171,11 @@ fn open_overlay(handle: &AppHandle, label: &str, bounds: Option<[i32; 4]>) -> ta
         .map(|m| (m.position().x, m.position().y, m.size().width as i32, m.size().height as i32))
         .collect();
     match bounds.filter(|&[x, y, w, h]| w > 0 && h > 0 && on_screen((x, y, w, h), &monitors)) {
+        // Position first: the window is born on the primary monitor, and moving it to a monitor with another scale
+        // factor makes Windows rescale it, so a size set before the move came out multiplied by the ratio.
         Some([x, y, w, h]) => {
-            win.set_size(PhysicalSize::new(w as u32, h as u32))?;
             win.set_position(PhysicalPosition::new(x, y))?;
+            win.set_size(PhysicalSize::new(w as u32, h as u32))?;
         }
         None => win.center()?,
     }

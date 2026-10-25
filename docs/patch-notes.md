@@ -22,6 +22,7 @@ The top section is the next version, named by the patch bump of the last release
 
 ### Fixed
 
+- Overlays: they reopen at the size and position you left them, instead of shrinking a little each time on a second monitor with a different display scaling.
 - Pets overlay: "Next" now names a single monster instead of listing every monster at that spot.
 - Pets overlay: a soul you collect now shows its pet and its souls (or Max) even when AcompanION was opened after you logged in.
 
