@@ -18,6 +18,13 @@ pub fn load_state(path: &Path) -> Result<(State, Option<File>)> {
     Ok((State::load(path)?, guard))
 }
 
+/// The file another instance creates next to the state file to ask the lock owner to close.
+pub fn quit_path(state: &Path) -> PathBuf {
+    let mut quit = state.as_os_str().to_owned();
+    quit.push(".quit");
+    PathBuf::from(quit)
+}
+
 /// The saved fights next to the state file, shown before (or without) capture; empty when the
 /// state path is unknown.
 pub fn saved_history(state_path: Option<&Path>) -> Value {
@@ -221,6 +228,11 @@ mod tests {
         assert_eq!(saved_history(Some(&path)), json!([{"start_us": 1}]));
         assert_eq!(saved_history(None), json!([]));
         std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn the_quit_request_sits_next_to_the_state_file() {
+        assert_eq!(quit_path(Path::new(r"C:\data\characters.json")), PathBuf::from(r"C:\data\characters.json.quit"));
     }
 
     #[test]

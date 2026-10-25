@@ -421,11 +421,27 @@
         </context-group>
       </trans-unit>
       <trans-unit id="bannerStateInUse" datatype="html">
-        <source>Another instance is saving this character file. Saved characters are shown below. Close the other instance, then reopen this window to capture.</source>
-        <target>Outra instância está salvando este arquivo de personagens. Os personagens salvos são mostrados abaixo. Feche a outra instância e reabra esta janela para capturar.</target>
+        <source>Another instance is saving this character file. Saved characters are shown below.</source>
+        <target>Outra instância está salvando este arquivo de personagens. Os personagens salvos são mostrados abaixo.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
-          <context context-type="linenumber">42,43</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="takeOver" datatype="html">
+        <source>Close it and capture here</source>
+        <target>Fechar a outra e capturar aqui</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="takeOverFailed" datatype="html">
+        <source>The other instance did not close. Close it yourself, then try again.</source>
+        <target>A outra instância não fechou. Feche-a você mesmo e tente de novo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">45,47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="bannerReconnecting" datatype="html">

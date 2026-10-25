@@ -4,6 +4,10 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ## v0.2.2 (next)
 
+### Novo
+
+- Quando outra janela do AcompanION já está aberta, o aviso agora tem um botão **Fechar a outra e capturar aqui**, que fecha a outra e assume a captura.
+
 ## v0.2.1 (2026-10-25)
 
 ### Novo
