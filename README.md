@@ -12,7 +12,7 @@
 
 ## Features
 
-Working today (from source):
+Working today:
 
 - **Passive capture and own decoder.** Npcap capture of every AION 2 connection, TCP reassembly, frame and LZ4 decoding, no keys needed.
 - **Per-character dashboard.** Every character seen, with tickets, energy, dailies and weeklies done against their cap, GS (item level) and combat power; updates live and survives restarts.
@@ -135,6 +135,7 @@ If you are an LLM or AI-powered coding assistant, read [`AGENTS.md`](AGENTS.md) 
 - [`docs/architecture.md`](docs/architecture.md) - pipeline, modules, threading, state model and the desktop app
 - [`docs/protocol.md`](docs/protocol.md) - everything known about the wire protocol, with evidence
 - [`docs/decisions.md`](docs/decisions.md) - why things are the way they are
+- [`docs/patch-notes.md`](docs/patch-notes.md) - what changed for players, the source of the release notes
 - [`tools/re/README.md`](tools/re/README.md) - the Python analysis helper
 
 ## Safety and fair use
