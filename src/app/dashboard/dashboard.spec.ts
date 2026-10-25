@@ -17,16 +17,19 @@ const ch = (name: string, left: number, classCode = 3): Character => ({
   counters: [{ id: 1, value: left, ms: false, updated_us: nowUs }], last_seen_us: nowUs,
 });
 
-async function render(status: CaptureStatus, chars: Character[], game = false) {
+async function render(status: CaptureStatus, chars: Character[], game = false, update: string | null = null) {
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => gd })));
   const restartAsAdmin = vi.fn(async () => false);
+  const checkUpdate = vi.fn(async () => update);
+  const installUpdate = vi.fn(async () => {});
+  const forget = vi.fn(async () => {});
   TestBed.configureTestingModule({
-    providers: [{ provide: CharactersService, useValue: { characters: signal(chars), status: signal(status), game: signal(game), radar: signal(null), meter: signal(null), fights: signal([]), restartAsAdmin } }],
+    providers: [{ provide: CharactersService, useValue: { characters: signal(chars), status: signal(status), game: signal(game), radar: signal(null), meter: signal(null), fights: signal([]), restartAsAdmin, checkUpdate, installUpdate, forget } }],
   });
   const f = TestBed.createComponent(Dashboard);
-  await new Promise(r => setTimeout(r)); // let loadGamedata resolve
+  await new Promise(r => setTimeout(r)); // let loadGamedata and checkUpdate resolve
   f.detectChanges();
-  return { f, el: f.nativeElement as HTMLElement, restartAsAdmin };
+  return { f, el: f.nativeElement as HTMLElement, restartAsAdmin, installUpdate, forget };
 }
 const cardNames = (el: HTMLElement) => [...el.querySelectorAll('.card .name')].map(n => n.textContent?.trim());
 
@@ -70,6 +73,44 @@ describe('Dashboard', () => {
     expect(el.querySelectorAll('.card').length).toBe(2);
   });
 
+  it('removes a character from its card through the service once confirmed', async () => {
+    const { f, el, forget } = await render({ id: 'running', detail: null }, [ch('Alpha', 1), ch('Beta', 2)]);
+    const slot = [...el.querySelectorAll<HTMLElement>('.slot')].find(s => s.textContent?.includes('Alpha'))!;
+    slot.querySelector<HTMLButtonElement>('.trash')!.click();
+    f.detectChanges();
+    expect(forget).not.toHaveBeenCalled();
+    expect(slot.querySelector('.confirm')?.textContent).toContain('Remove Alpha');
+    slot.querySelector<HTMLButtonElement>('.btn.danger')!.click();
+    f.detectChanges();
+    expect(forget).toHaveBeenCalledOnce();
+    expect(forget).toHaveBeenCalledWith(expect.objectContaining({ server: 7, name: 'Alpha' }));
+    expect(el.querySelector('.confirm')).toBeNull();
+  });
+
+  it('keeps the character when the removal is cancelled or Escape is pressed', async () => {
+    const { f, el, forget } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)]);
+    const ask = () => {
+      el.querySelector<HTMLButtonElement>('.trash')!.click();
+      f.detectChanges();
+    };
+    ask();
+    [...el.querySelectorAll<HTMLButtonElement>('.confirm .btn')].find(b => b.textContent?.trim() === 'Cancel')!.click();
+    f.detectChanges();
+    expect(el.querySelector('.confirm')).toBeNull();
+    ask();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    f.detectChanges();
+    expect(el.querySelector('.confirm')).toBeNull();
+    expect(forget).not.toHaveBeenCalled();
+    expect(el.querySelectorAll('.card').length).toBe(1);
+  });
+
+  it('offers no trash while capture is not running', async () => {
+    const { el } = await render({ id: 'not_admin', detail: null }, [ch('Alpha', 1)]);
+    expect(el.querySelectorAll('.card').length).toBe(1);
+    expect(el.querySelector('.trash')).toBeNull();
+  });
+
   it('opens the pets screen from the header when a character reported pets, and returns on Escape', async () => {
     const withPets: Character = { ...ch('Alpha', 1), pets: { active: 1, updated_us: nowUs, list: [{ id: 1, level: 1, souls: 3 }] } };
     const { f, el } = await render({ id: 'running', detail: null }, [withPets]);
@@ -96,6 +137,26 @@ describe('Dashboard', () => {
     f.detectChanges();
     expect(el.querySelector('app-meter')).toBeNull();
     expect(el.querySelectorAll('.card').length).toBe(1);
+  });
+
+  it('opens the settings screen from the header, marks it, and returns on Escape', async () => {
+    const { f, el } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)]);
+    el.querySelector<HTMLButtonElement>('.settings-btn')!.click();
+    f.detectChanges();
+    expect(el.querySelector('app-settings h2')?.textContent).toContain('Settings');
+    expect(el.querySelector('app-settings app-overlay-panel')).not.toBeNull();
+    expect(el.querySelector('.settings-btn')!.getAttribute('aria-current')).toBe('page');
+    expect(el.querySelectorAll('.card').length).toBe(0);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    f.detectChanges();
+    expect(el.querySelector('app-settings')).toBeNull();
+    expect(el.querySelectorAll('.card').length).toBe(1);
+  });
+
+  it('says capture is reconnecting while the adapter is gone', async () => {
+    const { el } = await render({ id: 'reconnecting', detail: 'No network adapter' }, [ch('Alpha', 1)]);
+    expect(el.querySelector('.banner')?.textContent).toContain('Trying to reconnect');
+    expect(el.querySelector('.banner .detail')?.textContent).toContain('No network adapter');
   });
 
   it('always offers the pets screen and explains when no pets were seen yet', async () => {
@@ -146,6 +207,18 @@ describe('Dashboard', () => {
     button.click();
     expect(restartAsAdmin).toHaveBeenCalledOnce();
     expect(cardNames(el)).toEqual(['Alpha']); // saved characters still show
+  });
+
+  it('offers an update when a newer version is published', async () => {
+    const { el, installUpdate } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)], false, '0.2.0');
+    expect(el.querySelector('.banner')?.textContent).toContain('0.2.0');
+    el.querySelector<HTMLButtonElement>('.banner button')!.click();
+    expect(installUpdate).toHaveBeenCalledOnce();
+  });
+
+  it('shows no update banner when up to date', async () => {
+    const { el } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)]);
+    expect(el.querySelector('.banner')).toBeNull();
   });
 
   it('shows an empty state without characters', async () => {

@@ -74,6 +74,8 @@ export class Pets {
   readonly hovered = signal<number | null>(null);
   readonly selected = signal<number | null>(null);
   readonly dragging = signal(false);
+  /** Where the pointer is over the overlay map, in px inside `.stage-map`; the hover name sits there. */
+  readonly tipAt = signal<{ x: number; y: number } | null>(null);
   private drag: { x: number; y: number; moved: boolean } | null = null;
 
   /** Pets with progress toward their next level, nearest first. Pets nobody has started are left out. */
@@ -160,18 +162,14 @@ export class Pets {
       return seen;
     },
   });
-  /** The first stop not visited yet, with the names the foot line shows. */
+  /** The first stop not visited yet, with the one monster the foot line names: the first that feeds a pet the stop was picked for. */
   readonly next = computed(() => {
     const [r, gd] = [this.route(), this.gamedata()];
     const i = r ? r.stops.findIndex((_, k) => !this.visited().has(k)) : -1;
     if (!r || !gd || i < 0) return null;
     const s = r.stops[i];
-    const rows = this.collection()?.rows ?? [];
-    return {
-      n: i + 1, of: r.stops.length, x: s.x, y: s.y, souls: s.souls,
-      monsters: s.monsters.map(m => pick(gd.pet_monsters[m]?.name, this.lang) ?? `#${m}`).join(', '),
-      pets: s.pets.map(p => rows.find(x => x.id === p)?.name ?? `#${p}`).join(', '),
-    };
+    const m = s.monsters.find(id => s.pets.includes(gd.pet_monsters[id]?.pet)) ?? s.monsters[0];
+    return { x: s.x, y: s.y, monster: pick(gd.pet_monsters[m]?.name, this.lang) ?? `#${m}` };
   });
   /** The overlay map was dragged away from the player. */
   readonly panned = computed(() => this.overlayPan()?.key === this.region()?.key && this.overlayPan() !== null);
@@ -311,6 +309,11 @@ export class Pets {
     }
     d.x = e.clientX;
     d.y = e.clientY;
+  }
+
+  tipMove(e: PointerEvent) {
+    const rect = this.stageMap()?.nativeElement.getBoundingClientRect();
+    if (rect) this.tipAt.set({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   }
 
   onUp() {

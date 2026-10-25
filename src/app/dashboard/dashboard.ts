@@ -6,12 +6,14 @@ import { Emblem } from '../emblem/emblem';
 import { DAILY_RESET_HOUR_UTC, GameData, loadGamedata, nextReset, petCollection, pick, span, summarize } from '../gamedata';
 import { Glyph } from '../glyph';
 import { Meter } from '../meter/meter';
-import { OverlayPanel } from '../overlay-panel/overlay-panel';
+import { applyAppSettings, loadAppSettings } from '../app-settings';
+import { restoreOverlay } from '../overlay-control';
 import { Pets } from '../pets/pets';
+import { Settings } from '../settings/settings';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DecimalPipe, CharacterDetail, Emblem, Glyph, Meter, OverlayPanel, Pets],
+  imports: [DecimalPipe, CharacterDetail, Emblem, Glyph, Meter, Pets, Settings],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   host: { '(document:keydown.escape)': 'back()' },
@@ -29,10 +31,16 @@ export class Dashboard {
   readonly gamedata = signal<GameData | null>(null);
   readonly gamedataFailed = signal(false);
   readonly restarting = signal(false);
+  /** The newer version on GitHub Releases; null while unknown, up to date or offline. */
+  readonly update = signal<string | null>(null);
+  readonly installing = signal(false);
+  readonly updateFailed = signal(false);
   /** `server:name` of the character whose detail is open. */
   readonly selected = signal<string | null>(null);
-  /** The screen: the roster (and a character's detail), the Pets screen or the combat Meter. */
-  readonly screen = signal<'roster' | 'pets' | 'meter'>('roster');
+  /** `server:name` of the roster card asking "Remove?". */
+  readonly confirming = signal<string | null>(null);
+  /** The screen: the roster (and a character's detail), the Pets screen, the combat Meter or Settings. */
+  readonly screen = signal<'roster' | 'pets' | 'meter' | 'settings'>('roster');
   readonly resetHour = String(DAILY_RESET_HOUR_UTC).padStart(2, '0');
 
   readonly rows = computed<CharacterRow[]>(() => {
@@ -52,6 +60,12 @@ export class Dashboard {
 
   /** The open character; null (back to the roster) when none is selected or it left the list. */
   readonly open = computed(() => this.rows().find(r => r.key === this.selected()) ?? null);
+
+  /** Removing needs the capture thread, which exists only while capture runs. */
+  readonly canForget = computed(() => {
+    const s = this.chars.status().id;
+    return s === 'running' || s === 'save_failed';
+  });
 
   /** The account's pets; null until a character reported them. */
   readonly pets = computed(() => {
@@ -74,8 +88,16 @@ export class Dashboard {
 
   constructor() {
     loadGamedata().then(gd => this.gamedata.set(gd), () => this.gamedataFailed.set(true));
+    // offline or no backend: no banner
+    this.chars.checkUpdate().then(v => this.update.set(v), () => {});
+    // send Rust the saved preferences (and bring the tray icon back); no backend: nothing to do
+    applyAppSettings(loadAppSettings()).catch(() => {});
+    const stopOverlay = restoreOverlay();
     const timer = setInterval(() => this.now.set(Date.now()), 60_000);
-    inject(DestroyRef).onDestroy(() => clearInterval(timer));
+    inject(DestroyRef).onDestroy(() => {
+      clearInterval(timer);
+      stopOverlay();
+    });
   }
 
   /** Time from now until `at` (epoch ms). */
@@ -89,6 +111,10 @@ export class Dashboard {
   }
 
   back(): void {
+    if (this.confirming() !== null) {
+      this.confirming.set(null);
+      return;
+    }
     if (this.screen() !== 'roster') {
       this.screen.set('roster');
       return;
@@ -108,12 +134,29 @@ export class Dashboard {
     this.selected.set(null);
   }
 
+  /** The roster drops the character when the capture thread confirms the removal. */
+  forget(r: CharacterRow): void {
+    this.confirming.set(null);
+    this.chars.forget(r.c).catch(() => {});
+  }
+
   async restart(): Promise<void> {
     this.restarting.set(true);
     try {
       await this.chars.restartAsAdmin(); // on success this window closes
     } finally {
       this.restarting.set(false);
+    }
+  }
+
+  async install(): Promise<void> {
+    this.installing.set(true);
+    this.updateFailed.set(false);
+    try {
+      await this.chars.installUpdate(); // on success the app restarts
+    } catch {
+      this.updateFailed.set(true);
+      this.installing.set(false);
     }
   }
 }

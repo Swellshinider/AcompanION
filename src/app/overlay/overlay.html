@@ -1,8 +1,8 @@
-<div class="shell" [style.opacity]="settings().opacity / 100">
+<div class="shell" [class.bare]="bare()" [style.opacity]="bare() ? null : settings().opacity / 100" [style.--bar-a]="bare() ? settings().opacity / 100 : null">
   @if (!settings().clickThrough) {
     <header data-tauri-drag-region>
       <span class="title" data-tauri-drag-region>
-        @switch (settings().view) {
+        @switch (view()) {
           @case ('radar') { <ng-container i18n="@@overlayRadar">Radar</ng-container> }
           @case ('meter') { <ng-container i18n="@@overlayMeter">Meter</ng-container> }
           @default { <ng-container i18n="@@overlayDailies">Dailies</ng-container> }
@@ -11,13 +11,13 @@
       <button type="button" class="x" (click)="close()" i18n-aria-label="@@overlayClose" aria-label="Close overlay">×</button>
     </header>
   }
-  <main [class.map]="settings().view === 'radar'">
-    @if (settings().view === 'radar' && !settings().clickThrough) {
+  <main [class.map]="view() === 'radar'">
+    @if (view() === 'radar' && !settings().clickThrough) {
       <input class="fade" type="range" [min]="minOpacity" max="100" step="5" [value]="settings().opacity" (input)="fade($event)" i18n-aria-label="@@overlayOpacity" aria-label="Opacity" />
     }
-    @if (settings().view === 'radar') {
+    @if (view() === 'radar') {
       <app-pets [overlay]="true" [lastRegion]="lastRegion()" [collection]="pets()" [gamedata]="gamedata()" [radar]="radar()" [now]="now()" />
-    } @else if (settings().view === 'meter') {
+    } @else if (view() === 'meter') {
       <app-meter [compact]="true" [gamedata]="gamedata()" />
     } @else if (row(); as r) {
       @if (resets(); as t) {

@@ -197,8 +197,20 @@ describe('Pets farm map', () => {
       f.detectChanges();
       expect(el.querySelector('svg.map path.route')).not.toBeNull();
       expect(stops(el)).toBe(2);   // Alpha (Slime) and Delta (Bat); Gamma's Wolf is in the other region
-      expect(note(el)).toContain('Next 1/2');
+      expect(note(el)).toBe('Next: Slime');
       expect(chip(el, 'Route').getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('names one monster for the next stop even when several share its spot', () => {
+      const shared: GameData = { ...gd, pet_monsters: { ...gd.pet_monsters, 13: { name: { en: 'Rat' }, level: 5, grade: 'normal', pet: 5, zones: [], spawns: { north: [[0.05, 0.05]] } } } };
+      const f = TestBed.createComponent(Pets);
+      f.componentRef.setInput('collection', collection);
+      f.componentRef.setInput('gamedata', shared);
+      f.componentRef.setInput('now', 60_000);
+      f.componentRef.setInput('overlay', true);
+      f.componentRef.setInput('lastRegion', 'north');
+      f.detectChanges();
+      expect(note(f.nativeElement)).toBe('Next: Slime');
     });
 
     it('drops a pet from the route when it reaches the top, and says so when none is left', () => {
@@ -225,13 +237,11 @@ describe('Pets farm map', () => {
       f.componentRef.setInput('overlay', true);
       f.detectChanges();
       const el = f.nativeElement as HTMLElement;
-      expect(note(el)).toContain('Next 1/2');
-      expect(note(el)).toContain('Slime');
+      expect(note(el)).toBe('Next: Slime');
       expect(el.querySelector('line.route-next')).not.toBeNull();
       f.componentRef.setInput('radar', at(0, 0));
       f.detectChanges();
-      expect(note(el)).toContain('Next 2/2');
-      expect(note(el)).toContain('Bat');
+      expect(note(el)).toBe('Next: Bat');
       expect(el.querySelectorAll('circle.stop.done').length).toBe(1);
     });
   });
@@ -307,6 +317,19 @@ describe('Pets farm map', () => {
       expect(el.querySelector('.cap')).not.toBeNull();
       expect(el.querySelector('svg.map')).not.toBeNull();
       expect(el.querySelector('svg.map')!.getAttribute('style') ?? '').not.toContain('aspect-ratio');
+    });
+
+    it('names the monster under the pointer, only while hovering', () => {
+      const { f, el } = renderOverlay(here(1010));
+      const dot = el.querySelector('svg.map path.lv1')!;
+      expect(el.querySelector('.tip')).toBeNull();
+      dot.dispatchEvent(new Event('pointerenter'));
+      dot.dispatchEvent(new Event('pointermove'));
+      f.detectChanges();
+      expect(el.querySelector('.tip')?.textContent).toContain('Slime');
+      dot.dispatchEvent(new Event('pointerleave'));
+      f.detectChanges();
+      expect(el.querySelector('.tip')).toBeNull();
     });
 
     it('draws no map outside the regions', () => {

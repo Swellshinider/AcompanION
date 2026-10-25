@@ -1,0 +1,70 @@
+<button type="button" class="back" (click)="back.emit()">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5" /></svg>
+  <ng-container i18n="@@back">Back</ng-container>
+  <kbd aria-hidden="true">Esc</kbd>
+</button>
+
+<div class="page-h">
+  <h2 i18n="@@settingsTitle">Settings</h2>
+</div>
+
+<div class="sections">
+  <section class="panel">
+    <h3 i18n="@@settingsGeneral">General</h3>
+
+    <label class="check">
+      <input type="checkbox" name="closeToTray" [checked]="s().closeToTray" (change)="toggle('closeToTray', $event)" />
+      <span i18n="@@settingsCloseToTray">Keep running in the tray when the window is closed</span>
+    </label>
+    @if (trayFailed()) {
+      <p class="err" role="alert" i18n="@@settingsTrayFailed">The tray icon could not be created, so closing the window still quits.</p>
+    }
+
+    <label class="check">
+      <input type="checkbox" name="reconnect" [checked]="s().reconnect" (change)="toggle('reconnect', $event)" />
+      <span i18n="@@settingsReconnect">Reconnect automatically when capture stops</span>
+    </label>
+
+    <label class="field">
+      <span i18n="@@settingsLanguage">Language</span>
+      <select name="language" [value]="s().language" (change)="setLanguage($event)">
+        <option value="auto" i18n="@@settingsLanguageAuto">Automatic (follow Windows)</option>
+        <option value="en">English</option>
+        <option value="pt-BR">Português (Brasil)</option>
+      </select>
+    </label>
+    @if (languageChanged()) {
+      <p class="note" role="status" i18n="@@settingsLanguageRestart">Restart AcompanION to apply the new language.</p>
+    }
+
+    <p class="note" i18n="@@settingsNote">Capture and the combat meter keep running while the window is hidden or minimized.</p>
+  </section>
+
+  <section class="panel">
+    <h3 i18n="@@settingsUpdates">Updates</h3>
+    @if (version(); as v) {
+      <p class="current" i18n="@@settingsVersion">Current version: <b>{{ v }}</b></p>
+    }
+    <div class="row">
+      <button type="button" class="btn" name="checkUpdate" (click)="checkNow()" [disabled]="check() === 'checking'" i18n="@@settingsCheckUpdate">Check for updates now</button>
+      <span class="status" role="status">
+        @switch (check()) {
+          @case ('checking') { <ng-container i18n="@@settingsChecking">Checking…</ng-container> }
+          @case ('current') { <ng-container i18n="@@settingsUpToDate">You are up to date.</ng-container> }
+          @case ('found') { <ng-container i18n="@@settingsUpdateFound">Version {{ found() }} is available.</ng-container> }
+          @case ('failed') { <span class="err" i18n="@@settingsCheckFailed">Could not check for updates.</span> }
+        }
+      </span>
+    </div>
+  </section>
+</div>
+
+<section class="panel overlays">
+  <h3 i18n="@@settingsOverlays">Overlays</h3>
+  <div class="cards">
+    @for (v of views; track v) {
+      <app-overlay-panel [view]="v" />
+    }
+  </div>
+  <p class="note" i18n="@@overlayNote">With clicks passing through, the overlay cannot be moved or closed: turn it off here. It shows over the game only in windowed or borderless mode; on another monitor any mode works.</p>
+</section>

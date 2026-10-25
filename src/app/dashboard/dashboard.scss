@@ -9,11 +9,9 @@
   top: 0;
   z-index: 5;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 16px;
-  min-height: 58px;
-  padding: 8px 24px;
+  align-items: stretch;
+  min-height: 68px;
+  padding: 0 18px;
   background: color-mix(in oklch, var(--bg) 94%, black);
   border-bottom: 1px solid var(--line);
 
@@ -24,46 +22,61 @@
     right: 0;
     bottom: -1px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-line) 20%, var(--gold-line) 80%, transparent);
+    background: linear-gradient(90deg, transparent, var(--gold-line) 18%, var(--gold-line) 82%, transparent);
   }
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex: none;
+  gap: 11px;
 }
 
 .mark {
-  width: 11px;
-  height: 11px;
-  transform: rotate(45deg);
-  background: var(--well);
-  box-shadow: inset 0 0 0 1.5px var(--accent), 0 0 10px color-mix(in oklch, var(--accent) 40%, transparent);
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
 }
 
 h1 {
   margin: 0;
   font: 600 21px/1 var(--display);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.015em;
+  white-space: nowrap;
+}
+
+.dim {
+  opacity: 0.6;
+}
+
+.status-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 7px;
+  min-width: 0;
+  margin-left: 18px;
 }
 
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 26px;
-  padding: 0 11px;
+  gap: 7px;
+  min-height: 25px;
+  padding: 0 9px;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 99px;
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
 
   &::before {
     content: "";
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--bad);
   }
@@ -96,24 +109,80 @@ h1 {
   }
 }
 
+// the section tabs, docked to the right and as tall as the header
+.tabs {
+  display: flex;
+  align-items: stretch;
+  flex: none;
+  margin-left: auto;
+  border-left: 1px solid var(--line);
+}
+
+.tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 86px;
+  padding: 0 13px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.14s;
+
+  // a short hairline between tabs
+  & + &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1px;
+    height: 18px;
+    transform: translateY(-50%);
+    background: var(--line);
+  }
+
+  &:hover {
+    color: var(--text);
+  }
+
+  // the section the user is in
+  &[aria-current="page"] {
+    color: var(--gold-hi);
+    text-shadow: 0 0 10px color-mix(in oklch, var(--accent) 24%, transparent);
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 11px;
+      right: 11px;
+      bottom: 0;
+      height: 2px;
+      background: var(--accent);
+      box-shadow: 0 0 9px color-mix(in oklch, var(--accent) 48%, transparent);
+    }
+  }
+}
+
 .resets {
   display: flex;
   align-items: center;
-  margin-left: auto;
 }
 
 .reset {
   padding: 0 16px;
-  font-size: 13px;
   white-space: nowrap;
-  color: var(--muted);
+
+  &:first-child {
+    padding-left: 0;
+  }
 
   & + & {
     border-left: 1px solid var(--line);
-  }
-
-  &:last-child {
-    padding-right: 0;
   }
 
   b {
@@ -159,12 +228,6 @@ h1 {
     opacity: 0.6;
     cursor: default;
   }
-
-  // the section the user is in
-  &[aria-current="page"] {
-    background: var(--panel-2);
-    border-color: var(--accent);
-  }
 }
 
 .detail {
@@ -181,7 +244,7 @@ main {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 26px 24px 36px;
+  padding: 18px 24px 22px;
 }
 
 .page-h {
@@ -207,6 +270,88 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
+}
+
+// wraps a card and its trash: a button cannot hold another button
+.slot {
+  position: relative;
+  display: grid;
+  transition: transform 0.16s;
+
+  &:hover,
+  &:focus-within {
+    transform: translateY(-2px);
+  }
+
+  &:has(.card:active) {
+    transform: none;
+  }
+
+  &:hover .trash,
+  &:focus-within .trash,
+  .trash:focus-visible {
+    opacity: 1;
+  }
+}
+
+.trash {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: color-mix(in oklch, var(--panel) 80%, transparent);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--bad);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--panel-2);
+    border-color: var(--bad);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  // no hover on touch screens: keep it reachable
+  @media (hover: none) {
+    opacity: 1;
+  }
+}
+
+.confirm {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 16px;
+  text-align: center;
+  color: var(--muted);
+  background: color-mix(in oklch, var(--panel) 94%, transparent);
+  border: 1px solid var(--bad);
+  border-radius: 5px;
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn.danger {
+    border-color: var(--bad);
+  }
 }
 
 .card {
@@ -249,16 +394,11 @@ main {
 
   &:hover,
   &:focus-visible {
-    transform: translateY(-2px);
     border-color: var(--gold);
     box-shadow:
       inset 0 1px 0 var(--gold-line),
       0 10px 26px rgb(0 0 0 / 0.4),
       0 0 0 1px color-mix(in oklch, var(--accent) 20%, transparent);
-  }
-
-  &:active {
-    transform: none;
   }
 }
 
@@ -320,29 +460,68 @@ main {
 }
 
 .foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 24px;
   padding: 10px 24px;
   border-top: 1px solid var(--line);
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: var(--muted);
+}
+
+// narrow windows: the tabs drop to their own row, spread across the width
+@media (max-width: 860px) {
+  .top {
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 8px 14px;
+  }
+
+  .brand {
+    min-height: 48px;
+  }
+
+  .status-group {
+    margin-left: 12px;
+  }
+
+  .tabs {
+    flex: 1 0 100%;
+    height: 46px;
+    margin-top: 4px;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+
+    .tab {
+      flex: 1;
+      min-width: 0;
+    }
+  }
 }
 
 @media (max-width: 640px) {
   .top {
-    padding: 8px 16px;
+    padding: 8px 10px;
   }
 
-  // the reset timers drop to their own row
-  .resets {
-    flex-basis: 100%;
-    margin-left: 0;
+  .brand {
+    gap: 8px;
   }
 
-  .reset:first-child {
-    padding-left: 0;
+  h1 {
+    font-size: 18px;
+  }
+
+  .pill {
+    min-height: 24px;
+    padding: 0 7px;
+    font-size: 10px;
   }
 
   main {
-    padding: 18px 16px 28px;
+    padding: 14px 16px 22px;
   }
 
   .banner,
@@ -352,8 +531,8 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card:hover,
-  .card:focus-visible {
+  .slot:hover,
+  .slot:focus-within {
     transform: none;
   }
 }

@@ -16,6 +16,11 @@ use crate::events::Event;
 /// A fight ends this long after its last hit.
 /// ponytail: fixed gap; per-boss logic if a boss that goes untargetable splits real fights.
 const FIGHT_GAP_US: u64 = 10_000_000;
+
+/// Hits still in flight when a boss reaches 0 HP (a spirit's and a tick landed 0.10 and 0.15 s later
+/// in a `spirit-1` boss) count in its fight; the fight closes at the first event after this.
+/// ponytail: fixed 1 s; raise it if a slower tail shows up.
+const BOSS_TAIL_US: u64 = 1_000_000;
 /// Finished fights kept.
 /// ponytail: fixed cap; make it a setting if anyone wants more.
 pub const MAX_HISTORY: usize = 50;
@@ -120,6 +125,8 @@ struct Fight {
     /// The foe the fight shows, and when it was picked.
     target: Option<u32>,
     picked_us: u64,
+    /// When a boss of this fight reached 0 HP: the fight closes at the first event after that instant.
+    boss_dead_us: Option<u64>,
 }
 
 impl Fight {
@@ -298,7 +305,10 @@ impl Meter {
 
     /// Move the clock: closes the fight when `FIGHT_GAP_US` passed since its last hit. `true` when it closed.
     pub fn advance(&mut self, ts_us: u64) -> bool {
-        match self.fight.take_if(|f| ts_us.saturating_sub(f.last_us) > FIGHT_GAP_US) {
+        let over = |f: &Fight| {
+            ts_us.saturating_sub(f.last_us) > FIGHT_GAP_US || f.boss_dead_us.is_some_and(|d| ts_us > d + BOSS_TAIL_US)
+        };
+        match self.fight.take_if(|f| over(f)) {
             Some(f) => {
                 self.finish(&f);
                 true
@@ -340,6 +350,9 @@ impl Meter {
         let Some(fight) = self.fight.as_mut() else { return false };
         let Some(foe) = fight.foes.get_mut(&entity) else { return false };
         (foe.hp, foe.max_hp) = (hp.or(foe.hp), max.or(foe.max_hp));
+        if hp == Some(0) && foe.stagger.is_some() {
+            fight.boss_dead_us.get_or_insert(ts_us);
+        }
         if hp == Some(0) && fight.target == Some(entity) {
             fight.pick(ts_us);
         }
@@ -384,6 +397,12 @@ impl Meter {
             who(fight, &self.players, target).taken.add(amount, crit);
             return true;
         }
+        // only a hit on a boss opens a fight; once open, it counts its adds and the damage taken too
+        // ponytail: the stagger gauge is the boss marker; a boss without one is not metered. Add a
+        // curated boss list if one shows up.
+        if self.fight.is_none() && !(dealt && self.staggers.contains_key(&target)) {
+            return false;
+        }
         let taken = on_me || on_other;
         let template = self.templates.get(&target).copied().unwrap_or(0);
         let fight = self.fight.get_or_insert_with(|| Fight {
@@ -393,6 +412,7 @@ impl Meter {
             foes: BTreeMap::new(),
             target: None,
             picked_us: ts_us,
+            boss_dead_us: None,
         });
         fight.last_us = ts_us;
         if dealt {
@@ -506,6 +526,11 @@ mod tests {
         Event::Hit { target, attacker, skill, amount, crit: Some(false) }
     }
 
+    /// The stagger gauge that marks a boss: only a hit on one opens a fight.
+    fn stagger(entity: u32) -> Event {
+        Event::Stagger { entity, state: 1, value: Some(10), max: Some(10) }
+    }
+
     const S: u64 = 1_000_000;
 
     #[test]
@@ -513,6 +538,7 @@ mod tests {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
         m.apply(&at(S, Event::Spawn { entity: 5, template: 2_100_025, x: 0, y: 0, max_hp: None }));
+        m.apply(&at(S, stagger(5)));
         assert!(m.apply(&at(2 * S, hit(5, 77, 14_090_130, 100))));
         assert!(m.apply(&at(3 * S, Event::Hit { target: 5, attacker: 77, skill: 14_090_130, amount: 50, crit: Some(true) })));
         // a tick: a hit, but not a direct one
@@ -535,11 +561,14 @@ mod tests {
     fn hits_between_strangers_are_ignored_and_a_hit_on_the_player_is_damage_taken() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
+        m.apply(&at(0, stagger(5)));
         assert!(!m.apply(&at(S, hit(5, 8, 1, 10)))); // neither is a player
+        assert!(!m.apply(&at(2 * S, hit(77, 5, 1, 30)))); // damage taken alone opens no fight
         assert_eq!(m.to_json()["current"], Value::Null);
-        assert!(m.apply(&at(2 * S, hit(77, 5, 1, 30))));
+        assert!(m.apply(&at(3 * S, hit(5, 77, 1, 10))));
+        assert!(m.apply(&at(4 * S, hit(77, 5, 1, 30))));
         let p = m.to_json()["current"]["players"][0].clone();
-        assert_eq!((p["taken"].clone(), p["dealt"].clone()), (json!({"amount": 30, "hits": 1}), json!({"amount": 0, "hits": 0, "direct": 0, "crits": 0})));
+        assert_eq!((p["taken"].clone(), p["dealt"].clone()), (json!({"amount": 30, "hits": 1}), json!({"amount": 10, "hits": 1, "direct": 1, "crits": 0})));
     }
 
     #[test]
@@ -547,6 +576,7 @@ mod tests {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
         m.apply(&at(0, Event::Summon { entity: 500, owner: 77 }));
+        m.apply(&at(0, stagger(5)));
         assert!(m.apply(&at(S, hit(5, 500, 14_170_037, 40))));
         let p = m.to_json()["current"]["players"][0].clone();
         assert_eq!((p["entity"].clone(), p["dealt"].clone()), (json!(77), json!({"amount": 40, "hits": 1, "direct": 1, "crits": 0})));
@@ -561,6 +591,7 @@ mod tests {
         m.apply(&at(0, identity(77)));
         m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
         m.apply(&at(0, Event::Spawn { entity: 5, template: 2_100_025, x: 0, y: 0, max_hp: None }));
+        m.apply(&at(0, stagger(5)));
         assert!(m.apply(&at(S, hit(5, 77, 1, 10)))); // the player engages 5 first
         assert!(m.apply(&at(S, hit(5, 88, 2, 30))));
         assert!(m.apply(&at(S, hit(88, 5, 3, 4))));
@@ -589,6 +620,8 @@ mod tests {
         m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
         m.apply(&at(0, Event::Summon { entity: 500, owner: 77 }));
         m.apply(&at(0, Event::Spawn { entity: 5, template: 2_100_025, x: 0, y: 0, max_hp: None }));
+        m.apply(&at(0, stagger(5)));
+        m.apply(&at(0, stagger(6)));
         assert!(!m.apply(&at(S, hit(5, 88, 2, 30)))); // 5 not engaged: no fight
         assert!(!m.apply(&at(S, hit(88, 5, 3, 4)))); // nor a hit by 5 on 88
         assert_eq!(m.to_json()["current"], Value::Null);
@@ -618,6 +651,7 @@ mod tests {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
         m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(0, stagger(5)));
         assert!(!m.apply(&at(S, hit(88, 77, 1, 50)))); // an ally heal read as a hit: no fight
         assert_eq!(m.to_json()["current"], Value::Null);
         assert!(m.apply(&at(2 * S, hit(5, 77, 1, 10))));
@@ -646,6 +680,7 @@ mod tests {
         m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
         m.apply(&at(0, Event::Spawn { entity: 5, template: 2_100_025, x: 0, y: 0, max_hp: None }));
         m.apply(&at(0, Event::Spawn { entity: 7, template: 2_100_025, x: 0, y: 0, max_hp: None }));
+        m.apply(&at(0, stagger(5)));
         assert!(!m.apply(&at(S, hit(88, 7, 3, 10)))); // no fight yet: not counted
         assert!(m.apply(&at(2 * S, hit(5, 77, 1, 10)))); // the player engages 5 only
         assert!(m.apply(&at(2 * S, hit(5, 88, 2, 30)))); // 88 is in the fight
@@ -671,6 +706,7 @@ mod tests {
         m.apply(&at(0, identity(77)));
         m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
         m.apply(&at(0, Event::Summon { entity: 500, owner: 77 }));
+        m.apply(&at(0, stagger(5)));
         assert!(!m.apply(&at(S, heal(77, 77, 50)))); // no fight: not counted, and HP unknown is full
         m.apply(&at(S, Event::Hp { entity: 77, hp: Some(900), max: None }));
         assert!(m.apply(&at(2 * S, hit(5, 77, 1, 10))));
@@ -701,11 +737,12 @@ mod tests {
         m.apply(&at(0, Event::Spawn { entity: 6, template: 2_100_026, x: 0, y: 0, max_hp: Some(500) }));
         m.apply(&at(0, Event::Stagger { entity: 5, state: 1, value: Some(240), max: Some(240) }));
         assert!(!m.apply(&at(0, hp(5, 1000)))); // no fight yet
-        assert!(m.apply(&at(S, hit(77, 5, 1, 9)))); // damage taken only: no target
-        assert_eq!(m.to_json()["current"]["target"], Value::Null);
-        // one packet: 6 first, then more damage on 5; the pick is redone at the same instant
+        assert!(!m.apply(&at(S, hit(77, 5, 1, 9)))); // damage taken alone: no fight
+        assert_eq!(m.to_json()["current"], Value::Null);
+        // one packet: the boss opens the fight, 6 ties and takes the pick, then 5 gets more damage; the pick is redone at the same instant
+        m.apply(&at(2 * S, hit(5, 77, 1, 1)));
         m.apply(&at(2 * S, hit(6, 77, 1, 1)));
-        m.apply(&at(2 * S, hit(5, 77, 1, 100)));
+        m.apply(&at(2 * S, hit(5, 77, 1, 99)));
         assert!(m.apply(&at(2 * S, hp(5, 900))));
         let want = json!({"entity": 5, "template": 2_100_025, "hp": 900, "max_hp": 1000, "stagger": {"state": 1, "value": 240, "max": 240}});
         assert_eq!(m.to_json()["current"]["target"], want);
@@ -715,14 +752,13 @@ mod tests {
         assert!(m.apply(&at(3 * S, Event::Stagger { entity: 5, state: 3, value: None, max: None })));
         assert_eq!(m.to_json()["current"]["target"]["entity"], 5);
         assert_eq!(m.to_json()["current"]["target"]["stagger"], json!({"state": 3, "value": null, "max": null}));
-        // 5 dies: the living 6 is the target
+        // 5 dies: the living 6 is the target until the fight closes with its boss
         assert!(m.apply(&at(4 * S, hp(5, 0))));
         assert_eq!(m.to_json()["current"]["target"]["entity"], 6);
-        // 6 dies and despawns: it stays the finished fight's target
-        m.apply(&at(5 * S, hit(6, 77, 1, 199)));
-        m.apply(&at(5 * S, hp(6, 0)));
-        m.apply(&at(6 * S, Event::Gone { entity: 6 }));
-        m.advance(16 * S);
+        // 6 dies and despawns before the fight closes: it stays that finished fight's target
+        m.apply(&at(4 * S + 500_000, hp(6, 0)));
+        m.apply(&at(4 * S + 600_000, Event::Gone { entity: 6 }));
+        m.advance(6 * S);
         assert_eq!(
             m.history_json()[0]["target"],
             json!({"entity": 6, "template": 2_100_026, "hp": 0, "max_hp": 500, "stagger": null})
@@ -733,6 +769,7 @@ mod tests {
     fn a_foe_killed_by_its_first_hit_is_the_target_when_no_foe_lives() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
+        m.apply(&at(0, stagger(5)));
         // one packet: the HP 0 comes before the hit that killed it
         m.apply(&at(S, Event::Hp { entity: 5, hp: Some(0), max: None }));
         assert!(m.apply(&at(S, hit(5, 77, 1, 100))));
@@ -750,6 +787,7 @@ mod tests {
     fn a_fight_ends_after_ten_seconds_without_hits_and_the_next_hit_starts_another() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
+        m.apply(&at(0, stagger(5)));
         m.apply(&at(S, hit(5, 77, 1, 10)));
         assert!(!m.advance(10 * S)); // nine seconds since the last hit: still the same fight
         assert!(m.advance(11 * S + 1));
@@ -762,9 +800,62 @@ mod tests {
     }
 
     #[test]
+    fn each_boss_gets_its_own_fight() {
+        let boss = |entity: u32, template: u32| {
+            [
+                Event::Spawn { entity, template, x: 0, y: 0, max_hp: Some(1000) },
+                Event::Stagger { entity, state: 1, value: Some(10), max: Some(10) },
+            ]
+        };
+        let mut m = Meter::default();
+        m.apply(&at(0, identity(77)));
+        m.apply(&at(0, Event::Spawn { entity: 4, template: 2_100_025, x: 0, y: 0, max_hp: None }));
+        for e in boss(5, 2_300_909).into_iter().chain(boss(6, 2_300_910)) {
+            m.apply(&at(0, e));
+        }
+        // trash opens no fight, then a boss does
+        assert!(!m.apply(&at(S, hit(4, 77, 1, 10))));
+        m.apply(&at(2 * S, hit(5, 77, 1, 100)));
+        assert_eq!(m.closed(), 0);
+        // the boss dies: hits in flight (the same instant, and 0.2 s later) still count
+        m.apply(&at(3 * S, Event::Hp { entity: 5, hp: Some(0), max: None }));
+        m.apply(&at(3 * S, hit(5, 77, 1, 50)));
+        m.apply(&at(3 * S + 200_000, hit(5, 77, 1, 25)));
+        assert_eq!(m.closed(), 0);
+        // a second boss right away: the first fight is over, another starts
+        m.apply(&at(4 * S + 1, hit(6, 77, 1, 70)));
+        assert_eq!(m.closed(), 1);
+        let first = &m.history_json()[0];
+        assert_eq!((first["target"]["template"].clone(), first["players"][0]["dealt"]["amount"].clone()), (json!(2_300_909), json!(175)));
+        assert_eq!(m.to_json()["current"]["target"]["template"], 2_300_910);
+    }
+
+    #[test]
+    fn only_a_boss_opens_a_fight_and_the_closed_boss_fight_stays_the_latest() {
+        let mut m = Meter::default();
+        m.apply(&at(0, identity(77)));
+        m.apply(&at(0, Event::Spawn { entity: 4, template: 2_100_025, x: 0, y: 0, max_hp: None }));
+        m.apply(&at(0, stagger(5)));
+        assert!(!m.apply(&at(S, hit(4, 77, 1, 10)))); // trash alone: no fight
+        assert!(!m.apply(&at(S, hit(77, 4, 1, 10)))); // nor damage taken from it
+        assert_eq!(m.to_json()["current"], Value::Null);
+        assert!(m.apply(&at(2 * S, hit(5, 77, 1, 100))));
+        assert!(m.apply(&at(2 * S, hit(4, 77, 1, 10)))); // inside a boss fight its adds count
+        assert_eq!(m.to_json()["current"]["players"][0]["targets"].as_array().unwrap().len(), 2);
+        m.apply(&at(3 * S, Event::Hp { entity: 5, hp: Some(0), max: None }));
+        assert!(m.advance(5 * S));
+        // trash after the boss's fight does not replace it
+        assert!(!m.apply(&at(6 * S, hit(4, 77, 1, 10))));
+        assert_eq!(m.to_json()["current"], Value::Null);
+        assert_eq!(m.history_json().as_array().unwrap().len(), 1);
+        assert_eq!(m.history_json()[0]["players"][0]["dealt"]["amount"], 110);
+    }
+
+    #[test]
     fn a_connection_ending_closes_the_fight_and_forgets_who_is_who() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
+        m.apply(&at(0, stagger(5)));
         m.apply(&at(S, hit(5, 77, 1, 10)));
         assert!(m.end_connection());
         assert!(!m.end_connection()); // nothing left to close
@@ -777,6 +868,7 @@ mod tests {
     fn history_keeps_the_last_fights_only() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
+        m.apply(&at(0, stagger(5)));
         for i in 0..MAX_HISTORY as u64 + 3 {
             m.apply(&at(i * 20 * S, hit(5, 77, 1, 1)));
         }
@@ -791,9 +883,11 @@ mod tests {
     fn clearing_the_history_keeps_the_open_fight_and_the_closed_count() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
+        m.apply(&at(0, stagger(5)));
         m.apply(&at(S, hit(5, 77, 1, 10)));
         m.end_connection();
         m.apply(&at(2 * S, identity(77)));
+        m.apply(&at(2 * S, stagger(5)));
         m.apply(&at(3 * S, hit(5, 77, 1, 10)));
         assert_eq!(m.history_json().as_array().unwrap().len(), 1);
         m.clear_history();
@@ -810,6 +904,7 @@ mod tests {
         assert!(load_history(&path).is_empty());
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
+        m.apply(&at(0, stagger(5)));
         m.apply(&at(S, hit(5, 77, 9, 10)));
         m.end_connection();
         save_history(&path, &m).unwrap();

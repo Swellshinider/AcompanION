@@ -74,9 +74,9 @@ tasks:
       - pnpm tauri dev
 
   app:build:
-    desc: Build the release app (no installer)
+    desc: Build the release app (no installer; the installer is built by the release workflow)
     cmds:
-      - pnpm tauri build
+      - pnpm tauri build --no-bundle
 
   web:test:
     desc: Run the frontend unit tests once

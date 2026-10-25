@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import { pushRecent } from './fight';
 
 /** Wire shapes from `src-tauri` (`Character::to_json`, `app::Status::to_json`). Times are capture µs since the epoch. */
 export interface CounterValue { id: number; value: number; ms: boolean; updated_us: number }
@@ -41,16 +42,22 @@ export interface MeterTarget {
 export interface Fight { start_us: number; end_us: number; me: number | null; players: MeterPlayer[]; target: MeterTarget | null }
 /** What `meter://update` carries without `history`. */
 export interface Meter { me: number | null; current: Fight | null; fights: number }
-export type StatusId = 'starting' | 'running' | 'save_failed' | 'not_admin' | 'npcap_missing' | 'no_adapter' | 'state_unreadable' | 'state_in_use' | 'error';
+export type StatusId = 'starting' | 'running' | 'save_failed' | 'not_admin' | 'npcap_missing' | 'no_adapter' | 'state_unreadable' | 'state_in_use' | 'reconnecting' | 'error';
 export interface CaptureStatus { id: StatusId; detail: string | null }
 
-const key = (c: Character) => `${c.server}\u0000${c.name}`;
+const key = (c: Pick<Character, 'server' | 'name'>) => `${c.server}\u0000${c.name}`;
 
 /** `base` with every update replacing the character with the same (server, name). */
 export function merge(base: Character[], updates: Character[]): Character[] {
   const byKey = new Map(base.map(c => [key(c), c]));
   for (const u of updates) byKey.set(key(u), u);
   return [...byKey.values()];
+}
+
+/** `base` without the characters with these (server, name). */
+export function without(base: Character[], removed: Pick<Character, 'server' | 'name'>[]): Character[] {
+  const gone = new Set(removed.map(key));
+  return base.filter(c => !gone.has(key(c)));
 }
 
 @Injectable({ providedIn: 'root' })
@@ -65,6 +72,8 @@ export class CharactersService {
   readonly meter = signal<Meter | null>(null);
   /** Every finished fight, oldest first (`meter://update` sends it only when a fight closed). */
   readonly fights = signal<Fight[]>([]);
+  /** The open fight's last few seconds of snapshots, for the current DPS (`recentRates`). */
+  readonly recent = signal<Fight[]>([]);
   private statusSeen = false;
   private gameSeen = false;
   private radarSeen = false;
@@ -79,6 +88,7 @@ export class CharactersService {
   private async connect(): Promise<void> {
     try {
       await listen<Character[]>('characters://update', e => this.characters.update(cs => merge(cs, e.payload)));
+      await listen<Pick<Character, 'server' | 'name'>[]>('characters://removed', e => this.characters.update(cs => without(cs, e.payload)));
       await listen<CaptureStatus>('capture://status', e => {
         this.statusSeen = true;
         this.status.set(e.payload);
@@ -95,6 +105,7 @@ export class CharactersService {
         const { history, ...meter } = e.payload;
         this.meterSeen = true;
         this.meter.set(meter);
+        this.recent.update(r => pushRecent(r, meter.current));
         if (history) {
           this.fightsSeen = true;
           this.fights.set(history);
@@ -125,7 +136,22 @@ export class CharactersService {
     return invoke<void>('meter_clear');
   }
 
+  /** Removes a saved character; the capture thread does it and the next update drops it from the list. */
+  forget(c: Pick<Character, 'server' | 'name'>): Promise<void> {
+    return invoke<void>('forget_character', { server: c.server, name: c.name });
+  }
+
   restartAsAdmin(): Promise<boolean> {
     return invoke<boolean>('restart_as_admin');
+  }
+
+  /** The newer version on GitHub Releases, or null when up to date. */
+  checkUpdate(): Promise<string | null> {
+    return invoke<string | null>('check_update');
+  }
+
+  /** Downloads and installs the update found by `checkUpdate`; the app restarts. */
+  installUpdate(): Promise<void> {
+    return invoke<void>('install_update');
   }
 }

@@ -30,10 +30,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "messages.*.xlf",
+                "input": "src/locale",
+                "output": "locale"
               }
             ],
             "styles": ["src/styles.scss"],
-            "polyfills": ["@angular/localize/init"]
+            "polyfills": ["@angular/localize/init"],
+            "loader": { ".xlf": "text" }
           },
           "configurations": {
             "production": {
@@ -46,7 +52,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
-                  "maximumError": "12kB"
+                  "maximumError": "16kB"
                 }
               ],
               "outputHashing": "all",

@@ -6,7 +6,7 @@ Read [`AGENTS.md`](AGENTS.md) first (it applies to people as well as coding agen
 
 1. Branch from `main` with a prefix: `feature/*`, `bugfix/*`, `docs/*`, `refactor/*`, `test/*` or `chore/*`.
 2. Keep the change small and follow the existing structure. No new dependency without a stated reason.
-3. Run `task check` (clippy, Rust tests, frontend tests). Run `task i18n` if you changed a user-facing string.
+3. Run `task check` (clippy, Rust tests, frontend tests). Run `task i18n` if you changed a user-facing string, and translate it in every `src/locale/messages.<locale>.xlf` (and give game names every language key) in the same change; the frontend tests check this.
 4. Commit with a conventional, imperative message (`feat: ...`, `fix: ...`, `docs: ...`, `chore: ...`, `test: ...`).
 5. Open a pull request against `main`. `main` only accepts pull requests that pass CI and are squash-merged.
 

@@ -1,13 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { OverlayPanel } from './overlay-panel';
+import { OverlayView } from '../overlay-settings';
 
-const stored = () => JSON.parse(localStorage.getItem('acompanion.overlay')!);
+const stored = (view: OverlayView = 'radar') => JSON.parse(localStorage.getItem(`acompanion.overlay.${view}`)!);
 const tick = () => new Promise(r => setTimeout(r));
 
-function render(invoke = vi.fn(async (..._: unknown[]) => undefined)) {
+function render(invoke = vi.fn(async (..._: unknown[]) => undefined), view: OverlayView = 'radar') {
   vi.stubGlobal('__TAURI_INTERNALS__', { invoke });
   const f = TestBed.createComponent(OverlayPanel);
+  f.componentRef.setInput('view', view);
   f.detectChanges();
   const el = f.nativeElement as HTMLElement;
   const input = (name: string) => el.querySelector<HTMLInputElement>(`input[name="${name}"]`)!;
@@ -28,13 +30,13 @@ describe('OverlayPanel', () => {
     open.dispatchEvent(new Event('change'));
     await tick();
     f.detectChanges();
-    expect(calls(invoke, 'overlay')[0][1]).toEqual({ open: true, onTop: true, clickThrough: false, bounds: null });
+    expect(calls(invoke, 'overlay')[0][1]).toEqual({ view: 'radar', open: true, onTop: true, clickThrough: false, bounds: null });
     expect(calls(invoke, 'plugin:event|emit_to')).toHaveLength(1);
     expect(stored().open).toBe(true);
   });
 
   it('passes click-through and always-on-top to Rust', async () => {
-    localStorage.setItem('acompanion.overlay', JSON.stringify({ open: true }));
+    localStorage.setItem('acompanion.overlay.radar', JSON.stringify({ open: true }));
     const { input, invoke } = render();
     await tick();
     const through = input('clickThrough');
@@ -60,7 +62,7 @@ describe('OverlayPanel', () => {
 
   it('keeps the position the overlay saved while the panel was open', async () => {
     const { input } = render();
-    localStorage.setItem('acompanion.overlay', JSON.stringify({ ...stored(), bounds: [5, 6, 420, 300] }));
+    localStorage.setItem('acompanion.overlay.radar', JSON.stringify({ ...stored(), bounds: [5, 6, 420, 300] }));
     const range = input('opacity');
     range.value = '50';
     range.dispatchEvent(new Event('input'));
@@ -68,18 +70,23 @@ describe('OverlayPanel', () => {
     expect(stored()).toEqual(expect.objectContaining({ opacity: 50, bounds: [5, 6, 420, 300] }));
   });
 
-  it('switches the view', async () => {
-    const { f, el } = render();
-    const dailies = el.querySelectorAll<HTMLInputElement>('input[name="view"]')[1];
-    dailies.dispatchEvent(new Event('change'));
+  it('keeps each overlay to itself: its own storage and its own window', async () => {
+    const { input, invoke } = render(undefined, 'meter');
+    const open = input('open');
+    open.checked = true;
+    open.dispatchEvent(new Event('change'));
     await tick();
-    f.detectChanges();
-    expect(stored().view).toBe('dailies');
+    expect(calls(invoke, 'overlay')[0][1]).toEqual(expect.objectContaining({ view: 'meter', open: true }));
+    expect(stored('meter').open).toBe(true);
+    expect(localStorage.getItem('acompanion.overlay.radar')).toBeNull();
   });
 
-  it('reopens at start when it was open, and does not remember an overlay that failed to open', async () => {
-    localStorage.setItem('acompanion.overlay', JSON.stringify({ open: true }));
-    const { f, el, invoke } = render(vi.fn(async () => { throw new Error('no window'); }));
+  it('does not remember an overlay that failed to open', async () => {
+    const { f, el, input, invoke } = render(vi.fn(async () => { throw new Error('no window'); }));
+    const open = input('open');
+    open.checked = true;
+    open.dispatchEvent(new Event('change'));
+    f.detectChanges(); // the browser re-renders right after the click, then again when the work settles
     await tick();
     f.detectChanges();
     expect(calls(invoke, 'overlay')).toHaveLength(1);

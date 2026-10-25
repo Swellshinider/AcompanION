@@ -140,7 +140,7 @@
             <image [attr.href]="r.image.href" [attr.x]="r.image.x" [attr.y]="r.image.y" [attr.width]="r.image.w" [attr.height]="r.image.h" />
             @for (m of r.monsters; track m.id) {
               <path [class]="'lv' + m.petLevel" [class.dim]="active() !== null && active()!.id !== m.id" [attr.d]="m.d" [attr.stroke-width]="unit()"
-                (pointerenter)="hovered.set(m.id)" (pointerleave)="hovered.set(null)" (click)="select(m, false)" />
+                (pointerenter)="hovered.set(m.id)" (pointermove)="tipMove($event)" (pointerleave)="hovered.set(null)" (click)="select(m, false)" />
             }
             @if (active(); as a) {
               <path class="halo" [attr.d]="a.d" [attr.stroke-width]="unit() * 2.6" />
@@ -181,6 +181,9 @@
               }
             </ul>
           }
+          @if (overlay() && hovered() !== null && active(); as a) {
+            <span class="tip" [style.left.px]="tipAt()?.x" [style.top.px]="tipAt()?.y">{{ a.name }}</span>
+          }
         </div>
         }
         <div class="stage-foot">
@@ -193,7 +196,7 @@
           @if (showRoute()) {
             <p class="route-note" data-route>
               @if (next(); as n) {
-                <b i18n="@@farmRouteNext">Next {{ n.n }}/{{ n.of }}</b> · {{ n.monsters }} · {{ n.pets }} · <span i18n="@@farmRouteSouls">{{ n.souls | number }} souls left</span>
+                <b i18n="@@farmRouteNext">Next: {{ n.monster }}</b>
               } @else if (!route()) {
                 <span i18n="@@farmRouteNone">No open pets to farm here.</span>
               }

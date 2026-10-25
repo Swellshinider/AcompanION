@@ -8,24 +8,30 @@
   A Windows companion for AION 2 that passively reads game traffic and tracks every character you play.
 </p>
 
-> **Status: early development.** The protocol decoder, the live engine and the desktop app (Tauri + Angular) work, but only from source: there is no installer. The curated game data (names, caps, resets) is partial, so some counters and dailies are not shown yet. See [`docs/status.md`](docs/status.md) for exactly where things stand.
+> **Status: early development.** The protocol decoder, the live engine and the desktop app (Tauri + Angular) work and ship as a Windows installer (unsigned, so SmartScreen warns on the first install). The curated game data (names, caps, resets) is partial, so some counters and dailies are not shown yet. See [`docs/status.md`](docs/status.md) for exactly where things stand.
 
 ## Features
 
-Working today (from source):
+Working today:
 
 - **Passive capture and own decoder.** Npcap capture of every AION 2 connection, TCP reassembly, frame and LZ4 decoding, no keys needed.
 - **Per-character dashboard.** Every character seen, with tickets, energy, dailies and weeklies done against their cap, GS (item level) and combat power; updates live and survives restarts.
 - **Pets.** The account's pet collection (souls, levels, closest to the next level), a farm map of the monsters that drop pet souls, a live radar of the monsters in view and your last known position, and a suggested farm route for the pets you have not maxed.
-- **Overlay.** A movable, resizable, translucent window with the radar, the dailies or the DPS meter. Opacity, always on top and click-through are settings.
+- **Overlay.** A movable, resizable, translucent window with the radar, the dailies or the DPS meter, each its own overlay that can be open at the same time. Opacity, always on top and click-through are settings of each.
 - **DPS meter.** Fights ranked by damage with DPS, share, crits, healing and damage taken, a per-player detail (skills, targets) and a saved history.
-- **Translatable UI.** Every user-facing string is extracted for translation (English first).
+- **Translatable UI.** Every user-facing string is extracted for translation. English and Brazilian Portuguese ship today, picked in Settings (or from the system language); a change to text is translated into every language in the same change (see [`docs/development.md`](docs/development.md), Translations).
 
 ## How it works
 
 1. **Passive capture.** Packets are read through [Npcap](https://npcap.com/), loaded at runtime (no SDK needed). No memory reads, no injection, no input sent to the game.
 2. **Own decoder.** Server to client traffic is length-framed and LZ4-compressed but not encrypted, so it decodes without keys (see [`docs/protocol.md`](docs/protocol.md)).
 3. **Character state.** Decoded events update a per-character state (identity, combat power, checklist counters, pets) that is saved to `%APPDATA%\AcompanION\characters.json`. Fights are saved to `meter.json` next to it.
+
+## Install
+
+Download `AcompanION_<version>_x64-setup.exe` from the [latest release](https://github.com/Swellshinider/AcompanION/releases/latest) and run it. It installs for the current user (no administrator prompt) and you remove it in Settings > Apps. The installer checks for the [Npcap](https://npcap.com/) runtime and, if it is missing, offers to download and run Npcap's official installer (you click through its wizard) or to open its download page. Capture needs administrator rights (the app offers "Restart as admin").
+
+On start the app checks the latest release; when a newer one exists, a banner offers "Update and restart".
 
 ## Quick start
 
@@ -63,7 +69,7 @@ task live -- --device "<adapter name>"             # pick the adapter from `task
 ```powershell
 pnpm install
 task app          # elevated terminal to capture; unelevated shows saved characters and offers "Restart as admin"
-task app:build    # release exe, no installer
+task app:build    # release exe, no installer (the installer is built by the release workflow)
 ```
 
 The dashboard lists every character seen with what is left to collect and updates live. It reads and writes the same state file as `task live`.
@@ -92,6 +98,17 @@ The same tools as above are enough; the Angular and Tauri CLIs are dev dependenc
 | Build the crate and the `re` tool | `task build` |
 | Extract translatable strings | `task i18n` |
 
+### Releasing
+
+The version lives in `src-tauri/Cargo.toml` only. One-time setup: `pnpm tauri signer generate -w <path>`, put the public key in `plugins.updater.pubkey` of `src-tauri/tauri.conf.json`, and add the private key and its password as the repository secrets `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Never commit the private key: without it nobody can ship updates, and anyone who has it can.
+
+1. Bump `version` in `src-tauri/Cargo.toml` (and `Cargo.lock`) through a pull request and merge it.
+2. On `main`: `git tag vX.Y.Z && git push origin vX.Y.Z`. The `Release` workflow builds the installer and creates a **draft** release.
+3. Write the release notes into the draft (`gh release edit vX.Y.Z -R Swellshinider/AcompanION --notes-file <file>`), starting from this version's section of `docs/patch-notes.md` (then put the date on its heading and open the next one). They are for players, not developers: plain language, what is new or fixed in terms of what the user sees, no module names, commit hashes or jargon. Keep the install steps and the SmartScreen note. Do not paste the commit list.
+4. Check the draft and publish it. Only then do installed apps see the update.
+
+Hotfix for an old version: `git switch -c release/X.Y vX.Y.Z`, fix, bump the patch version, tag `vX.Y.(Z+1)` on that branch.
+
 ### Reverse-engineering workflow
 
 ```powershell
@@ -118,6 +135,7 @@ If you are an LLM or AI-powered coding assistant, read [`AGENTS.md`](AGENTS.md) 
 - [`docs/architecture.md`](docs/architecture.md) - pipeline, modules, threading, state model and the desktop app
 - [`docs/protocol.md`](docs/protocol.md) - everything known about the wire protocol, with evidence
 - [`docs/decisions.md`](docs/decisions.md) - why things are the way they are
+- [`docs/patch-notes.md`](docs/patch-notes.md) - what changed for players, the source of the release notes
 - [`tools/re/README.md`](tools/re/README.md) - the Python analysis helper
 
 ## Safety and fair use
