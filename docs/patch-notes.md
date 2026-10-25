@@ -19,6 +19,11 @@ The top section is the next version, named by the patch bump of the last release
 - Settings: a **See what's in your version** button lists the changes of every version.
 - Meter: your combat power now shows next to your name, in the meter and in its overlay. Other players do not show one yet.
 
+### Improved
+
+- Meter overlay: the boss now has a dark background behind it, so it is easier to read over the game.
+- Meter overlay: the title bar that appears under the mouse no longer covers the boss's information.
+
 ## v0.2.0 (2026-10-25)
 
 ### Improved
