@@ -11,7 +11,7 @@ Where things stand and what comes next. Update it at the end of every working se
 - **Settings:** a screen (replaces the Overlay popover) with the overlay controls, close to the tray (tray icon with Open and Quit), automatic reconnection of capture when the adapter drops, and a "Check for updates now" button.
 - **Shugo Festival alert:** a pop-up in a chosen corner (top/bottom, left/right) when a round starts, with a configurable time (3 to 300 s), click to close, a chime and an on/off switch, all in Settings, shown only while the game is running. The schedule is curated (every hour on the hour: confirmed for the global version, Season 1), not read from the wire; if the game changes it, edit `SHUGO_MINUTES_UTC` in `src/app/shugo.ts`. It uses the primary monitor.
 - **Overlay:** three transparent, frameless windows, one each for the radar (minimap of the current region), the dailies and the meter, each switched on in Settings and open at the same time if wanted; each has its own opacity, always on top, click-through, saved position, auto-hide when the game is closed (the same for the radar, the dailies and the meter; the radar shows the last region the player was seen in, kept in `localStorage`, until the game says where they are). Its border and title bar show only on hover, and the meter view has no background (opacity fades only its bars).
-- **Combat meter:** damage hits and ticks, crits, summons credited to their owner, players in view, heals, overheal, damage taken and the fight's target; a fight opens only on a hit on a boss (a foe with a stagger gauge; normal monsters and PvP are not metered, and its adds count once it is open), closes 10 s after the last counted hit, each boss gets its own fight, a Spiritmaster's spirits count for their owner, and the last 50 are kept in `meter.json`. UI: a Meter screen (ranking, player detail with skills and targets, Clear history) and the overlay view.
+- **Combat meter:** damage hits and ticks, crits, summons credited to their owner, players in view, heals, overheal, damage taken and the fight's target; a fight opens only on a hit on a boss (a foe with a stagger gauge; normal monsters and PvP are not metered, and its adds count once it is open), closes 10 s after the last counted hit, each boss gets its own fight, a Spiritmaster's spirits count for their owner, and the last 50 are kept in `meter.json`. Combat power next to each name (the player's own from `56 36`, the others' from their spawn frame `45 36`). UI: a Meter screen (ranking, player detail with skills and targets, Clear history) and the overlay view.
 
 ## Not verified live yet
 
@@ -24,6 +24,7 @@ These have unit tests or browser checks, but no one has watched them in a real e
 - [ ] Farm route on the real maps: whether the grid cell matches the real loot range, and visited tracking while moving.
 - [ ] Meter in a real fight: the overlay view updating, a fight landing in the history 10 s after the last hit, names showing up, Clear history emptying the list and `meter.json`, `meter://update` at the real rate in a crowd.
 - [ ] Boss fights against a reference meter (Ferocious Horn Den): one fight per boss with the same duration and totals, and no small fight left after a boss's death by hits on other foes (the old merged fight had some 23 s after its boss died, on a `2920591` entity with 1-damage hits). Checked on one boss against the reference meter's log (`spirit-1`, a Spiritmaster with the Fire and Water spirits: same total, hits, duration and skills); not yet with Earth and Wind spirits or a party.
+- [ ] Others' combat power in the meter: the values match the party window on one recording (`cp-1`, 4 players); the tail rule has the one-capture limit noted in `docs/protocol.md`. Check it in a party fight in the real app.
 - [ ] A live Daeva Pass change, a live equipment change updating GS, a live Supply Emergency delivery or sale, a live Duty Mission completion.
 - [ ] The "Game detected" badge flipping with the game, and the new rows' look.
 
@@ -61,8 +62,7 @@ Layouts and evidence for everything decoded are in [protocol.md](protocol.md).
 1. Manual pass of the overlay, radar and meter in a real session (the checklist above), fixing what it finds.
 2. Real dailies: curate more of `public/gamedata.json` and decode attendance once its recording exists.
 3. Name more skills, monsters and class specialisations as recordings allow.
-4. Other players' combat power in the meter (only the local player's is shown). Record joining a party and inspecting a player, noting the CP the game shows, then search the capture for those values (likely the party list and inspect frames).
-5. Later, each with its own spec: build and macro suggestions, and opt-in input automation (separate, heavy ban-risk warnings).
+4. Later, each with its own spec: build and macro suggestions, and opt-in input automation (separate, heavy ban-risk warnings).
 
 ## Deferred issues
 

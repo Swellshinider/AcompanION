@@ -151,8 +151,8 @@ impl Fight {
     }
 
     /// `me`: the player's own entity when the fight is shown or closed (entity ids are per session);
-    /// `power` is their combat power.
-    fn to_json(&self, me: Option<u32>, power: Option<u32>) -> Value {
+    /// `power` is their combat power, `powers` the other players'.
+    fn to_json(&self, me: Option<u32>, power: Option<u32>, powers: &BTreeMap<u32, u32>) -> Value {
         let players: Vec<Value> = self
             .who
             .iter()
@@ -161,7 +161,7 @@ impl Fight {
                     "entity": entity,
                     "name": w.name,
                     "class_code": w.class_code,
-                    "combat_power": if me == Some(*entity) { power } else { None },
+                    "combat_power": if me == Some(*entity) { power } else { powers.get(entity).copied() },
                     "dealt": w.dealt.to_json(),
                     "taken": w.taken.plain(),
                     "skills": w.skills.iter().map(|(&id, &t)| keyed(t, "id", id)).collect::<Vec<_>>(),
@@ -192,8 +192,9 @@ pub struct Meter {
     /// The player's own entity, from the last identity.
     me: Option<u32>,
     /// The player's own combat power, as last sent.
-    /// ponytail: other players' combat power is not decoded yet, so only the own row carries it.
     power: Option<u32>,
+    /// `entity -> combat power` of the other players in view, from their spawn frame.
+    powers: BTreeMap<u32, u32>,
     /// `entity -> (name, class code)` of the players in view, the player's own included.
     /// Another player's hits count only on `engaged` targets.
     players: BTreeMap<u32, (String, u32)>,
@@ -232,6 +233,7 @@ impl Meter {
     fn add_player(&mut self, entity: u32, name: &str, class_code: u32) {
         if self.players.len() >= MAX_ENTITIES {
             self.players.retain(|&e, _| Some(e) == self.me);
+            self.powers.clear();
         }
         self.players.insert(entity, (name.to_owned(), class_code));
     }
@@ -256,10 +258,16 @@ impl Meter {
                 changed |= self.me != Some(entity);
                 if let Some(old) = self.me.replace(entity) {
                     self.players.remove(&old);
+                    self.powers.remove(&old);
                 }
                 self.add_player(entity, name, class_code);
             }
-            Event::PlayerSpawn { entity, ref name, class_code } => self.add_player(entity, name, class_code),
+            Event::PlayerSpawn { entity, ref name, class_code, combat_power } => {
+                self.add_player(entity, name, class_code);
+                if let Some(p) = combat_power {
+                    self.powers.insert(entity, p);
+                }
+            }
             Event::CombatPower(p) => self.power = Some(p),
             Event::Spawn { entity, template, max_hp, .. } => {
                 if self.templates.len() >= MAX_ENTITIES {
@@ -286,6 +294,7 @@ impl Meter {
                 self.staggers.remove(&entity);
                 if self.me != Some(entity) {
                     self.players.remove(&entity);
+                    self.powers.remove(&entity);
                 }
             }
             Event::Hit { target, attacker, skill, amount, crit } => {
@@ -339,6 +348,7 @@ impl Meter {
         }
         self.me = None;
         self.players.clear();
+        self.powers.clear();
         self.templates.clear();
         self.owners.clear();
         self.engaged.clear();
@@ -369,7 +379,7 @@ impl Meter {
         if self.history.len() == MAX_HISTORY {
             self.history.pop_front();
         }
-        self.history.push_back(f.to_json(self.me, self.power));
+        self.history.push_back(f.to_json(self.me, self.power, &self.powers));
         self.closed += 1;
     }
 
@@ -469,7 +479,7 @@ impl Meter {
 
     /// The meter as ids and raw values; finished fights come through `history_json`.
     pub fn to_json(&self) -> Value {
-        json!({"me": self.me, "current": self.fight.as_ref().map(|f| f.to_json(self.me, self.power)), "fights": self.history.len()})
+        json!({"me": self.me, "current": self.fight.as_ref().map(|f| f.to_json(self.me, self.power, &self.powers)), "fights": self.history.len()})
     }
 
     pub fn history_json(&self) -> Value {
@@ -592,23 +602,28 @@ mod tests {
     }
 
     #[test]
-    fn the_own_row_carries_the_combat_power_and_the_others_do_not() {
+    fn each_row_carries_its_combat_power_and_an_unknown_one_is_null() {
         let mut m = Meter::default();
         m.apply(&at(0, Event::CombatPower(12_345)));
         m.apply(&at(0, identity(77)));
-        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25, combat_power: Some(56_070) }));
+        m.apply(&at(0, Event::PlayerSpawn { entity: 89, name: "Other".into(), class_code: 25, combat_power: None }));
         m.apply(&at(0, stagger(5)));
         m.apply(&at(S, hit(5, 77, 1, 10)));
         m.apply(&at(S, hit(5, 88, 2, 30)));
-        let ps = m.to_json()["current"]["players"].clone();
-        assert_eq!((ps[0]["combat_power"].clone(), ps[1]["combat_power"].clone()), (json!(12_345), Value::Null));
+        m.apply(&at(S, hit(5, 89, 2, 30)));
+        let power = |m: &Meter, i: usize| m.to_json()["current"]["players"][i]["combat_power"].clone();
+        assert_eq!((power(&m, 0), power(&m, 1), power(&m, 2)), (json!(12_345), json!(56_070), Value::Null));
+        // gone from view: forgotten
+        m.apply(&at(S, Event::Gone { entity: 88 }));
+        assert_eq!(power(&m, 1), Value::Null);
     }
 
     #[test]
     fn players_in_view_count_with_their_name_and_class_until_they_are_gone() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
-        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25, combat_power: None }));
         m.apply(&at(0, Event::Spawn { entity: 5, template: 2_100_025, x: 0, y: 0, max_hp: None }));
         m.apply(&at(0, stagger(5)));
         assert!(m.apply(&at(S, hit(5, 77, 1, 10)))); // the player engages 5 first
@@ -627,7 +642,7 @@ mod tests {
         // a new identity replaces the old own entity
         m.apply(&at(6 * S, identity(99)));
         assert!(!m.apply(&at(7 * S, hit(5, 77, 1, 10))));
-        m.apply(&at(7 * S, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(7 * S, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25, combat_power: None }));
         assert!(m.end_connection());
         assert!(!m.apply(&at(8 * S, hit(5, 88, 2, 30)))); // forgotten with the connection
     }
@@ -636,7 +651,7 @@ mod tests {
     fn another_players_hits_count_only_on_targets_the_player_engaged() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
-        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25, combat_power: None }));
         m.apply(&at(0, Event::Summon { entity: 500, owner: 77 }));
         m.apply(&at(0, Event::Spawn { entity: 5, template: 2_100_025, x: 0, y: 0, max_hp: None }));
         m.apply(&at(0, stagger(5)));
@@ -661,7 +676,7 @@ mod tests {
         m.apply(&at(23 * S, hit(6, 77, 1, 10)));
         m.end_connection();
         m.apply(&at(24 * S, identity(77)));
-        m.apply(&at(24 * S, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(24 * S, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25, combat_power: None }));
         assert!(!m.apply(&at(25 * S, hit(6, 88, 2, 30))));
     }
 
@@ -669,7 +684,7 @@ mod tests {
     fn a_hit_on_a_player_is_never_damage_dealt() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
-        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25, combat_power: None }));
         m.apply(&at(0, stagger(5)));
         assert!(!m.apply(&at(S, hit(88, 77, 1, 50)))); // an ally heal read as a hit: no fight
         assert_eq!(m.to_json()["current"], Value::Null);
@@ -696,7 +711,7 @@ mod tests {
     fn a_player_in_the_fight_takes_damage_from_any_attacker_in_view_engaged_or_not() {
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
-        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25, combat_power: None }));
         m.apply(&at(0, Event::Spawn { entity: 5, template: 2_100_025, x: 0, y: 0, max_hp: None }));
         m.apply(&at(0, Event::Spawn { entity: 7, template: 2_100_025, x: 0, y: 0, max_hp: None }));
         m.apply(&at(0, stagger(5)));
@@ -723,7 +738,7 @@ mod tests {
         let mut m = Meter::default();
         m.apply(&at(0, Event::Hp { entity: 77, hp: None, max: Some(1000) })); // before the identity
         m.apply(&at(0, identity(77)));
-        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25, combat_power: None }));
         m.apply(&at(0, Event::Summon { entity: 500, owner: 77 }));
         m.apply(&at(0, stagger(5)));
         assert!(!m.apply(&at(S, heal(77, 77, 50)))); // no fight: not counted, and HP unknown is full
@@ -751,7 +766,7 @@ mod tests {
         let hp = |entity: u32, hp: u64| Event::Hp { entity, hp: Some(hp), max: None };
         let mut m = Meter::default();
         m.apply(&at(0, identity(77)));
-        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25 }));
+        m.apply(&at(0, Event::PlayerSpawn { entity: 88, name: "Testname".into(), class_code: 25, combat_power: None }));
         m.apply(&at(0, Event::Spawn { entity: 5, template: 2_100_025, x: 0, y: 0, max_hp: Some(1000) }));
         m.apply(&at(0, Event::Spawn { entity: 6, template: 2_100_026, x: 0, y: 0, max_hp: Some(500) }));
         m.apply(&at(0, Event::Stagger { entity: 5, state: 1, value: Some(240), max: Some(240) }));
