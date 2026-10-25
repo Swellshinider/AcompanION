@@ -39,9 +39,12 @@ describe('Settings', () => {
     localStorage.clear();
   });
 
-  it('shows the overlay controls with the app options', () => {
+  it('shows a switch and settings for each overlay, below the app options', () => {
     const { el, input } = render();
-    expect(el.querySelector('app-overlay-panel input[name="open"]')).not.toBeNull();
+    const panels = el.querySelectorAll('app-overlay-panel');
+    expect(panels).toHaveLength(3);
+    panels.forEach(p => expect(p.querySelector('input[role="switch"][name="open"]')).not.toBeNull());
+    expect(el.querySelector('.sections')!.compareDocumentPosition(panels[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(input('closeToTray').checked).toBe(false);
     expect(input('reconnect').checked).toBe(true);
   });

@@ -17,7 +17,7 @@ Working today:
 - **Passive capture and own decoder.** Npcap capture of every AION 2 connection, TCP reassembly, frame and LZ4 decoding, no keys needed.
 - **Per-character dashboard.** Every character seen, with tickets, energy, dailies and weeklies done against their cap, GS (item level) and combat power; updates live and survives restarts.
 - **Pets.** The account's pet collection (souls, levels, closest to the next level), a farm map of the monsters that drop pet souls, a live radar of the monsters in view and your last known position, and a suggested farm route for the pets you have not maxed.
-- **Overlay.** A movable, resizable, translucent window with the radar, the dailies or the DPS meter. Opacity, always on top and click-through are settings.
+- **Overlay.** A movable, resizable, translucent window with the radar, the dailies or the DPS meter, each its own overlay that can be open at the same time. Opacity, always on top and click-through are settings of each.
 - **DPS meter.** Fights ranked by damage with DPS, share, crits, healing and damage taken, a per-player detail (skills, targets) and a saved history.
 - **Translatable UI.** Every user-facing string is extracted for translation. English and Brazilian Portuguese ship today, picked in Settings (or from the system language); a change to text is translated into every language in the same change (see [`docs/development.md`](docs/development.md), Translations).
 

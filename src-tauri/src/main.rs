@@ -101,9 +101,7 @@ fn app_settings(app: tauri::State<'_, AppState>, close_to_tray: bool, reconnect:
 #[tauri::command]
 fn quit(handle: AppHandle) {
     handle.state::<AppState>().quitting.store(true, Ordering::Relaxed);
-    if let Some(w) = handle.get_webview_window(OVERLAY) {
-        let _ = w.close();
-    }
+    close_overlays(&handle);
     handle.exit(0);
 }
 
@@ -140,12 +138,23 @@ async fn install_update(handle: AppHandle, pending: tauri::State<'_, PendingUpda
     handle.restart()
 }
 
-const OVERLAY: &str = "overlay";
+/// Each overlay view is its own window, labelled `overlay-<view>`.
+const OVERLAY_PREFIX: &str = "overlay-";
+const OVERLAY_VIEWS: [&str; 3] = ["radar", "dailies", "meter"];
 
-/// The overlay window, created hidden: its saved position (or the centre, when that monitor is gone) is applied here and
+fn close_overlays(handle: &AppHandle) {
+    for (label, w) in handle.webview_windows() {
+        if label.starts_with(OVERLAY_PREFIX) {
+            let _ = w.close();
+        }
+    }
+}
+
+/// An overlay window, created hidden: its saved position (or the centre, when that monitor is gone) is applied here and
 /// the window shows or hides itself from then on (`Overlay`, auto-hide).
-fn open_overlay(handle: &AppHandle, bounds: Option<[i32; 4]>) -> tauri::Result<WebviewWindow> {
-    let win = WebviewWindowBuilder::new(handle, OVERLAY, WebviewUrl::App("index.html".into()))
+/// ponytail: overlays opened for the first time start stacked at the centre; cascade them if that bothers anyone.
+fn open_overlay(handle: &AppHandle, label: &str, bounds: Option<[i32; 4]>) -> tauri::Result<WebviewWindow> {
+    let win = WebviewWindowBuilder::new(handle, label, WebviewUrl::App("index.html".into()))
         .title("AcompanION overlay")
         .inner_size(420.0, 420.0)
         .min_inner_size(200.0, 120.0)
@@ -173,14 +182,18 @@ fn open_overlay(handle: &AppHandle, bounds: Option<[i32; 4]>) -> tauri::Result<W
 
 /// Open, close or update the overlay. Async: Windows deadlocks when a window is built on the main thread.
 #[tauri::command(async)]
-fn overlay(handle: AppHandle, open: bool, on_top: bool, click_through: bool, bounds: Option<[i32; 4]>) -> Result<(), String> {
-    let existing = handle.get_webview_window(OVERLAY);
+fn overlay(handle: AppHandle, view: String, open: bool, on_top: bool, click_through: bool, bounds: Option<[i32; 4]>) -> Result<(), String> {
+    if !OVERLAY_VIEWS.contains(&view.as_str()) {
+        return Err(format!("unknown overlay view: {view}"));
+    }
+    let label = format!("{OVERLAY_PREFIX}{view}");
+    let existing = handle.get_webview_window(&label);
     if !open {
         return existing.map_or(Ok(()), |w| w.close()).map_err(|e| e.to_string());
     }
     let win = match existing {
         Some(w) => w,
-        None => open_overlay(&handle, bounds).map_err(|e| e.to_string())?,
+        None => open_overlay(&handle, &label, bounds).map_err(|e| e.to_string())?,
     };
     win.set_always_on_top(on_top).map_err(|e| e.to_string())?;
     win.set_ignore_cursor_events(click_through).map_err(|e| e.to_string())
@@ -330,13 +343,13 @@ fn main() {
                     }
                     // the overlay must not keep the app alive (or be remembered as switched off)
                     handle.state::<AppState>().quitting.store(true, Ordering::Relaxed);
-                    if let Some(w) = handle.get_webview_window(OVERLAY) {
-                        let _ = w.close();
-                    }
+                    close_overlays(handle);
                 }
-                RunEvent::WindowEvent { label, event: WindowEvent::Destroyed, .. } if label == OVERLAY => {
-                    if !handle.state::<AppState>().quitting.load(Ordering::Relaxed) {
-                        let _ = handle.emit_to("main", "overlay://closed", ());
+                RunEvent::WindowEvent { label, event: WindowEvent::Destroyed, .. } => {
+                    if let Some(view) = label.strip_prefix(OVERLAY_PREFIX)
+                        && !handle.state::<AppState>().quitting.load(Ordering::Relaxed)
+                    {
+                        let _ = handle.emit_to("main", "overlay://closed", view);
                     }
                 }
                 // joining lets `live::run` flush the engine to disk

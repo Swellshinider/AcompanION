@@ -912,65 +912,44 @@
           <context context-type="linenumber">272,274</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="overlayPanelTitle" datatype="html">
-        <source>Overlay</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">2,4</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="overlayShow" datatype="html">
-        <source>Show overlay</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">6,9</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="overlayView" datatype="html">
-        <source>View</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">10,11</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="overlayRadar" datatype="html">
         <source>Radar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">13,15</context>
+          <context context-type="linenumber">5,6</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay/overlay.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="overlayDailies" datatype="html">
-        <source>Dailies</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">17,19</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/overlay/overlay.html</context>
-          <context context-type="linenumber">8,9</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="overlayMeter" datatype="html">
         <source>Meter</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">21,23</context>
+          <context context-type="linenumber">6,7</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay/overlay.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="overlayDailies" datatype="html">
+        <source>Dailies</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
+          <context context-type="linenumber">7,9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/overlay/overlay.html</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="overlayOpacity" datatype="html">
         <source>Opacity</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">26,27</context>
+          <context context-type="linenumber">14,15</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay/overlay.html</context>
@@ -981,35 +960,28 @@
         <source>Keep above other windows</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">33,36</context>
+          <context context-type="linenumber">21,24</context>
         </context-group>
       </trans-unit>
       <trans-unit id="overlayClickThrough" datatype="html">
         <source>Let clicks pass through</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">38,41</context>
+          <context context-type="linenumber">26,29</context>
         </context-group>
       </trans-unit>
       <trans-unit id="overlayAutoHide" datatype="html">
         <source>Hide when the game is closed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">43,46</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="overlayNote" datatype="html">
-        <source>With clicks passing through, the overlay cannot be moved or closed: turn it off here. It shows over the game only in windowed or borderless mode; on another monitor any mode works.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">46,48</context>
+          <context context-type="linenumber">31,34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="overlayFailed" datatype="html">
         <source>The overlay could not be opened.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/overlay-panel/overlay-panel.html</context>
-          <context context-type="linenumber">48,51</context>
+          <context context-type="linenumber">35,38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="overlayClose" datatype="html">
@@ -1432,105 +1404,119 @@
         <source>General</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">15,17</context>
+          <context context-type="linenumber">13,15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsCloseToTray" datatype="html">
         <source>Keep running in the tray when the window is closed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">19,21</context>
+          <context context-type="linenumber">17,19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsTrayFailed" datatype="html">
         <source>The tray icon could not be created, so closing the window still quits.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">22,25</context>
+          <context context-type="linenumber">20,23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsReconnect" datatype="html">
         <source>Reconnect automatically when capture stops</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">27,30</context>
+          <context context-type="linenumber">25,28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsLanguage" datatype="html">
         <source>Language</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">31,32</context>
+          <context context-type="linenumber">29,30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsLanguageAuto" datatype="html">
         <source>Automatic (follow Windows)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">33,34</context>
+          <context context-type="linenumber">31,32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsLanguageRestart" datatype="html">
         <source>Restart AcompanION to apply the new language.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">39,42</context>
+          <context context-type="linenumber">37,40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsNote" datatype="html">
         <source>Capture and the combat meter keep running while the window is hidden or minimized.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">42,45</context>
+          <context context-type="linenumber">40,43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsUpdates" datatype="html">
         <source>Updates</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">46,47</context>
+          <context context-type="linenumber">44,45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsVersion" datatype="html">
         <source>Current version: <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ v }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">48,50</context>
+          <context context-type="linenumber">46,48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsCheckUpdate" datatype="html">
         <source>Check for updates now</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">51,52</context>
+          <context context-type="linenumber">49,50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsChecking" datatype="html">
         <source>Checking…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">54,55</context>
+          <context context-type="linenumber">52,53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsUpToDate" datatype="html">
         <source>You are up to date.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">53,54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsUpdateFound" datatype="html">
         <source>Version <x id="INTERPOLATION" equiv-text="{{ found() }}"/> is available.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsCheckFailed" datatype="html">
         <source>Could not check for updates.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.html</context>
-          <context context-type="linenumber">57,59</context>
+          <context context-type="linenumber">55,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settingsOverlays" datatype="html">
+        <source>Overlays</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">63,65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="overlayNote" datatype="html">
+        <source>With clicks passing through, the overlay cannot be moved or closed: turn it off here. It shows over the game only in windowed or borderless mode; on another monitor any mode works.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.html</context>
+          <context context-type="linenumber">69,71</context>
         </context-group>
       </trans-unit>
     </body>

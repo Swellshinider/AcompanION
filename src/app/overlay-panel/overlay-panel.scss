@@ -2,34 +2,69 @@
   display: block;
 }
 
-.panel {
+.box {
   box-sizing: border-box;
-  padding: 16px 18px;
-  background: var(--panel);
-  border: 1px solid var(--gold-line);
+  height: 100%;
+  padding: 12px 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
   border-radius: 5px;
   color: var(--text);
+}
 
-  h3 {
-    margin: 0 0 12px;
-    font: 600 16px var(--display);
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+
+  .name {
+    font: 600 15px var(--display);
   }
 }
 
-fieldset {
-  margin: 8px 0;
-  padding: 0;
-  border: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
+.switch {
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  background: var(--panel);
+  border: 1px solid var(--gold-line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
 
-  legend {
-    float: left;
-    width: 100%;
-    padding: 0;
-    color: var(--muted);
-    font-size: 12px;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: var(--muted);
+    border-radius: 50%;
+    transition: transform 0.15s, background 0.15s;
+  }
+
+  &:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+
+    &::after {
+      background: var(--panel);
+      transform: translateX(16px);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
@@ -59,18 +94,12 @@ fieldset {
   }
 }
 
-input[type="checkbox"],
-input[type="radio"] {
+input[type="checkbox"]:not(.switch) {
   accent-color: var(--accent);
 }
 
-.note,
 .err {
   margin: 10px 0 0;
   font-size: 12px;
-  color: var(--muted);
-}
-
-.err {
   color: var(--bad);
 }

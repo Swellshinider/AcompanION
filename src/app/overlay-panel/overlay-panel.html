@@ -1,26 +1,14 @@
-<section class="panel">
-  <h3 i18n="@@overlayPanelTitle">Overlay</h3>
-
-  <label class="check">
-    <input type="checkbox" name="open" [checked]="s().open" (change)="toggle('open', $event)" />
-    <span i18n="@@overlayShow">Show overlay</span>
+<section class="box">
+  <label class="head">
+    <span class="name">
+      @switch (view()) {
+        @case ('radar') { <ng-container i18n="@@overlayRadar">Radar</ng-container> }
+        @case ('meter') { <ng-container i18n="@@overlayMeter">Meter</ng-container> }
+        @default { <ng-container i18n="@@overlayDailies">Dailies</ng-container> }
+      }
+    </span>
+    <input class="switch" type="checkbox" role="switch" name="open" [checked]="s().open" (change)="toggle('open', $event)" />
   </label>
-
-  <fieldset>
-    <legend i18n="@@overlayView">View</legend>
-    <label class="check">
-      <input type="radio" name="view" [checked]="s().view === 'radar'" (change)="set({ view: 'radar' })" />
-      <span i18n="@@overlayRadar">Radar</span>
-    </label>
-    <label class="check">
-      <input type="radio" name="view" [checked]="s().view === 'dailies'" (change)="set({ view: 'dailies' })" />
-      <span i18n="@@overlayDailies">Dailies</span>
-    </label>
-    <label class="check">
-      <input type="radio" name="view" [checked]="s().view === 'meter'" (change)="set({ view: 'meter' })" />
-      <span i18n="@@overlayMeter">Meter</span>
-    </label>
-  </fieldset>
 
   <label class="range">
     <span i18n="@@overlayOpacity">Opacity</span>
@@ -43,7 +31,6 @@
     <span i18n="@@overlayAutoHide">Hide when the game is closed</span>
   </label>
 
-  <p class="note" i18n="@@overlayNote">With clicks passing through, the overlay cannot be moved or closed: turn it off here. It shows over the game only in windowed or borderless mode; on another monitor any mode works.</p>
   @if (failed()) {
     <p class="err" role="alert" i18n="@@overlayFailed">The overlay could not be opened.</p>
   }
