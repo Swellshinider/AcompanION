@@ -15,10 +15,13 @@ Where things stand and what comes next. Update it at the end of every working se
 
 ## Not verified live yet
 
+The meter overlay now has a default-off setting to hide 10 s after its last counted hit, including after boss death; both boss bars show current/max HP inside. All 258 frontend tests and the production web build pass (CSS size budget warnings); static review found no remaining issues. No browser surface was connected for a visual check: the native window and narrow/low-opacity bars still need the manual pass below.
+
 These have unit tests or browser checks, but no one has watched them in a real elevated `task app` session:
 
 - [ ] Settings in a real session: close to tray (X hides, tray icon Open and Quit, overlay stays up, state saved on Quit), reconnection (disable and enable the adapter during capture: banner appears and clears, the meter and characters carry on), and "Check for updates now" against a published release.
 - [ ] Overlay: the real transparent window, dragging and edge resizing, opacity, click-through reaching the game, always on top, reopening in place, centring after a monitor is unplugged, hiding and showing itself with the game, the app exiting with the overlay open, the border and title bar appearing on hover, and the new meter look (bars without background, the boss health bar).
+- [ ] Meter overlay: enable hiding outside combat, check it hides 10 s after the last counted hit even after boss death and reappears on the next fight; read current/max HP in both bars at narrow widths and low opacity.
 - [ ] Overlay radar following a moving player, and a map change hiding it; the radar discs and the player ring in Verteron against a live game; the 250 ms update rate in a crowded zone.
 - [ ] Footer "last soul gain" after a real kill; a live soul gain or level-up moving a Pets row. Soul and level frames on a connection with no identity (the app started after the login) go to the character with the freshest pet collection (`State::pet_owner`); confirm in game.
 - [ ] Farm route on the real maps: whether the grid cell matches the real loot range, and visited tracking while moving.

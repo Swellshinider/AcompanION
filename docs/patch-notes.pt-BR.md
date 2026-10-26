@@ -4,6 +4,14 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ## v0.2.3 (next)
 
+### Novo
+
+- Overlay do medidor: uma opção permite ocultá-lo após 10 segundos sem combate e mostrá-lo novamente quando o combate recomeçar.
+
+### Melhorado
+
+- A vida atual e total do boss agora aparecem dentro da barra de vida, tanto no medidor quanto no overlay dele.
+
 ## v0.2.2 (2026-10-25)
 
 ### Novo

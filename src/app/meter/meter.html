@@ -77,11 +77,13 @@
             <div class="line2">
               <b class="foe"><ng-container [ngTemplateOutlet]="foe" [ngTemplateOutletContext]="{ name: t.name, template: t.template }" /></b>
               @if (t.stagger !== null) { <span class="stagger" i18n="@@meterStagger">Stagger {{ t.stagger | percent:'1.0-0' }}</span> }
-              @if (t.hp !== null) { <span class="hpnum">{{ t.cur | number }} / {{ t.max | number }}</span> }
             </div>
             @if (t.hp !== null) {
               <div class="line3">
-                <span class="hpbar" [class.dead]="t.dead" role="img" [attr.aria-label]="(t.hp | percent:'1.0-0')"><span [style.width.%]="t.hp * 100"></span></span>
+                <span class="hpbar" [class.dead]="t.dead" role="img" [attr.aria-label]="(t.cur | number) + ' / ' + (t.max | number) + ' · ' + (t.hp | percent:'1.0-0')">
+                  <span class="hp-fill" [style.width.%]="t.hp * 100"></span>
+                  <span class="hpnum">{{ t.cur | number }} / {{ t.max | number }}</span>
+                </span>
                 <b class="hppct">{{ t.hp | percent:'1.0-0' }}</b>
               </div>
             }
@@ -132,9 +134,9 @@
             <b class="name"><ng-container [ngTemplateOutlet]="foe" [ngTemplateOutletContext]="{ name: t.name, template: t.template }" /></b>
             <ng-container [ngTemplateOutlet]="badge" [ngTemplateOutletContext]="{ $implicit: result() }" />
             @if (t.hp !== null) {
-              <span class="hp" [class.dead]="t.dead" role="img" [attr.aria-label]="(t.hp | percent:'1.0-0')">
+              <span class="hp" [class.dead]="t.dead" role="img" [attr.aria-label]="(t.cur | number) + ' / ' + (t.max | number) + ' · ' + (t.hp | percent:'1.0-0')">
                 <span class="hp-fill" [style.width.%]="t.hp * 100"></span>
-                <span class="hp-text">@if (t.dead) { <ng-container i18n="@@meterDead">Dead</ng-container> } @else { {{ t.hp | percent:'1.0-0' }} }</span>
+                <span class="hp-text">{{ t.cur | number }} / {{ t.max | number }} · @if (t.dead) { <ng-container i18n="@@meterDead">Dead</ng-container> } @else { {{ t.hp | percent:'1.0-0' }} }</span>
               </span>
             }
             @if (t.stagger !== null) {

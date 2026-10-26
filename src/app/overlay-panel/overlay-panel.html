@@ -31,6 +31,13 @@
     <span i18n="@@overlayAutoHide">Hide when the game is closed</span>
   </label>
 
+  @if (view() === 'meter') {
+    <label class="check">
+      <input type="checkbox" name="hideOutOfCombat" [checked]="s().hideOutOfCombat" (change)="toggle('hideOutOfCombat', $event)" />
+      <span i18n="@@overlayHideOutOfCombat">Hide after 10 seconds without combat</span>
+    </label>
+  }
+
   @if (failed()) {
     <p class="err" role="alert" i18n="@@overlayFailed">The overlay could not be opened.</p>
   }

@@ -60,6 +60,25 @@ describe('OverlayPanel', () => {
     expect(stored().autoHide).toBe(false);
   });
 
+  it('saves and sends the combat setting to an open meter overlay', async () => {
+    localStorage.setItem('acompanion.overlay.meter', JSON.stringify({ open: true }));
+    const { input, invoke } = render(undefined, 'meter');
+    expect(input('hideOutOfCombat').checked).toBe(false);
+    input('hideOutOfCombat').checked = true;
+    input('hideOutOfCombat').dispatchEvent(new Event('change'));
+    await tick();
+    expect(stored('meter').hideOutOfCombat).toBe(true);
+    expect(calls(invoke, 'plugin:event|emit_to').at(-1)?.[1]).toEqual(expect.objectContaining({
+      event: 'overlay://settings', payload: expect.objectContaining({ hideOutOfCombat: true }),
+    }));
+  });
+
+  for (const view of ['radar', 'dailies'] as const) {
+    it(`does not offer the combat setting for ${view}`, () => {
+      expect(render(undefined, view).el.querySelector('input[name="hideOutOfCombat"]')).toBeNull();
+    });
+  }
+
   it('keeps the position the overlay saved while the panel was open', async () => {
     const { input } = render();
     localStorage.setItem('acompanion.overlay.radar', JSON.stringify({ ...stored(), bounds: [5, 6, 420, 300] }));

@@ -11,6 +11,8 @@ export interface OverlaySettings {
   clickThrough: boolean;
   /** Hide the window while the game is closed. */
   autoHide: boolean;
+  /** Meter only: hide after 10 seconds without a counted hit. */
+  hideOutOfCombat: boolean;
   /** Physical pixels `[x, y, width, height]` of the window when it was last moved or resized. */
   bounds: [number, number, number, number] | null;
 }
@@ -19,7 +21,7 @@ export const MIN_OPACITY = 20;
 const KEY = 'acompanion.overlay';
 const keyOf = (view: OverlayView) => `${KEY}.${view}`;
 
-export const DEFAULTS: OverlaySettings = { open: false, opacity: 85, onTop: true, clickThrough: false, autoHide: true, bounds: null };
+export const DEFAULTS: OverlaySettings = { open: false, opacity: 85, onTop: true, clickThrough: false, autoHide: true, hideOutOfCombat: false, bounds: null };
 
 /** Whatever is stored, with every field checked: a missing, old or corrupt value falls back to its default. */
 export function parse(raw: unknown): OverlaySettings {
@@ -34,6 +36,7 @@ export function parse(raw: unknown): OverlaySettings {
     onTop: typeof o['onTop'] === 'boolean' ? o['onTop'] : DEFAULTS.onTop,
     clickThrough: o['clickThrough'] === true,
     autoHide: typeof o['autoHide'] === 'boolean' ? o['autoHide'] : DEFAULTS.autoHide,
+    hideOutOfCombat: o['hideOutOfCombat'] === true,
     bounds,
   };
 }

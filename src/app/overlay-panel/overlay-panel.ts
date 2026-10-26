@@ -42,7 +42,7 @@ export class OverlayPanel {
     }
   }
 
-  toggle(key: 'open' | 'onTop' | 'clickThrough' | 'autoHide', e: Event): void {
+  toggle(key: 'open' | 'onTop' | 'clickThrough' | 'autoHide' | 'hideOutOfCombat', e: Event): void {
     void this.set({ [key]: (e.target as HTMLInputElement).checked });
   }
 
