@@ -83,15 +83,17 @@ export async function closeShugoAlert(): Promise<void> {
 
 /** A start this late (the computer slept through it) is stale: no alert. */
 const LATE_MS = 60_000;
+/** The alert is a warning: it shows this long before the festival starts. */
+const WARN_MS = MIN_MS;
 
 /**
- * Show the alert at every start while it is on and the game is running. Runs in the main window, which stays loaded
+ * Show the alert a minute before every start while it is on and the game is running. Runs in the main window, which stays loaded
  * when hidden to the tray. Returns the function that stops it.
  */
 export function startShugoAlert(game: () => boolean): () => void {
   let timer: ReturnType<typeof setTimeout>;
   const arm = (after: number) => {
-    const at = nextFestival(after);
+    const at = nextFestival(after + WARN_MS) - WARN_MS;
     timer = setTimeout(() => {
       const s = loadShugoSettings();
       if (s.enabled && game() && Date.now() - at < LATE_MS) void showShugoAlert(s).catch(() => undefined);

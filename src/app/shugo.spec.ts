@@ -42,7 +42,7 @@ describe('startShugoAlert', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(at(10, 59, 50));
+    vi.setSystemTime(at(10, 58, 50));
     vi.stubGlobal('__TAURI_INTERNALS__', { invoke });
   });
   afterEach(() => {
@@ -52,7 +52,7 @@ describe('startShugoAlert', () => {
     invoke.mockClear();
   });
 
-  it('shows the alert on the hour while the game runs, then waits for the next hour', async () => {
+  it('shows the alert a minute before the hour while the game runs, then waits for the next one', async () => {
     const stop = startShugoAlert(() => true);
     await vi.advanceTimersByTimeAsync(9_000);
     expect(shown()).toHaveLength(0);
@@ -79,7 +79,7 @@ describe('startShugoAlert', () => {
 
   it('skips a start the computer slept through', async () => {
     const stop = startShugoAlert(() => true);
-    vi.setSystemTime(at(11, 5)); // woke up five minutes late
+    vi.setSystemTime(at(11, 4)); // woke up five minutes late
     await vi.advanceTimersByTimeAsync(10_000);
     expect(shown()).toHaveLength(0);
     stop();
