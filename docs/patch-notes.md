@@ -13,6 +13,10 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.2.5 (next)
 
+### Fixed
+
+- The combat meter no longer shows a hugely inflated combat power for some players.
+
 ## v0.2.4 (2026-10-26)
 
 ### Improved

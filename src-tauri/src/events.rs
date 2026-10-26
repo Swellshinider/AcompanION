@@ -663,15 +663,19 @@ fn summon_owner(rest: &[u8]) -> Option<u32> {
 
 /// The combat power in the tail of a `45 36`: a u32 at `len - 9`, or at `len - 10` when the frame has
 /// one more trailing byte; the u32 before it is a small count (< 64) or the item level (800 to 2000).
-/// `from`: where the unread middle starts.
-/// ponytail: found on one capture (36 spawns, 4 values checked against the party window); the extra
-/// byte is not understood. Re-check this rule after a game patch.
+/// Some frames carry a one-byte field (`01`) between that u32 and the power: then the u32 at
+/// `len - 10` is the power x 256 + 1, so a value over 2^24 is rejected and the power is read at
+/// `len - 9` after the u32 at `len - 14`. `from`: where the unread middle starts.
+/// ponytail: found on two captures (4 values checked against the party window, 2 against another
+/// meter's log); the extra bytes are not understood, and a one-byte field with a power under 65,536
+/// is still misread. Re-check this rule after a game patch.
 fn tail_power(frame: &[u8], from: usize) -> Option<u32> {
     let u32_at = |at: usize| Some(u32::from_le_bytes(frame.get(at..at + 4)?.try_into().ok()?));
-    [9, 10].into_iter().find_map(|back| {
-        let at = frame.len().checked_sub(back)?;
-        let before = u32_at(at.checked_sub(4).filter(|&b| b >= from)?)?;
-        if before < 64 || (800..=2000).contains(&before) { u32_at(at) } else { None }
+    // (power, the u32 before it), as bytes back from the end
+    [(9, 13), (10, 14), (9, 14)].into_iter().find_map(|(power, before)| {
+        let before = u32_at(frame.len().checked_sub(before).filter(|&b| b >= from)?)?;
+        let power = u32_at(frame.len().checked_sub(power)?)?;
+        ((before < 64 || (800..=2000).contains(&before)) && power < 1 << 24).then_some(power)
     })
 }
 
@@ -1174,6 +1178,12 @@ mod tests {
         let mut low = u32s(&[1034, 8_124]);
         low.extend([0; 5]);
         assert_eq!(power(&head(&low)), Some(8_124));
+        // a one-byte field (`01`) between the count and the power: not the power x 256 + 1
+        let mut flagged = u32s(&[1204, 19]);
+        flagged.push(1);
+        flagged.extend(u32s(&[157_450]));
+        flagged.extend([0; 5]);
+        assert_eq!(power(&head(&flagged)), Some(157_450));
         // a tail that does not fit
         assert_eq!(power(&head(&[7; 9])), None);
     }
