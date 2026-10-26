@@ -127,6 +127,17 @@ describe('Overlay', () => {
       return invoke.mock.calls.map(c => c[0]).filter(c => c === 'plugin:window|show' || c === 'plugin:window|hide').at(-1);
     }
 
+    it('listens for settings sent to its own window only', async () => {
+      const invoke = vi.fn(async (..._: unknown[]) => undefined);
+      vi.stubGlobal('__TAURI_INTERNALS__', { invoke, metadata: { currentWindow: { label: 'overlay-meter' } }, transformCallback: () => 1 });
+      vi.stubGlobal('__TAURI_EVENT_PLUGIN_INTERNALS__', { unregisterListener: () => undefined });
+      const { f } = await render('meter', {});
+      await f.whenStable();
+      f.destroy();
+      const call = invoke.mock.calls.find(c => c[0] === 'plugin:event|listen' && (c[1] as { event: string }).event === 'overlay://settings');
+      expect((call![1] as { target: unknown }).target).toEqual({ kind: 'AnyLabel', label: 'overlay-meter' });
+    });
+
     it('shows the radar while the game runs in a known map', async () => {
       expect(await windowCalls({}, { on: true, radar: here(1010) })).toBe('plugin:window|show');
     });

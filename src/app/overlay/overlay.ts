@@ -106,7 +106,8 @@ export class Overlay {
     void (async () => {
       try {
         const win = getCurrentWindow();
-        unlisten.push(await listen(OVERLAY_SETTINGS_EVENT, e => this.settings.set(parse(e.payload))));
+        // only this window's events: a global listener also gets the other overlays' settings
+        unlisten.push(await listen(OVERLAY_SETTINGS_EVENT, e => this.settings.set(parse(e.payload)), { target: win.label }));
         const remember = () => {
           clearTimeout(saveTimer);
           saveTimer = setTimeout(async () => {

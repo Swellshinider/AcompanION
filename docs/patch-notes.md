@@ -16,6 +16,12 @@ The top section is the next version, named by the patch bump of the last release
 ### Improved
 
 - The combat meter now recognizes global field bosses and Hero/Legend bosses across the game.
+- The Shugo Festival alert now shows one minute before the festival starts.
+
+### Fixed
+
+- Changing one overlay's opacity or options no longer changes the other overlays.
+- The meter's "hide after 10 seconds" option now works as soon as the app opens.
 
 ## v0.2.3 (2026-10-26)
 

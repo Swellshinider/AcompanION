@@ -7,6 +7,12 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 ### Melhorado
 
 - O medidor de combate agora reconhece chefes globais e chefes Hero/Legend em todo o jogo.
+- O alerta do Festival Shugo agora aparece um minuto antes do início do festival.
+
+### Corrigido
+
+- Mudar a opacidade ou as opções de um overlay não altera mais os outros overlays.
+- A opção "ocultar após 10 segundos" do medidor agora funciona assim que o app abre.
 
 ## v0.2.3 (2026-10-26)
 
