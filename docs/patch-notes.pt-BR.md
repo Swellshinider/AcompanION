@@ -4,6 +4,10 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ## v0.2.4 (next)
 
+### Melhorado
+
+- O medidor de combate agora reconhece chefes globais e chefes Hero/Legend em todo o jogo.
+
 ## v0.2.3 (2026-10-26)
 
 ### Novo

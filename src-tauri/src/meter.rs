@@ -29,6 +29,82 @@ pub const MAX_HISTORY: usize = 50;
 /// run that lost despawn frames.
 const MAX_ENTITIES: usize = 4096;
 
+/// The 521 bosses in Aion2Data's 2.0.6.0 global client list (field bosses plus Hero/Legend monsters),
+/// unioned with the 85 field bosses in the current client.
+/// shortcut: refresh this roster when the game client or Aion2Data's definition changes.
+const BOSSES: &[u32] = &[
+    2100003, 2100027, 2100040, 2100050, 2100076, 2100077, 2100079, 2100141,
+    2100177, 2100178, 2100582, 2100604, 2100617, 2100661, 2100708, 2100718,
+    2100875, 2100876, 2100877, 2100988, 2100989, 2100990, 2100991, 2101016,
+    2101074, 2101104, 2101105, 2101106, 2101107, 2101108, 2101109, 2101110,
+    2101111, 2101112, 2101113, 2101114, 2101115, 2101116, 2101117, 2101118,
+    2101120, 2101122, 2101128, 2101131, 2101217, 2101218, 2101257, 2101278,
+    2101279, 2101306, 2101349, 2101350, 2101415, 2101416, 2101600, 2101601,
+    2101602, 2110000, 2110016, 2110300, 2110311, 2110350, 2110360, 2110370,
+    2110380, 2110390, 2110399, 2110410, 2110418, 2110437, 2110443, 2110453,
+    2110465, 2110470, 2110515, 2110516, 2110517, 2110518, 2110519, 2110520,
+    2110521, 2110600, 2110619, 2110640, 2200031, 2200060, 2200101, 2200103,
+    2200108, 2200146, 2290156, 2290158, 2300000, 2300001, 2300002, 2300104,
+    2300108, 2300153, 2300154, 2300155, 2300171, 2300188, 2300189, 2300190,
+    2300206, 2300207, 2300218, 2300259, 2300260, 2300261, 2300310, 2300311,
+    2300312, 2300371, 2300401, 2300403, 2300470, 2300471, 2300473, 2300474,
+    2300475, 2300502, 2300580, 2300581, 2300582, 2300601, 2300615, 2300616,
+    2300707, 2300708, 2300709, 2300907, 2300908, 2300909, 2300910, 2301006,
+    2301007, 2301008, 2301014, 2301055, 2301059, 2301060, 2301207, 2301208,
+    2301209, 2301216, 2301302, 2301303, 2301401, 2301402, 2301403, 2301601,
+    2301602, 2301603, 2340057, 2340158, 2340255, 2370001, 2370002, 2370003,
+    2370004, 2370401, 2370402, 2370403, 2370404, 2400017, 2400074, 2400140,
+    2400141, 2400212, 2400223, 2400274, 2400335, 2400353, 2400358, 2400370,
+    2400411, 2400419, 2400424, 2400425, 2400474, 2400504, 2400593, 2400607,
+    2400608, 2400659, 2400709, 2400800, 2400810, 2400853, 2400854, 2400855,
+    2404001, 2404002, 2404003, 2404004, 2404005, 2404006, 2404007, 2404008,
+    2404009, 2404010, 2404011, 2404012, 2404013, 2404014, 2404015, 2405006,
+    2405023, 2405045, 2405062, 2405085, 2405106, 2405120, 2405144, 2405150,
+    2405175, 2405194, 2405215, 2405236, 2405256, 2405276, 2406034, 2406035,
+    2406071, 2406093, 2406094, 2406129, 2406131, 2406132, 2406181, 2406182,
+    2406990, 2406991, 2406992, 2407000, 2407023, 2407046, 2407059, 2407060,
+    2407061, 2407062, 2407063, 2407064, 2407065, 2407075, 2407094, 2500016,
+    2500037, 2500068, 2500086, 2500107, 2500119, 2500120, 2500131, 2500138,
+    2590089, 2590118, 2590120, 2600068, 2600078, 2600084, 2600089, 2600093,
+    2600094, 2600096, 2600097, 2600098, 2600150, 2600381, 2600382, 2600383,
+    2600384, 2600385, 2600386, 2600387, 2600479, 2600480, 2600520, 2600521,
+    2600522, 2670001, 2670002, 2670003, 2670004, 2670005, 2670006, 2670007,
+    2670008, 2670009, 2670010, 2670011, 2670012, 2670013, 2670014, 2670015,
+    2670016, 2670017, 2670018, 2670019, 2670020, 2670021, 2670022, 2670023,
+    2670024, 2670025, 2670026, 2670027, 2670028, 2670029, 2670030, 2670031,
+    2670032, 2670033, 2670034, 2670035, 2670036, 2670037, 2670038, 2670039,
+    2670040, 2670041, 2670042, 2670043, 2670044, 2670045, 2670046, 2670047,
+    2670048, 2670049, 2670050, 2670051, 2670052, 2670053, 2670054, 2670055,
+    2670056, 2670057, 2670058, 2670059, 2670060, 2670061, 2670062, 2670063,
+    2670064, 2670065, 2670066, 2670067, 2670068, 2670069, 2670070, 2670071,
+    2670072, 2670073, 2670074, 2670075, 2670076, 2670077, 2670078, 2670079,
+    2670080, 2670081, 2670082, 2670083, 2670084, 2670085, 2670086, 2670087,
+    2670088, 2670089, 2670090, 2670091, 2670092, 2670093, 2670094, 2670095,
+    2670096, 2670097, 2670098, 2670099, 2670100, 2670101, 2670102, 2670103,
+    2670104, 2670105, 2670106, 2670107, 2670108, 2670109, 2670110, 2670111,
+    2670112, 2670113, 2670114, 2670115, 2670116, 2670117, 2670118, 2700003,
+    2700009, 2700089, 2700091, 2700099, 2700100, 2700242, 2700265, 2700306,
+    2700374, 2700415, 2700440, 2700461, 2700552, 2700553, 2700691, 2700692,
+    2700694, 2700703, 2700715, 2700716, 2700731, 2700744, 2700835, 2700837,
+    2700840, 2700845, 2700847, 2700856, 2700857, 2700876, 2700886, 2700908,
+    2700914, 2700916, 2700921, 2700942, 2700949, 2700952, 2700963, 2700975,
+    2700981, 2700988, 2701013, 2701020, 2701034, 2701035, 2701043, 2701048,
+    2701051, 2701055, 2701072, 2701090, 2701096, 2701101, 2701118, 2701128,
+    2701130, 2701138, 2701142, 2701145, 2701148, 2701151, 2701155, 2701156,
+    2701157, 2701184, 2701202, 2701227, 2701250, 2701275, 2701280, 2701287,
+    2701298, 2701310, 2701361, 2701373, 2701374, 2701378, 2701388, 2701399,
+    2701409, 2701440, 2701449, 2701454, 2701480, 2701485, 2701492, 2701501,
+    2701521, 2701525, 2701544, 2701551, 2701568, 2701569, 2701578, 2701585,
+    2701697, 2701702, 2701753, 2701774, 2701788, 2701892, 2701964, 2702026,
+    2702076, 2702110, 2702111, 2702132, 2702133, 2702137, 2702177, 2702197,
+    2702232, 2702241, 2702326, 2702329, 2702359, 2702461, 2702564, 2702572,
+    2702574, 2702598, 2920235, 2920367, 2920908, 2920935, 2921354, 2980050,
+];
+
+fn is_boss_template(template: u32) -> bool {
+    BOSSES.contains(&template)
+}
+
 #[derive(Default, Clone, Copy)]
 struct Tally {
     amount: u64,
@@ -114,6 +190,12 @@ struct Foe {
     stagger: Option<Value>,
 }
 
+impl Foe {
+    fn is_boss(&self) -> bool {
+        self.stagger.is_some() || is_boss_template(self.template)
+    }
+}
+
 struct Fight {
     start_us: u64,
     last_us: u64,
@@ -131,7 +213,7 @@ struct Fight {
 
 impl Fight {
     /// Keep the target while it lives; when it dies (HP 0), or at the first hit, take the living foe
-    /// the players dealt the most damage to. Only bosses (foes with a stagger gauge) are taken while the
+    /// the players dealt the most damage to. Only bosses (stagger gauge or roster) are taken while the
     /// fight has one, so a boss that dies stays the target and its adds never replace it. A pick made at
     /// this instant is redone, so the frames of one packet count together. Ties go to the highest entity.
     /// When no such foe lives, a target picked before stays, else the most damaged foe is taken (one
@@ -143,9 +225,9 @@ impl Fight {
         if self.picked_us != ts_us && self.target.is_some_and(|t| self.foes.get(&t).is_some_and(alive)) {
             return;
         }
-        let bosses = self.foes.values().any(|f| f.stagger.is_some());
+        let bosses = self.foes.values().any(Foe::is_boss);
         let best = |living: bool| {
-            let eligible = |f: &Foe| (!living || alive(f)) && (!bosses || f.stagger.is_some());
+            let eligible = |f: &Foe| (!living || alive(f)) && (!bosses || f.is_boss());
             self.foes.iter().filter(|(_, f)| eligible(f)).max_by_key(|(_, f)| f.dealt).map(|(&e, _)| e)
         };
         let keep = self.target.is_some() && self.picked_us != ts_us;
@@ -232,6 +314,11 @@ impl Meter {
 
     fn is_player(&self, entity: u32) -> bool {
         self.players.contains_key(&entity)
+    }
+
+    fn is_boss(&self, entity: u32) -> bool {
+        self.staggers.contains_key(&entity)
+            || self.templates.get(&entity).is_some_and(|&template| is_boss_template(template))
     }
 
     fn add_player(&mut self, entity: u32, name: &str, class_code: u32) {
@@ -370,7 +457,7 @@ impl Meter {
         let Some(fight) = self.fight.as_mut() else { return false };
         let Some(foe) = fight.foes.get_mut(&entity) else { return false };
         (foe.hp, foe.max_hp) = (hp.or(foe.hp), max.or(foe.max_hp));
-        if hp == Some(0) && foe.stagger.is_some() {
+        if hp == Some(0) && foe.is_boss() {
             fight.boss_dead_us.get_or_insert(ts_us);
         }
         if hp == Some(0) && fight.target == Some(entity) {
@@ -417,10 +504,8 @@ impl Meter {
             who(fight, &self.players, target).taken.add(amount, crit);
             return true;
         }
-        // only a hit on a boss opens a fight; once open, it counts its adds and the damage taken too
-        // ponytail: the stagger gauge is the boss marker; a boss without one is not metered. Add a
-        // curated boss list if one shows up.
-        if self.fight.is_none() && !(dealt && self.staggers.contains_key(&target)) {
+        // Only a hit on a boss opens a fight; once open, its adds and the damage taken count too.
+        if self.fight.is_none() && !(dealt && self.is_boss(target)) {
             return false;
         }
         let taken = on_me || on_other;
@@ -885,6 +970,48 @@ mod tests {
         assert_eq!(m.to_json()["current"], Value::Null);
         assert_eq!(m.history_json().as_array().unwrap().len(), 1);
         assert_eq!(m.history_json()[0]["players"][0]["dealt"]["amount"], 110);
+    }
+
+    #[test]
+    fn a_field_boss_without_stagger_opens_a_fight_and_stays_the_target() {
+        let mut m = Meter::default();
+        m.apply(&at(0, identity(77)));
+        m.apply(&at(0, Event::Spawn { entity: 4, template: 2_100_025, x: 0, y: 0, max_hp: Some(100) }));
+        m.apply(&at(0, Event::Spawn { entity: 5, template: 2_600_089, x: 0, y: 0, max_hp: Some(1000) }));
+
+        assert!(!m.apply(&at(S, hit(4, 77, 1, 10)))); // an ordinary monster still opens no fight
+        assert!(m.apply(&at(2 * S, hit(5, 77, 1, 100)))); // Watcher Kaira, without a stagger frame
+        assert!(m.apply(&at(3 * S, hit(4, 77, 1, 20)))); // its add counts, but does not replace it
+        assert_eq!(m.to_json()["current"]["target"]["template"], 2_600_089);
+
+        m.apply(&at(4 * S, Event::Hp { entity: 5, hp: Some(0), max: None }));
+        assert!(!m.advance(5 * S)); // keep the one-second tail after death
+        assert!(m.advance(5 * S + 1));
+        assert_eq!(m.history_json()[0]["target"]["template"], 2_600_089);
+        assert_eq!(m.history_json()[0]["target"]["hp"], 0);
+    }
+
+    #[test]
+    fn an_aion2data_hero_boss_without_stagger_opens_a_fight() {
+        let mut m = Meter::default();
+        m.apply(&at(0, identity(77)));
+        m.apply(&at(0, Event::Spawn { entity: 5, template: 2_300_601, x: 0, y: 0, max_hp: Some(1000) })); // Atiel
+
+        assert!(m.apply(&at(S, hit(5, 77, 1, 100))));
+        assert_eq!(m.to_json()["current"]["target"]["template"], 2_300_601);
+    }
+
+    #[test]
+    fn boss_roster_has_528_unique_templates() {
+        let mut sorted = BOSSES.to_vec();
+        sorted.sort_unstable();
+        sorted.dedup();
+
+        assert_eq!(BOSSES.len(), 528);
+        assert_eq!(sorted.len(), BOSSES.len());
+        assert!(is_boss_template(2_300_601)); // Atiel
+        assert!(is_boss_template(2_600_089)); // Watcher Kaira
+        assert!(!is_boss_template(2_100_025));
     }
 
     #[test]
