@@ -15,12 +15,13 @@ Where things stand and what comes next. Update it at the end of every working se
 
 ## Not verified live yet
 
-The meter overlay now has a default-off setting to hide 10 s after its last counted hit, including after boss death; both boss bars show current/max HP inside. The hover title bar now reserves space only while visible across the three overlays. All 258 frontend tests and the production web build pass (with existing CSS size budget warnings); the native window still needs the manual pass below.
+The meter overlay now has a default-off setting to hide 10 s after its last counted hit, including after boss death; both boss bars show current/max HP inside. The hover title bar's spacing has been checked in all three overlays. All 258 frontend tests and the production web build pass (with existing CSS size budget warnings); the remaining native-window behavior still needs the manual pass below.
 
 These have unit tests or browser checks, but no one has watched them in a real elevated `task app` session:
 
 - [ ] Settings in a real session: close to tray (X hides, tray icon Open and Quit, overlay stays up, state saved on Quit), reconnection (disable and enable the adapter during capture: banner appears and clears, the meter and characters carry on), and "Check for updates now" against a published release.
-- [ ] Overlay: the real transparent window, content moving below the title bar only on hover in all three views, dragging and edge resizing, opacity, click-through reaching the game, always on top, reopening in place, centring after a monitor is unplugged, hiding and showing itself with the game, the app exiting with the overlay open, and the new meter look (bars without background, the boss health bar).
+- [x] Overlay title bar: content moves below the bar only while it is visible in the radar, dailies and meter views.
+- [ ] Overlay: the real transparent window, dragging and edge resizing, opacity, click-through reaching the game, always on top, reopening in place, centring after a monitor is unplugged, hiding and showing itself with the game, the app exiting with the overlay open, and the new meter look (bars without background, the boss health bar).
 - [ ] Meter overlay: enable hiding outside combat, check it hides 10 s after the last counted hit even after boss death and reappears on the next fight; read current/max HP in both bars at narrow widths and low opacity.
 - [ ] Overlay radar following a moving player, and a map change hiding it; the radar discs and the player ring in Verteron against a live game; the 250 ms update rate in a crowded zone.
 - [ ] Footer "last soul gain" after a real kill; a live soul gain or level-up moving a Pets row. Soul and level frames on a connection with no identity (the app started after the login) go to the character with the freshest pet collection (`State::pet_owner`); confirm in game.
