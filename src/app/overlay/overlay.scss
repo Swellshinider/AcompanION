@@ -23,33 +23,33 @@
   // the meter paints only its own bars over the game
   &.bare {
     background: transparent;
-
-    // the title bar (26px, only there when not click-through) sits above the meter instead of over its boss panel
-    header + main {
-      padding-top: 34px;
-    }
   }
 }
 
-// floats over the top of the content (above the map, z-index 20 in pets.scss, and the fade slider)
+// takes space only while visible, so the content moves below it on hover
 header {
-  position: absolute;
-  inset: 0 0 auto;
-  z-index: 40;
+  box-sizing: border-box;
   display: flex;
+  flex: 0 0 0;
   align-items: center;
   justify-content: space-between;
-  height: 26px;
+  height: 0;
+  min-height: 0;
+  overflow: hidden;
   padding: 0 4px 0 10px;
   background: var(--panel);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 0;
   cursor: move;
   user-select: none;
   opacity: 0;
-  transition: opacity 0.15s;
+  pointer-events: none;
+  transition: flex-basis 0.15s, opacity 0.15s;
 
   .shell:hover & {
+    flex-basis: 27px;
+    border-bottom: 1px solid var(--line);
     opacity: 1;
+    pointer-events: auto;
   }
 }
 
@@ -96,7 +96,7 @@ main.map {
 // over the map's top left, opposite the zoom buttons; above the filled map (z-index 20 in pets.scss)
 .fade {
   position: absolute;
-  top: 34px;
+  top: 7px;
   left: 6px;
   z-index: 30;
   width: 72px;

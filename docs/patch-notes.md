@@ -20,6 +20,7 @@ The top section is the next version, named by the patch bump of the last release
 ### Improved
 
 - The boss's current and total health now appear inside its health bar, both in the meter and its overlay.
+- Overlay content now moves below the drag bar only while the bar is visible.
 
 ## v0.2.2 (2026-10-25)
 
