@@ -11,6 +11,7 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 ### Melhorado
 
 - A vida atual e total do boss agora aparecem dentro da barra de vida, tanto no medidor quanto no overlay dele.
+- O conteúdo dos overlays agora se desloca para liberar a barra de arraste somente enquanto ela está visível.
 
 ## v0.2.2 (2026-10-25)
 
