@@ -1132,6 +1132,10 @@
           <context context-type="linenumber">46,48</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="overlayHideOutOfCombat" datatype="html">
+        <source>Hide after 10 seconds without combat</source>
+        <target>Ocultar após 10 segundos sem combate</target>
+      </trans-unit>
       <trans-unit id="overlayFailed" datatype="html">
         <source>The overlay could not be opened.</source>
         <target>Não foi possível abrir o overlay.</target>

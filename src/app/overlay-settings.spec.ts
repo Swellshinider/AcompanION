@@ -12,7 +12,7 @@ describe('overlay settings', () => {
   });
 
   it('round-trips what was saved', () => {
-    const s = { open: true, opacity: 60, onTop: false, clickThrough: true, autoHide: false, bounds: [10, 20, 420, 300] as [number, number, number, number] };
+    const s = { open: true, opacity: 60, onTop: false, clickThrough: true, autoHide: false, hideOutOfCombat: true, bounds: [10, 20, 420, 300] as [number, number, number, number] };
     saveOverlaySettings('dailies', s);
     expect(loadOverlaySettings('dailies')).toEqual(s);
     expect(loadOverlaySettings('meter')).toEqual(DEFAULTS); // each overlay has its own
@@ -34,5 +34,7 @@ describe('overlay settings', () => {
     expect(parse({ clickThrough: true }).clickThrough).toBe(true);
     expect(parse({ autoHide: 'no' }).autoHide).toBe(true); // on unless it says false
     expect(parse({ autoHide: false }).autoHide).toBe(false);
+    expect(parse({ hideOutOfCombat: 'true' }).hideOutOfCombat).toBe(false);
+    expect(parse({ hideOutOfCombat: true }).hideOutOfCombat).toBe(true);
   });
 });

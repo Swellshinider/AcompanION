@@ -141,37 +141,50 @@ kbd {
   font-weight: 600;
 }
 
-.hpnum {
-  margin-left: auto;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
-
-// the boss's health: the bar, with its percentage beside it
+// the boss's health: current/max inside the bar, with its percentage beside it
 .line3 {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-top: 2px;
 }
 
 .hpbar {
-  flex: 1;
-  height: 8px;
+  position: relative;
+  flex: 1 0 24ch;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 11px;
+  height: 20px;
   overflow: hidden;
+  background: color-mix(in oklch, var(--well) calc(var(--bar-a, 1) * 100%), transparent);
   border-radius: 999px;
 
-  span {
-    display: block;
+  .hp-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
     height: 100%;
     background: linear-gradient(90deg, color-mix(in oklch, var(--bad) 80%, black), var(--bad));
     opacity: var(--bar-a, 1);
     border-radius: inherit;
     transition: width 0.25s;
   }
+
+  .hpnum {
+    position: relative;
+    display: block;
+    color: var(--text);
+    font: 600 11px/20px var(--ui);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    text-shadow: 0 1px 2px #000;
+    white-space: nowrap;
+  }
 }
 
 .hppct {
+  margin-left: auto;
   min-width: 4ch;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
@@ -531,8 +544,9 @@ kbd {
 
 .hp {
   position: relative;
-  flex: 1 1 200px;
-  height: 18px;
+  flex: 1 1 260px;
+  min-width: min(100%, 260px);
+  height: 22px;
   overflow: hidden;
   background: var(--well);
   border: 1px solid var(--line);
@@ -548,9 +562,11 @@ kbd {
   .hp-text {
     position: relative;
     display: block;
-    font: 600 11px/16px var(--ui);
+    font: 600 11px/20px var(--ui);
+    font-variant-numeric: tabular-nums;
     text-align: center;
     text-shadow: 0 1px 2px #000a;
+    white-space: nowrap;
   }
 
   &.dead .hp-text {

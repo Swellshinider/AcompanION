@@ -30,8 +30,12 @@ export class Overlay {
   /** The meter has no background: the opacity setting fades only its bars (`--bar-a`), never its text. */
   readonly bare = computed(() => this.view() === 'meter');
 
-  /** Whether the window is shown: always, or (auto-hide) only while the game runs, whatever the view. */
-  readonly shown = computed(() => !this.settings().autoHide || this.chars.game());
+  private readonly lastHit = computed(() => (this.chars.meter()?.current ?? this.chars.fights().at(-1))?.end_us ?? null);
+  private readonly recentCombat = signal(false);
+
+  /** Game visibility and the meter's optional combat timeout both apply. */
+  readonly shown = computed(() => (!this.settings().autoHide || this.chars.game())
+    && (this.view() !== 'meter' || !this.settings().hideOutOfCombat || this.recentCombat()));
 
   /** The region the player was last seen in (kept across runs): the radar's map until the game says where the player is. */
   readonly lastRegion = signal(loadLastRegion());
@@ -76,6 +80,16 @@ export class Overlay {
       if (now !== null && now !== untracked(this.lastRegion)) {
         this.lastRegion.set(now);
         saveLastRegion(now);
+      }
+    });
+    effect(onCleanup => {
+      if (this.view() !== 'meter' || !this.settings().hideOutOfCombat) return;
+      const hit = this.lastHit();
+      const remaining = hit === null ? 0 : hit / 1000 + 10_000 - Date.now();
+      this.recentCombat.set(remaining > 0);
+      if (remaining > 0) {
+        const timeout = setTimeout(() => this.recentCombat.set(false), remaining);
+        onCleanup(() => clearTimeout(timeout));
       }
     });
     // Rust creates the window hidden: this decides when it is seen

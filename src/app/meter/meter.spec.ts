@@ -186,10 +186,29 @@ describe('Meter', () => {
 
   it('shows the boss health as numbers, a bar and a percentage in the overlay', () => {
     const { el } = render({ current: fight(0, [mine], { target: golem }), compact: true });
-    expect(el.querySelector('.line2 .hpnum')?.textContent?.trim()).toBe('50 / 200');
-    expect(el.querySelector<HTMLElement>('.line3 .hpbar span')!.style.width).toBe('25%');
+    expect(el.querySelector('.line3 .hpbar .hpnum')?.textContent?.trim()).toBe('50 / 200');
+    expect(el.querySelector('.line2 .hpnum')).toBeNull();
+    expect(el.querySelector<HTMLElement>('.line3 .hpbar .hp-fill')!.style.width).toBe('25%');
     expect(el.querySelector('.line3 .hppct')?.textContent?.trim()).toBe('25%');
   });
+
+  for (const compact of [false, true]) {
+    it(`keeps full HP numbers inside the bar at full health and death (${compact ? 'overlay' : 'page'})`, () => {
+      const { f, el, meter } = render({ current: fight(0, [mine], { target: { ...golem, hp: 99_999_999, max_hp: 99_999_999 } }), compact });
+      const bar = () => el.querySelector(compact ? '.hpbar' : '.boss-line .hp')!;
+      expect(bar().textContent).toContain('99,999,999 / 99,999,999');
+      expect(bar().getAttribute('aria-label')).toContain('100%');
+      expect(bar().querySelector<HTMLElement>('.hp-fill')!.style.width).toBe('100%');
+      meter.set({ me: 1, current: fight(0, [mine], { target: { ...golem, hp: 0 } }), fights: 0 });
+      f.detectChanges();
+      expect(bar().textContent).toContain('0 / 200');
+      expect(bar().querySelector<HTMLElement>('.hp-fill')!.style.width).toBe('0%');
+      if (!compact) expect(bar().textContent).toContain('Dead');
+      meter.set({ me: 1, current: fight(0, [mine], { target: { ...golem, max_hp: null } }), fights: 0 });
+      f.detectChanges();
+      expect(el.querySelector(compact ? '.hpbar' : '.boss-line .hp')).toBeNull();
+    });
+  }
 
   it('ranks the players on one short line each, with the extra figures kept for the detail', () => {
     const { el } = render({ current: fight(0, [other, { ...mine, dealt: tally(5_710_000, 40, 16), taken: { amount: 4200, hits: 3 } }]) });

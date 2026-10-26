@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
 import { Overlay } from './overlay';
-import { Character, CharactersService, Radar } from '../characters.service';
+import { Character, CharactersService, Fight, Meter as MeterData, Radar } from '../characters.service';
 import { GameData } from '../gamedata';
 import { OverlaySettings, OverlayView } from '../overlay-settings';
 
@@ -22,18 +22,24 @@ const ch = (name: string, seenUs: number): Character => ({
 async function render(view: OverlayView, settings: Partial<OverlaySettings>, chars: Character[] = [], game: { on: boolean; radar: Radar | null } = { on: false, radar: null }) {
   localStorage.setItem(`acompanion.overlay.${view}`, JSON.stringify(settings));
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => gd })));
+  const service = {
+    characters: signal(chars), game: signal(game.on), radar: signal(game.radar), meter: signal<MeterData | null>(null),
+    fights: signal<Fight[]>([]), recent: signal<Fight[]>([]), status: signal({ id: 'running', detail: null }),
+  };
   TestBed.configureTestingModule({
-    providers: [{ provide: CharactersService, useValue: { characters: signal(chars), game: signal(game.on), radar: signal(game.radar), meter: signal(null), fights: signal([]), status: signal({ id: 'running', detail: null }) } }],
+    providers: [{ provide: CharactersService, useValue: service }],
   });
   const f = TestBed.createComponent(Overlay);
   f.componentRef.setInput('view', view);
   await new Promise(r => setTimeout(r)); // let loadGamedata resolve
   f.detectChanges();
-  return { f, el: f.nativeElement as HTMLElement };
+  return { f, el: f.nativeElement as HTMLElement, service };
 }
 
 describe('Overlay', () => {
   afterEach(() => {
+    TestBed.resetTestingModule();
+    vi.useRealTimers();
     vi.unstubAllGlobals();
     localStorage.clear();
   });
@@ -165,6 +171,115 @@ describe('Overlay', () => {
     it('stays shown everywhere when auto-hide is off', async () => {
       expect(await windowCalls({ autoHide: false }, { on: false, radar: null })).toBe('plugin:window|show');
     });
+  });
+
+  describe('hide outside combat', () => {
+    const fight = (end = Date.now()): Fight => ({ start_us: (end - 1000) * 1000, end_us: end * 1000, me: 1, players: [], target: null });
+    async function setup() {
+      const invoke = vi.fn(async (..._: unknown[]) => undefined);
+      vi.stubGlobal('__TAURI_INTERNALS__', { invoke, metadata: { currentWindow: { label: 'overlay-meter' } }, transformCallback: () => 1 });
+      vi.stubGlobal('__TAURI_EVENT_PLUGIN_INTERNALS__', { unregisterListener: () => undefined });
+      const result = await render('meter', { open: true, hideOutOfCombat: true }, [], { on: true, radar: null });
+      vi.useFakeTimers();
+      const lastWindowCall = () => invoke.mock.calls.map(c => c[0]).filter(c => c === 'plugin:window|show' || c === 'plugin:window|hide').at(-1);
+      const hit = (current = fight()) => {
+        result.service.meter.set({ me: 1, current, fights: result.service.fights().length });
+        result.f.detectChanges();
+        return current;
+      };
+      const advance = (ms: number) => { vi.advanceTimersByTime(ms); result.f.detectChanges(); };
+      return { ...result, lastWindowCall, hit, advance };
+    }
+
+    it('hides without a fight, shows on damage, hides at 10 seconds and shows on the next hit', async () => {
+      const { f, hit, advance, lastWindowCall } = await setup();
+      expect(lastWindowCall()).toBe('plugin:window|hide');
+      hit();
+      expect(lastWindowCall()).toBe('plugin:window|show');
+      advance(9999);
+      expect(f.componentInstance.shown()).toBe(true);
+      advance(1);
+      expect(lastWindowCall()).toBe('plugin:window|hide');
+      hit();
+      expect(lastWindowCall()).toBe('plugin:window|show');
+      expect(JSON.parse(localStorage.getItem('acompanion.overlay.meter')!).open).toBe(true);
+    });
+
+    it('restarts the timeout only when the last hit changes', async () => {
+      const { hit, advance, lastWindowCall, service, f } = await setup();
+      const first = hit();
+      advance(5000);
+      hit({ ...first }); // duplicate snapshot
+      const second = hit();
+      advance(5000); // the first hit's deadline
+      expect(lastWindowCall()).toBe('plugin:window|show');
+      service.meter.update(m => ({ ...m!, current: { ...second, target: { entity: 9, template: 5, hp: 50, max_hp: 200, stagger: null } } }));
+      f.detectChanges();
+      advance(4999);
+      expect(lastWindowCall()).toBe('plugin:window|show');
+      advance(1);
+      expect(lastWindowCall()).toBe('plugin:window|hide');
+    });
+
+    it('keeps the last result until 10 seconds after its hit even when the boss died', async () => {
+      const { hit, advance, lastWindowCall, service, f } = await setup();
+      const dead = hit({ ...fight(), target: { entity: 9, template: 5, hp: 0, max_hp: 200, stagger: null } });
+      advance(1100);
+      service.fights.set([dead]);
+      service.meter.set({ me: 1, current: null, fights: 1 });
+      f.detectChanges();
+      advance(8899);
+      expect(lastWindowCall()).toBe('plugin:window|show');
+      advance(1);
+      expect(lastWindowCall()).toBe('plugin:window|hide');
+    });
+
+    it('uses the remaining time of a saved fight and leaves old history hidden', async () => {
+      const { service, f, advance, lastWindowCall } = await setup();
+      service.fights.set([fight(Date.now() - 20_000)]);
+      f.detectChanges();
+      expect(lastWindowCall()).toBe('plugin:window|hide');
+      service.fights.set([fight(Date.now() - 7000)]);
+      f.detectChanges();
+      advance(2999);
+      expect(lastWindowCall()).toBe('plugin:window|show');
+      advance(1);
+      expect(lastWindowCall()).toBe('plugin:window|hide');
+    });
+
+    it('applies settings immediately and combines combat hiding with game hiding', async () => {
+      const { service, f, hit, advance, lastWindowCall } = await setup();
+      hit();
+      service.game.set(false);
+      f.detectChanges();
+      expect(lastWindowCall()).toBe('plugin:window|hide');
+      f.componentInstance.settings.update(s => ({ ...s, autoHide: false }));
+      f.detectChanges();
+      expect(lastWindowCall()).toBe('plugin:window|show');
+      advance(10_000);
+      expect(lastWindowCall()).toBe('plugin:window|hide');
+      f.componentInstance.settings.update(s => ({ ...s, hideOutOfCombat: false }));
+      f.detectChanges();
+      expect(lastWindowCall()).toBe('plugin:window|show');
+      f.componentInstance.settings.update(s => ({ ...s, hideOutOfCombat: true }));
+      f.detectChanges();
+      expect(lastWindowCall()).toBe('plugin:window|hide');
+    });
+
+    it('cancels its combat timeout when destroyed', async () => {
+      const { f, hit } = await setup();
+      hit();
+      expect(vi.getTimerCount()).toBe(1);
+      f.destroy();
+      expect(vi.getTimerCount()).toBe(0);
+    });
+
+    for (const view of ['radar', 'dailies'] as const) {
+      it(`ignores the combat preference for ${view}`, async () => {
+        const { f } = await render(view, { hideOutOfCombat: true }, [], { on: true, radar: null });
+        expect(f.componentInstance.shown()).toBe(true);
+      });
+    }
   });
 
   it('closes through the overlay command and remembers it as closed', async () => {

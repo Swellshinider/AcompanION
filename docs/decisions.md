@@ -4,6 +4,7 @@ Short record of what was decided and why. Add a row when a decision changes; do 
 
 | Date | Decision | Why | Alternatives rejected |
 |---|---|---|---|
+| 2026-10-26 | The meter overlay can optionally hide 10 s after the current/latest fight's `end_us`, including after boss death; default off, independent of game-closed hiding. Both meter boss bars show current/max HP inside | Players wanted the overlay only around combat but with 10 s to read the final result. A cancellable frontend timeout uses existing fight data; early backend closure after boss death must not shorten it | Hiding as soon as the backend closes a fight; changing fight aggregation or adding a configurable delay |
 | 2026-10-12 | Read-only tracking and suggestions first; input automation maybe later, as a separate opt-in spec | Passive capture has the same risk profile as existing community overlays; automation is botting and risks bans | Building automation first |
 | 2026-10-12 | Own Npcap capture + own decoder | Independence from a third-party app's undocumented API; can follow every client at once | Consuming a third-party app's local API at runtime |
 | 2026-10-12 | Every protocol field is tied to a deliberate in-game action recorded in `captures/`, or to consistency across recordings; no third-party app is a dependency of the app or of the decoder | Anyone with the game and Npcap can reproduce a finding; the app runs standalone | Reusing another tool's decoded stream or opcode table |

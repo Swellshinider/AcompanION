@@ -13,6 +13,14 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.2.3 (next)
 
+### New
+
+- Meter overlay: an optional setting hides it after 10 seconds without combat and shows it again when combat resumes.
+
+### Improved
+
+- The boss's current and total health now appear inside its health bar, both in the meter and its overlay.
+
 ## v0.2.2 (2026-10-25)
 
 ### New
