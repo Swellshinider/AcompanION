@@ -4,6 +4,10 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ## v0.2.5 (next)
 
+### Corrigido
+
+- O medidor de combate não mostra mais um poder de combate absurdamente alto para alguns jogadores.
+
 ## v0.2.4 (2026-10-26)
 
 ### Melhorado
