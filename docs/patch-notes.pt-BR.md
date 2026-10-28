@@ -2,7 +2,9 @@
 
 Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada no app em Configurações › Ver o que há na sua versão. Cada linha nova vai nos dois arquivos, na mesma ordem, com as mesmas versões, seções e itens (o teste `patch-notes.spec.ts` confere).
 
-## v0.2.6 (next)
+## v0.2.7 (next)
+
+## v0.2.6 (2026-10-28)
 
 ### Corrigido
 
