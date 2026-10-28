@@ -4,6 +4,10 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ## v0.2.6 (next)
 
+### Corrigido
+
+- O medidor de combate não mostra mais um dano menor que o real para alguns jogadores em lutas de chefe em grupo.
+
 ## v0.2.5 (2026-10-26)
 
 ### Corrigido

@@ -13,6 +13,10 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.2.6 (next)
 
+### Fixed
+
+- The combat meter no longer comes up short on some players' damage in party boss fights.
+
 ## v0.2.5 (2026-10-26)
 
 ### Fixed
