@@ -645,7 +645,8 @@ fn hit_head(c: &mut Cur) -> Option<HitHead> {
         c.u8()?;
     }
     let effect = c.u32()?;
-    c.take(6)?; // a u32 and a 2-byte tag
+    c.take(4)?; // a u32
+    c.varint()?; // a tag: 2 bytes on most hits, 3 on some (a value of 16,384 or more)
     Some(HitHead { target, flags, extra, attacker, skill, crit, effect, amount: c.varint()? })
 }
 
@@ -986,6 +987,13 @@ mod tests {
         for n in 0..f.len() - 2 {
             assert_eq!(ops().parse(&f[..n]), None, "prefix {n}"); // the amount ends at len - 2
         }
+        // the tag before the amount is a varint: 3 bytes on some hits (read as 2, the next byte
+        // would be taken for the amount, 1)
+        let mut f = hit_frame(0x26, &[0xfe, 0x75]);
+        let tag = f.len() - 2 - 2 - 2;
+        assert_eq!(f[tag..tag + 2], [0xca, 0x61]);
+        f.splice(tag..tag + 2, [0xd5, 0x81, 0x01]);
+        assert_eq!(ops().parse(&f), want);
     }
 
     #[test]
