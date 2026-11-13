@@ -1,6 +1,6 @@
 # Patch notes
 
-What changed for players, in plain language. Every change a player can notice adds a line in the same commit, under the section of the next version (the top one); the notes of a release are taken from here (see [README](../README.md), Releasing).
+What changed for players, in plain language. Every change a player can notice adds a line in the same commit, under the section of the next version (the top one); the notes of a release are taken from here (see [Releasing](development.md#releasing)).
 
 How to write a line:
 

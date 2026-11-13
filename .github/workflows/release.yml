@@ -1,6 +1,6 @@
 name: Release
 
-# Push a tag vX.Y.Z (see README, Releasing). Builds the NSIS installer and its signed updater files
+# Push a tag vX.Y.Z (see docs/development.md, Releasing). Builds the NSIS installer and its signed updater files
 # and attaches them to a DRAFT release; nobody receives the update until the draft is published.
 on:
   push:
