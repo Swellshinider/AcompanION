@@ -5,22 +5,18 @@
 </button>
 
 <div class="page-h">
-  <h2 i18n="@@petsTitle">Pets</h2>
+  <h2>
+    @if (tab() === 'map') { <ng-container i18n="@@mapButton">Map</ng-container> }
+    @else { <ng-container i18n="@@petsTitle">Pets</ng-container> }
+  </h2>
   @if (collection(); as c) {
     <span class="meta" i18n="@@petsUpdated">Updated {{ ago(c.updatedUs) }} ago</span>
   }
 </div>
 
 @if (collection(); as c) {
-<div class="tabs" role="tablist" i18n-aria-label="@@petsTabs" aria-label="Pets views">
-  <button type="button" class="tab" role="tab" id="tab-collection" aria-controls="panel-collection" [attr.aria-selected]="tab() === 'collection'" (click)="setTab('collection')" i18n="@@petsTabCollection">Collection</button>
-  @if (farm()) {
-    <button type="button" class="tab" role="tab" id="tab-map" aria-controls="panel-map" [attr.aria-selected]="tab() === 'map'" (click)="setTab('map')" i18n="@@petsTabMap">Map</button>
-  }
-</div>
-
 @if (tab() === 'collection') {
-<div role="tabpanel" id="panel-collection" aria-labelledby="tab-collection">
+<div>
 <div class="summary">
   <div class="stat">
     <span class="k" i18n="@@petsObtained">Obtained</span>
@@ -87,28 +83,10 @@
 </section>
 </div>
 } @else if (farm(); as f) {
-<section class="sec" data-sec="farm" role="tabpanel" id="panel-map" aria-labelledby="tab-map">
-  <div class="sec-h">
-    <h3 i18n="@@farmTitle">Where to farm</h3>
-    @if (picked() !== null) {
-      <button type="button" class="chip on picked" (click)="picked.set(null)" i18n-aria-label="@@farmUnpick" aria-label="Show all pets again">{{ pickedName() }} ×</button>
-    } @else {
-      <div class="chips" role="group" i18n-aria-label="@@farmFilter" aria-label="Pets on the map">
-        <button type="button" class="chip" [class.on]="farmFilter() === 'all'" [attr.aria-pressed]="farmFilter() === 'all'" (click)="farmFilter.set('all')" i18n="@@petsFilterAll">All</button>
-        <button type="button" class="chip" [class.on]="farmFilter() === 'open'" [attr.aria-pressed]="farmFilter() === 'open'" (click)="farmFilter.set('open')" i18n="@@farmNotMax">Not maxed</button>
-        <button type="button" class="chip" [class.on]="farmFilter() === 'closest'" [attr.aria-pressed]="farmFilter() === 'closest'" (click)="farmFilter.set('closest')" i18n="@@farmClosest">Closest</button>
-        @for (l of levels; track l) {
-          <button type="button" class="chip" [class.on]="farmFilter() === l" [attr.aria-pressed]="farmFilter() === l" (click)="farmFilter.set(l)">
-            @if (l === 0) { <ng-container i18n="@@petsFilterLocked">Locked</ng-container> }
-            @else { <ng-container i18n="@@petsLevelN">Level {{ l }}</ng-container> }
-          </button>
-        }
-      </div>
-    }
-  </div>
+<section class="sec" data-sec="farm">
+  <div class="map-layout">
   @if (region(); as r) {
-    <div class="map-layout">
-      <div class="stage" [class.filled]="filled()">
+      <div class="stage filled">
         <div class="stage-top">
           <div class="chips regions" role="group" i18n-aria-label="@@farmRegions" aria-label="Region">
             @for (x of f.regions; track x.key) {
@@ -116,8 +94,7 @@
             }
           </div>
           <div class="tools">
-            <span class="hint" i18n="@@farmHint">Scroll to zoom, drag to move, click a monster to find it.</span>
-            @if (overlay() ? panned() : me()) {
+            @if (offMe()) {
               <button type="button" class="chip me-btn" (click)="centerOnMe()" i18n="@@farmCenterMe">Centre on me</button>
             }
             <button type="button" class="chip" (click)="zoomBy(1.5)" [disabled]="zoom() >= maxZoom" i18n-aria-label="@@farmZoomIn" aria-label="Zoom in">+</button>
@@ -125,16 +102,14 @@
             <button type="button" class="chip route-btn" [attr.aria-pressed]="showRoute()" (click)="showRoute.set(!showRoute())" i18n="@@farmRoute">Route</button>
             <button type="button" class="chip legend-btn" [attr.aria-pressed]="legend()" (click)="legend.set(!legend())" i18n="@@farmLegend">Legend</button>
             <button type="button" class="chip reset-btn" (click)="resetView()" [disabled]="zoom() === 1" i18n="@@farmReset">Reset</button>
-            <button type="button" class="chip fill" [attr.aria-pressed]="filled()" (click)="filled.set(!filled())">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" /></svg>
-              @if (filled()) { <ng-container i18n="@@farmExitFill">Exit fill</ng-container> }
-              @else { <ng-container i18n="@@farmFill">Fill</ng-container> }
-            </button>
+            @if (!overlay()) {
+              <button type="button" class="chip panel-btn" [attr.aria-pressed]="panel()" (click)="panel.set(!panel())" i18n="@@farmMonsters">Monsters</button>
+            }
           </div>
         </div>
         @if (view(); as v) {
         <div class="stage-map" #stageMap>
-          <svg class="map" [class.dragging]="dragging()" [attr.viewBox]="v.x + ' ' + v.y + ' ' + v.w + ' ' + v.h" [style.aspect-ratio]="overlay() ? null : r.box.w + ' / ' + r.box.h" [style.--ar]="r.box.w / r.box.h" [style.max-width.px]="filled() ? null : mapHeight * r.box.w / r.box.h"
+          <svg class="map" [class.dragging]="dragging()" [attr.viewBox]="v.x + ' ' + v.y + ' ' + v.w + ' ' + v.h"
             role="img" i18n-aria-label="@@farmMap" aria-label="Spawn points of the monsters listed below"
             (wheel)="onWheel($event)" (pointerdown)="onDown($event)" (pointermove)="onMove($event)" (pointerup)="onUp()" (pointercancel)="onUp()">
             <image [attr.href]="r.image.href" [attr.x]="r.image.x" [attr.y]="r.image.y" [attr.width]="r.image.w" [attr.height]="r.image.h" />
@@ -217,7 +192,30 @@
           </p>
         </div>
       </div>
-      <aside class="side">
+  } @else {
+    <p class="note" i18n="@@farmEmpty">No monsters on the map for this selection.</p>
+  }
+  @if (!overlay() && (panel() || !region())) {
+    <aside class="side">
+  <div class="sec-h">
+    <h3 i18n="@@farmTitle">Where to farm</h3>
+    @if (picked() !== null) {
+      <button type="button" class="chip on picked" (click)="picked.set(null)" i18n-aria-label="@@farmUnpick" aria-label="Show all pets again">{{ pickedName() }} ×</button>
+    } @else {
+      <div class="chips" role="group" i18n-aria-label="@@farmFilter" aria-label="Pets on the map">
+        <button type="button" class="chip" [class.on]="farmFilter() === 'all'" [attr.aria-pressed]="farmFilter() === 'all'" (click)="farmFilter.set('all')" i18n="@@petsFilterAll">All</button>
+        <button type="button" class="chip" [class.on]="farmFilter() === 'open'" [attr.aria-pressed]="farmFilter() === 'open'" (click)="farmFilter.set('open')" i18n="@@farmNotMax">Not maxed</button>
+        <button type="button" class="chip" [class.on]="farmFilter() === 'closest'" [attr.aria-pressed]="farmFilter() === 'closest'" (click)="farmFilter.set('closest')" i18n="@@farmClosest">Closest</button>
+        @for (l of levels; track l) {
+          <button type="button" class="chip" [class.on]="farmFilter() === l" [attr.aria-pressed]="farmFilter() === l" (click)="farmFilter.set(l)">
+            @if (l === 0) { <ng-container i18n="@@petsFilterLocked">Locked</ng-container> }
+            @else { <ng-container i18n="@@petsLevelN">Level {{ l }}</ng-container> }
+          </button>
+        }
+      </div>
+    }
+  </div>
+      @if (region(); as r) {
         <div class="side-h">
           <h4 i18n="@@farmMonsters">Monsters</h4>
           <span class="meta" i18n="@@farmInRegion">{{ r.monsters.length }} in region</span>
@@ -227,11 +225,7 @@
             <ng-container [ngTemplateOutlet]="monsterTpl" [ngTemplateOutletContext]="{ $implicit: m, onMap: true }" />
           }
         </ul>
-      </aside>
-    </div>
-  } @else {
-    <p class="note" i18n="@@farmEmpty">No monsters on the map for this selection.</p>
-  }
+      }
   @if (f.dungeons.length) {
     <div class="sec-h dungeons"><h3 i18n="@@farmDungeons">Only in dungeons</h3></div>
     <ul class="rows farm">
@@ -240,6 +234,9 @@
       }
     </ul>
   }
+    </aside>
+  }
+  </div>
 </section>
 }
 } @else {

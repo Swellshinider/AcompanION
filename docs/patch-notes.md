@@ -13,6 +13,12 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.2.7 (next)
 
+### Improved
+
+- The whole app has a new, cleaner and more modern look.
+- The Pets screen now opens straight to your collection, and the farm map has its own Map tab in the header.
+- The Map tab now works like the overlay minimap: it fills the window, follows you while the game runs, and keeps the filters and the monster list in a panel you can open and close.
+
 ## v0.2.6 (2026-10-28)
 
 ### Fixed

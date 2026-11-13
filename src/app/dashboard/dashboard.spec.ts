@@ -126,6 +126,24 @@ describe('Dashboard', () => {
     expect(el.querySelectorAll('.card').length).toBe(1);
   });
 
+  it('opens the farm map from its own header tab, marks it, and returns on Escape', async () => {
+    const withPets: Character = { ...ch('Alpha', 1), pets: { active: 1, updated_us: nowUs, list: [{ id: 1, level: 1, souls: 3 }] } };
+    const { f, el } = await render({ id: 'running', detail: null }, [withPets]);
+    el.querySelector<HTMLButtonElement>('.map-btn')!.click();
+    f.detectChanges();
+    expect(el.querySelector('app-pets h2')?.textContent).toContain('Map');
+    expect(el.querySelector('app-pets [data-sec="all"]')).toBeNull();
+    expect(el.querySelector('.map-btn')!.getAttribute('aria-current')).toBe('page');
+    expect(el.querySelector('.pets-btn')!.hasAttribute('aria-current')).toBe(false);
+    el.querySelector<HTMLButtonElement>('.pets-btn')!.click();
+    f.detectChanges();
+    expect(el.querySelector('app-pets h2')?.textContent).toContain('Pets');
+    expect(el.querySelector('app-pets [role="tablist"]')).toBeNull();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    f.detectChanges();
+    expect(el.querySelector('app-pets')).toBeNull();
+  });
+
   it('opens the meter screen from the header, marks it, and returns on Escape', async () => {
     const { f, el } = await render({ id: 'running', detail: null }, [ch('Alpha', 1)]);
     el.querySelector<HTMLButtonElement>('.meter-btn')!.click();

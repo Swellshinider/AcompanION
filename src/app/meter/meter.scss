@@ -1,41 +1,63 @@
 :host {
   display: block;
+  font-variant-numeric: tabular-nums;
+
+  // everything below is built from the global tokens; the only literals are pure-black shadows for the bare overlay
+  --accent-soft: color-mix(in oklch, var(--accent) 14%, transparent);
+  // legibility over any game scene: the overlay has no panel, so the text carries its own shade
+  --shade: 0 1px 2px oklch(0% 0 0 / 0.85), 0 0 4px oklch(0% 0 0 / 0.5);
+  // the overlay's bars: a dark track so the text reads on the unfilled part, a flat fill in the class colour
+  // solid at 100% opacity (the game must not show through), fading with the setting
+  --track: color-mix(in oklch, var(--well) calc(var(--bar-a, 1) * 100%), transparent);
+  --track-2: color-mix(in oklch, var(--panel-2) calc(var(--bar-a, 1) * 100%), transparent);
+  // the combat power plate
+  --cp-fg: var(--accent);
+  --cp-bg: color-mix(in oklch, var(--accent) 16%, var(--well));
+  // a skill's colour: the hue (`--h`) comes with the row, lightness and chroma are set here
+  --sk-tone: 0.66 0.12;
+  --sk-wash: 0.5 0.1;
+  --sk-ink: 0.92 0.06;
 }
 
 :host(.compact) {
-  font-size: 13px;
+  font-size: var(--fs-3);
+  text-shadow: var(--shade);
 
   .back, .page-h {
     display: none;
   }
 
+  // the boss header gets the rows' backing, so its text reads over any scene
   .head {
     margin-top: 0;
-    padding: 6px 10px 8px;
-    // a panel behind the boss so its text reads over the game; faded by the overlay's opacity like the bars
-    background: color-mix(in oklch, var(--well) calc(var(--bar-a, 1) * 85%), transparent);
-    border-radius: 8px;
+    padding: var(--sp-2);
+    background: var(--track);
+    border-radius: var(--r-md);
+
+    .hpbar {
+      background: var(--track-2);
+    }
   }
 }
 
 .back {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 36px;
-  margin-bottom: 16px;
-  padding: 0 12px 0 10px;
+  gap: var(--sp-2);
+  height: var(--ctl);
+  margin-bottom: var(--sp-4);
+  padding: 0 var(--sp-3) 0 var(--sp-2);
   background: transparent;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--r-md);
   color: inherit;
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 
   &:hover {
     background: var(--panel-2);
-    border-color: var(--gold-line);
+    border-color: var(--line-strong);
   }
 
   svg {
@@ -45,11 +67,11 @@
 }
 
 kbd {
-  margin-left: 4px;
+  margin-left: var(--sp-1);
   padding: 1px 5px;
   border: 1px solid var(--line);
-  border-radius: 3px;
-  font: 600 11px var(--ui);
+  border-radius: var(--r-sm);
+  font: var(--fw-medium) var(--fs-1) var(--ui);
   color: var(--muted);
 }
 
@@ -58,24 +80,25 @@ kbd {
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 4px 16px;
+  gap: var(--sp-1) var(--sp-4);
 
   h2 {
     margin: 0;
-    font: 600 32px/1.2 var(--display);
+    font: var(--fw-semi) var(--fs-6)/1.2 var(--ui);
+    letter-spacing: -0.01em;
   }
 }
 
 .meta {
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: var(--fs-3);
 }
 
 .bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: var(--sp-2) var(--sp-3);
 }
 
 .ask {
@@ -83,19 +106,19 @@ kbd {
 }
 
 .btn {
-  height: 34px;
-  padding: 0 14px;
+  height: var(--ctl);
+  padding: 0 var(--sp-3);
   background: var(--panel);
-  border: 1px solid var(--gold-line);
-  border-radius: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
   color: var(--text);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 
   &:hover:not(:disabled) {
     background: var(--panel-2);
-    border-color: var(--accent);
+    border-color: var(--line-strong);
   }
 
   &:disabled {
@@ -104,21 +127,22 @@ kbd {
   }
 
   &.danger {
-    border-color: var(--bad);
+    border-color: color-mix(in oklch, var(--bad) 50%, transparent);
+    color: var(--bad);
   }
 }
 
 .head {
   display: grid;
   gap: 2px;
-  margin-top: 16px;
+  margin-top: var(--sp-4);
 
   .line1, .line2 {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: 0 12px;
+    gap: 0 var(--sp-3);
   }
 }
 
@@ -127,18 +151,22 @@ kbd {
   align-items: center;
   gap: 6px;
   color: var(--muted);
-  font: 600 11px var(--ui);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-medium);
 
   &.live {
+    padding: 0 var(--sp-2);
+    background: var(--ok-soft);
+    border-radius: var(--r-pill);
     color: var(--ok);
+    line-height: 20px;
+    text-shadow: none;
   }
 }
 
 .foe {
-  color: var(--accent);
-  font-weight: 600;
+  color: var(--text);
+  font-weight: var(--fw-semi);
 }
 
 // the boss's health: current/max inside the bar, with its percentage beside it
@@ -146,7 +174,7 @@ kbd {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
   margin-top: 2px;
 }
 
@@ -155,17 +183,16 @@ kbd {
   flex: 1 0 24ch;
   min-width: 0;
   max-width: 100%;
-  font-size: 11px;
-  height: 20px;
+  height: var(--sp-5);
   overflow: hidden;
-  background: color-mix(in oklch, var(--well) calc(var(--bar-a, 1) * 100%), transparent);
-  border-radius: 999px;
+  background: var(--track);
+  border-radius: var(--r-sm);
 
   .hp-fill {
     position: absolute;
     inset: 0 auto 0 0;
     height: 100%;
-    background: linear-gradient(90deg, color-mix(in oklch, var(--bad) 80%, black), var(--bad));
+    background: var(--bad);
     opacity: var(--bar-a, 1);
     border-radius: inherit;
     transition: width 0.25s;
@@ -175,10 +202,9 @@ kbd {
     position: relative;
     display: block;
     color: var(--text);
-    font: 600 11px/20px var(--ui);
-    font-variant-numeric: tabular-nums;
+    font: var(--fw-medium) var(--fs-1)/20px var(--ui);
     text-align: center;
-    text-shadow: 0 1px 2px #000;
+    text-shadow: var(--shade);
     white-space: nowrap;
   }
 }
@@ -186,22 +212,22 @@ kbd {
 .hppct {
   margin-left: auto;
   min-width: 4ch;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+  font-weight: var(--fw-medium);
   text-align: right;
 }
 
 .stagger {
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-regular);
 }
 
 // the overlay: one bar per player, filled to the share of the best
 .list {
   display: grid;
-  gap: 3px;
-  margin: 8px 0 0;
+  gap: var(--sp-1);
+  margin: var(--sp-2) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -210,17 +236,17 @@ kbd {
   position: relative;
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr) auto auto;
-  gap: 8px;
+  gap: var(--sp-2);
   align-items: center;
   height: 30px;
-  padding: 0 10px 0 3px;
+  padding: 0 var(--sp-2) 0 3px;
   overflow: hidden;
-  border-radius: 999px;
+  background: var(--track);
+  border-radius: var(--r-md);
 
   .n {
     overflow: hidden;
     text-overflow: ellipsis;
-    text-shadow: 0 1px 2px #0008;
     white-space: nowrap;
   }
 
@@ -247,17 +273,15 @@ kbd {
 
   .v, .s, .now {
     text-align: right;
-    font-variant-numeric: tabular-nums;
   }
 
   .now {
-    color: var(--accent);
+    color: var(--text-2);
   }
 
   .s {
     min-width: 5ch;
-    color: var(--accent);
-    font-weight: 600;
+    font-weight: var(--fw-semi);
   }
 }
 
@@ -269,47 +293,44 @@ kbd {
 .fill {
   position: absolute;
   inset: 0 auto 0 0;
-  // the class colour (`--c`, from the game data), the accent when the class is not listed; solid, faded by the overlay's opacity (`--bar-a`)
-  background: linear-gradient(90deg, var(--c, var(--accent)), color-mix(in oklch, var(--c, var(--accent)) 45%, black));
+  // the class colour (`--c`, from the game data), the accent when the class is not listed; faded by the overlay's opacity (`--bar-a`)
+  // built here, not on :host: `--c` is set per row and does not exist higher up
+  background: color-mix(in oklch, var(--c, var(--accent)) 80%, var(--well));
   opacity: var(--bar-a, 1);
-  border-radius: 999px;
+  border-radius: var(--r-md);
   transition: width 0.25s;
   pointer-events: none;
 }
 
-// the local player in the overlay: a gold outline, whatever the class colour
+// the local player in the overlay: an accent outline, whatever the class colour
 .row.me {
   box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 .me .n {
-  font-weight: 600;
+  font-weight: var(--fw-semi);
 }
 
-// the combat power after the name, in the game's cyan plate with the crossed swords
+// the combat power after the name: a small accent plate with the crossed swords
 .cp {
-  --cp: #5fd8f2;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  margin-left: 8px;
-  padding: 1px 9px 1px 5px;
+  gap: var(--sp-1);
+  margin-left: var(--sp-2);
+  padding: 0 var(--sp-2) 0 6px;
+  background: var(--cp-bg);
+  border-radius: var(--r-pill);
+  color: var(--cp-fg);
   font-size: 0.85em;
-  font-weight: 600;
-  line-height: 1.35;
-  font-variant-numeric: tabular-nums;
-  color: var(--cp);
-  text-shadow: 0 0 6px color-mix(in oklch, var(--cp) 55%, transparent);
+  font-weight: var(--fw-medium);
+  line-height: 1.5;
+  text-shadow: none;
   vertical-align: middle;
-  background: linear-gradient(180deg, #14384a, #0a1d29);
-  box-shadow: inset 0 0 0 1px #6f8a96aa;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
 
   svg {
     width: 1.15em;
     height: 1.15em;
     flex: none;
-    filter: drop-shadow(0 0 3px color-mix(in oklch, var(--cp) 70%, transparent));
   }
 }
 
@@ -317,9 +338,9 @@ kbd {
 .layout {
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr);
-  gap: 20px;
+  gap: var(--sp-5);
   align-items: start;
-  margin-top: 16px;
+  margin-top: var(--sp-4);
 
   &.solo {
     display: block;
@@ -333,37 +354,36 @@ kbd {
 
 .fights {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--r-lg);
 }
 
 .cards {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   max-height: 52vh;
   overflow-y: auto;
   padding-right: 2px;
 }
 
 .day {
-  margin: 8px 0 0;
+  margin: var(--sp-2) 0 0;
   color: var(--muted);
-  font: 600 11px var(--ui);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-medium);
 }
 
 .entry {
   display: grid;
-  gap: 3px;
+  gap: 2px;
   width: 100%;
-  padding: 9px 11px;
-  background: var(--well);
-  border: 1px solid var(--line);
-  border-radius: 5px;
+  padding: 10px var(--sp-3);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
   color: inherit;
   font: inherit;
   text-align: left;
@@ -375,20 +395,21 @@ kbd {
   }
 
   &.on {
-    background: color-mix(in oklch, var(--accent) 10%, var(--well));
-    border-color: var(--gold-line);
+    background: var(--panel-2);
+    border-color: var(--line-strong);
   }
 
   .top {
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: var(--sp-2);
     min-width: 0;
   }
 
   .boss {
     min-width: 0;
     overflow: hidden;
+    font-weight: var(--fw-medium);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -397,33 +418,31 @@ kbd {
     flex: none;
     margin-left: auto;
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--fs-2);
     white-space: nowrap;
   }
 
   .sub {
     color: var(--muted);
-    font-size: 12.5px;
+    font-size: var(--fs-2);
 
     b {
-      color: var(--text);
-      font-weight: 600;
+      color: var(--text-2);
+      font-weight: var(--fw-medium);
     }
   }
 }
 
 .badge {
   flex: none;
-  padding: 1px 7px;
-  background: color-mix(in oklch, var(--accent) 16%, transparent);
-  border: 1px solid var(--gold-line);
-  border-radius: 999px;
-  color: var(--accent);
-  font: 600 11px/1.5 var(--ui);
+  padding: 0 var(--sp-2);
+  background: var(--panel-2);
+  border-radius: var(--r-pill);
+  color: var(--text-2);
+  font: var(--fw-medium) var(--fs-2)/20px var(--ui);
 
   &.won {
-    background: color-mix(in oklch, var(--ok) 16%, transparent);
-    border-color: color-mix(in oklch, var(--ok) 45%, transparent);
+    background: var(--ok-soft);
     color: var(--ok);
   }
 }
@@ -434,13 +453,11 @@ kbd {
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px 24px;
-  padding: 16px 18px;
-  background:
-    radial-gradient(120% 140% at 0% 0%, color-mix(in oklch, var(--accent) 14%, transparent), transparent 60%),
-    var(--panel);
-  border: 1px solid var(--gold-line);
-  border-radius: 6px;
+  gap: var(--sp-3) var(--sp-6);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
 
   .big {
     display: grid;
@@ -454,41 +471,40 @@ kbd {
     gap: 0 6px;
 
     > b {
-      font: 600 44px/1.1 var(--display);
-      font-variant-numeric: tabular-nums;
+      font: var(--fw-semi) var(--fs-6)/1.2 var(--ui);
+      letter-spacing: -0.01em;
     }
 
     .unit {
       color: var(--muted);
-      font-size: 18px;
+      font-size: var(--fs-4);
     }
   }
 
   .nowrate {
-    margin-left: 12px;
-    padding: 2px 10px;
-    background: color-mix(in oklch, var(--accent) 14%, transparent);
-    border-radius: 999px;
+    margin-left: var(--sp-3);
+    padding: 0 var(--sp-2);
+    background: var(--accent-soft);
+    border-radius: var(--r-pill);
     color: var(--muted);
-    font-size: 13px;
+    font-size: var(--fs-3);
+    line-height: 22px;
 
     b {
       color: var(--accent);
-      font-variant-numeric: tabular-nums;
+      font-weight: var(--fw-medium);
     }
   }
 
   .cap {
     color: var(--muted);
-    font: 600 11px var(--ui);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: var(--fs-2);
   }
 }
 
 .pulse {
-  width: 8px;
-  height: 8px;
+  width: var(--sp-2);
+  height: var(--sp-2);
   background: var(--ok);
   border-radius: 50%;
   animation: pulse 1.4s ease-in-out infinite;
@@ -507,7 +523,7 @@ kbd {
 
 .sums {
   display: flex;
-  gap: 24px;
+  gap: var(--sp-6);
   margin: 0;
 
   div {
@@ -518,15 +534,12 @@ kbd {
 
   dt {
     color: var(--muted);
-    font: 600 11px var(--ui);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: var(--fs-2);
   }
 
   dd {
     margin: 0;
-    font: 600 20px var(--ui);
-    font-variant-numeric: tabular-nums;
+    font: var(--fw-semi) var(--fs-5)/1.3 var(--ui);
   }
 }
 
@@ -534,11 +547,12 @@ kbd {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 12px;
-  margin-top: 10px;
+  gap: 6px var(--sp-3);
+  margin-top: var(--sp-3);
 
   .name {
-    font-size: 15px;
+    font-size: var(--fs-4);
+    font-weight: var(--fw-semi);
   }
 }
 
@@ -546,26 +560,24 @@ kbd {
   position: relative;
   flex: 1 1 260px;
   min-width: min(100%, 260px);
-  height: 22px;
+  height: var(--sp-5);
   overflow: hidden;
   background: var(--well);
-  border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--r-sm);
 
   .hp-fill {
     position: absolute;
     inset: 0 auto 0 0;
-    background: linear-gradient(90deg, color-mix(in oklch, var(--bad) 80%, black), var(--bad));
+    background: var(--bad);
     transition: width 0.25s;
   }
 
   .hp-text {
     position: relative;
     display: block;
-    font: 600 11px/20px var(--ui);
-    font-variant-numeric: tabular-nums;
+    font: var(--fw-medium) var(--fs-1)/20px var(--ui);
     text-align: center;
-    text-shadow: 0 1px 2px #000a;
+    text-shadow: var(--shade);
     white-space: nowrap;
   }
 
@@ -576,10 +588,10 @@ kbd {
 
 .stagger-bar {
   flex: 0 1 120px;
-  height: 4px;
+  height: var(--sp-1);
   overflow: hidden;
   background: var(--well);
-  border-radius: 2px;
+  border-radius: var(--r-pill);
 
   span {
     display: block;
@@ -591,21 +603,21 @@ kbd {
 
 .tabs {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   width: fit-content;
-  margin-top: 14px;
-  padding: 3px;
+  margin-top: var(--sp-4);
+  padding: 2px;
   background: var(--well);
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--r-md);
 
   button {
-    padding: 5px 14px;
+    padding: var(--sp-1) var(--sp-3);
     background: transparent;
     border: 0;
-    border-radius: 4px;
+    border-radius: var(--r-sm);
     color: var(--muted);
-    font: 600 13px var(--ui);
+    font: var(--fw-medium) var(--fs-3) var(--ui);
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
 
@@ -614,8 +626,8 @@ kbd {
     }
 
     &.on {
-      background: color-mix(in oklch, var(--accent) 18%, transparent);
-      color: var(--accent);
+      background: var(--panel-2);
+      color: var(--text);
     }
   }
 }
@@ -623,7 +635,7 @@ kbd {
 // the ranking: one line per player, opened for the details
 .board {
   --cols: 2ch 28px minmax(0, 1fr) 7ch 9ch 7ch;
-  margin-top: 10px;
+  margin-top: var(--sp-3);
 
   &.with-now {
     --cols: 2ch 28px minmax(0, 1fr) 7ch 9ch 9ch 7ch;
@@ -631,7 +643,7 @@ kbd {
 
   ol {
     display: grid;
-    gap: 4px;
+    gap: var(--sp-1);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -641,12 +653,11 @@ kbd {
 .cols {
   display: grid;
   grid-template-columns: var(--cols);
-  gap: 4px 14px;
-  padding: 0 13px 4px;
+  gap: var(--sp-1) 14px;
+  padding: 0 13px var(--sp-1);
   color: var(--muted);
-  font: 600 11px var(--ui);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-medium);
 
   .num {
     text-align: right;
@@ -657,15 +668,15 @@ kbd {
   position: relative;
   display: grid;
   grid-template-columns: var(--cols);
-  gap: 4px 14px;
+  gap: var(--sp-1) 14px;
   align-items: center;
   width: 100%;
   min-height: 40px;
-  padding: 4px 12px;
+  padding: var(--sp-1) var(--sp-3);
   overflow: hidden;
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 5px;
+  border-radius: var(--r-md);
   color: inherit;
   font: inherit;
   text-align: left;
@@ -675,23 +686,25 @@ kbd {
   &:hover,
   &[aria-expanded="true"] {
     background: var(--panel-2);
-    border-color: var(--gold-line);
+    border-color: var(--line-strong);
   }
 
   > :not(.fill) {
     position: relative;
   }
 
+  // a wash in the class colour behind the row, not the overlay's solid bar
   .fill {
-    background: linear-gradient(90deg, color-mix(in oklch, var(--c, var(--accent)) 72%, transparent), color-mix(in oklch, var(--c, var(--accent)) 26%, transparent));
+    background: color-mix(in oklch, var(--c, var(--accent)) 28%, transparent);
+    opacity: 1;
     border-radius: 0;
     transition: width 0.25s;
   }
 
   .rank {
-    color: color-mix(in oklch, var(--text) 60%, transparent);
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 1px 2px #0008;
+    color: var(--muted);
+    font-size: var(--fs-2);
+    text-align: center;
   }
 
   .ico {
@@ -701,33 +714,35 @@ kbd {
 
   .n {
     overflow: hidden;
-    font-weight: 600;
+    font-weight: var(--fw-medium);
     text-overflow: ellipsis;
-    text-shadow: 0 1px 2px #0008;
     white-space: nowrap;
   }
 
   .amt, .now, .rate, .pct {
     text-align: right;
-    font-variant-numeric: tabular-nums;
   }
 
   .amt {
-    font-weight: 600;
+    font-weight: var(--fw-semi);
   }
 
   .now {
-    color: var(--accent);
+    color: var(--text-2);
   }
 
   .rate {
-    color: color-mix(in oklch, var(--text) 70%, transparent);
+    color: var(--text-2);
+  }
+
+  .pct {
+    color: var(--muted);
   }
 }
 
-// the local player: a gold outline and a soft glow
+// the local player: an accent outline
 .me .line {
-  box-shadow: inset 0 0 0 1px var(--accent), 0 0 14px color-mix(in oklch, var(--accent) 18%, transparent);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 small {
@@ -735,59 +750,49 @@ small {
 }
 
 .note {
-  margin: 10px 0 0;
+  margin: var(--sp-3) 0 0;
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: var(--fs-2);
 }
 
 .detail {
-  margin: 4px 0 8px;
-  padding: 14px 14px 10px;
-  background:
-    linear-gradient(180deg, color-mix(in oklch, var(--c, var(--accent)) 10%, transparent), transparent 90px),
-    var(--well);
+  margin: var(--sp-1) 0 var(--sp-2);
+  padding: var(--sp-4);
+  background: var(--well);
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--r-md);
 }
 
-// one tile per figure, each with its own colour
+// one tile per figure; only the bad and good ones are tinted
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
-  gap: 8px;
+  gap: var(--sp-2);
   margin: 0;
 
   div {
-    --k: var(--muted);
+    --k: var(--text);
     display: grid;
     gap: 2px;
-    padding: 8px 10px;
-    background: color-mix(in oklch, var(--k) 9%, var(--panel));
-    border-top: 2px solid color-mix(in oklch, var(--k) 70%, transparent);
-    border-radius: 4px;
+    padding: var(--sp-2) 10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
   }
 
-  .k-class { --k: var(--c, var(--accent)); }
-  .k-dmg { --k: var(--c, var(--accent)); }
   .k-dps { --k: var(--accent); }
-  .k-crit { --k: oklch(0.78 0.15 55); }
-  .k-hits { --k: oklch(0.74 0.09 240); }
   .k-bad { --k: var(--bad); }
   .k-ok { --k: var(--ok); }
-  .k-dim { --k: oklch(0.72 0.07 160); }
 
   dt {
     color: var(--muted);
-    font: 600 11px var(--ui);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: var(--fs-2);
   }
 
   dd {
     margin: 0;
-    color: color-mix(in oklch, var(--k) 55%, var(--text));
-    font: 600 18px var(--ui);
-    font-variant-numeric: tabular-nums;
+    color: var(--k);
+    font: var(--fw-semi) var(--fs-4) var(--ui);
   }
 }
 
@@ -795,39 +800,37 @@ small {
 .mix {
   display: flex;
   gap: 2px;
-  height: 8px;
-  margin-top: 12px;
+  height: 6px;
+  margin-top: var(--sp-3);
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: var(--r-pill);
 
   span {
     min-width: 2px;
-    background: oklch(0.66 0.13 var(--h));
+    background: oklch(var(--sk-tone) var(--h));
   }
 }
 
 .scroll {
-  margin-top: 12px;
+  margin-top: var(--sp-3);
   overflow-x: auto;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
 
   th, td {
     padding: 6px 10px;
     border-bottom: 1px solid var(--line);
     text-align: left;
-    font-weight: 400;
+    font-weight: var(--fw-regular);
   }
 
   thead th {
     color: var(--muted);
-    font: 600 11px var(--ui);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: var(--fs-2);
+    font-weight: var(--fw-medium);
     white-space: nowrap;
   }
 
@@ -841,7 +844,7 @@ table {
 .ranked {
   tbody tr {
     --h: 75;
-    background: linear-gradient(90deg, oklch(0.5 0.1 var(--h) / 0.34) calc(var(--p) * 1%), transparent calc(var(--p) * 1%));
+    background: linear-gradient(90deg, oklch(var(--sk-wash) var(--h) / 0.3) calc(var(--p) * 1%), transparent calc(var(--p) * 1%));
     transition: background-color 0.15s;
 
     &:hover {
@@ -852,10 +855,10 @@ table {
   tbody th {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--sp-2);
     min-height: 28px;
     border-bottom: 0;
-    font-weight: 600;
+    font-weight: var(--fw-medium);
   }
 
   tbody td {
@@ -864,20 +867,20 @@ table {
 
   .amount {
     color: var(--text);
-    font-weight: 600;
+    font-weight: var(--fw-semi);
   }
 
   .crit {
     color: var(--muted);
 
     &.hot {
-      color: oklch(0.8 0.15 70);
-      font-weight: 600;
+      color: var(--warn);
+      font-weight: var(--fw-semi);
     }
   }
 
   .share {
-    color: color-mix(in oklch, var(--text) 75%, transparent);
+    color: var(--text-2);
   }
 }
 
@@ -887,17 +890,17 @@ table {
   width: 28px;
   height: 28px;
   box-sizing: border-box;
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   object-fit: cover;
 }
 
 span.sk {
   display: grid;
   place-items: center;
-  background: linear-gradient(145deg, oklch(0.46 0.1 var(--h)), oklch(0.3 0.07 var(--h)));
-  border: 1px solid oklch(0.62 0.13 var(--h));
-  color: oklch(0.92 0.06 var(--h));
-  font: 700 14px var(--ui);
+  background: color-mix(in oklch, oklch(var(--sk-tone) var(--h)) 18%, var(--panel-2));
+  border: 1px solid var(--line-strong);
+  color: oklch(var(--sk-ink) var(--h));
+  font: var(--fw-semi) var(--fs-3) var(--ui);
 
   &::before {
     content: attr(data-l);
@@ -907,26 +910,26 @@ span.sk {
 .tables {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  gap: 8px 28px;
-  margin-top: 16px;
+  gap: var(--sp-2) var(--sp-7);
+  margin-top: var(--sp-4);
 
   h3 {
     margin: 0;
-    font: 600 18px var(--display);
+    font: var(--fw-semi) var(--fs-4) var(--ui);
 
     small {
-      margin-left: 4px;
-      padding: 0 7px;
-      background: color-mix(in oklch, var(--c, var(--accent)) 20%, transparent);
-      border-radius: 999px;
-      color: var(--text);
-      font: 600 12px/1.6 var(--ui);
+      margin-left: var(--sp-1);
+      padding: 0 var(--sp-2);
+      background: var(--panel-2);
+      border-radius: var(--r-pill);
+      color: var(--text-2);
+      font: var(--fw-medium) var(--fs-2)/20px var(--ui);
     }
   }
 }
 
 .empty {
-  margin: 16px 0 0;
+  margin: var(--sp-4) 0 0;
   color: var(--muted);
 }
 
@@ -942,6 +945,6 @@ span.sk {
 
 @media (max-width: 480px) {
   .page-h h2 {
-    font-size: 26px;
+    font-size: var(--fs-5);
   }
 }

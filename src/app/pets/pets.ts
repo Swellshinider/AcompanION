@@ -1,7 +1,7 @@
 import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, DestroyRef, ElementRef, LOCALE_ID, afterNextRender, computed, effect, inject, input, linkedSignal, output, signal, untracked, viewChild } from '@angular/core';
 import { Radar } from '../characters.service';
-import { Box, FarmMonster, GameData, PetCollection, PetRow, MAX_ZOOM, clampBox, currentRegion, farmMap, fitBox, followBox, liveMonsters, pick, soulGain, span } from '../gamedata';
+import { Box, FarmMonster, GameData, PetCollection, PetRow, MAX_ZOOM, currentRegion, farmMap, fitBox, followBox, liveMonsters, pick, soulGain, span } from '../gamedata';
 import { FarmRoute, farmRoute } from '../route';
 
 /** `null` shows every pet; a number shows the pets at that level. */
@@ -19,15 +19,15 @@ const CLOSEST = 10;
 const MARKER_BOOST = 1.2;
 const MARKER_GROWTH = 0.3;
 
-/** The overlay's first zoom: this many times closer than the region's spawn box. */
-const OVERLAY_ZOOM = 4;
+/** The minimap's first zoom while the player's position is known: this many times closer than the region's spawn box. */
+const FOLLOW_ZOOM = 4;
 
 @Component({
   selector: 'app-pets',
   imports: [DecimalPipe, NgTemplateOutlet],
   templateUrl: './pets.html',
   styleUrl: './pets.scss',
-  host: { '[class.overlay]': 'overlay()' },
+  host: { '[class.overlay]': 'overlay()', '[class.map]': 'map()' },
 })
 export class Pets {
   private readonly lang = inject(LOCALE_ID).split('-')[0];
@@ -42,26 +42,26 @@ export class Pets {
   readonly overlay = input(false);
   /** The overlay's fallback while the game has not said where the player is: the region they were last seen in. */
   readonly lastRegion = input<string | null>(null);
-  readonly tab = linkedSignal<Tab>(() => (this.overlay() ? 'map' : 'collection'));
-  /** The map covers the whole app window (not the OS screen). */
-  readonly filled = linkedSignal(() => this.overlay());
+  /** The header's Map screen: the farm map instead of the collection. */
+  readonly map = input(false);
+  /** A pet was picked from the collection: the parent opens the Map screen, which shows where its souls drop. */
+  readonly showMap = output<void>();
+  readonly tab = computed<Tab>(() => (this.overlay() || this.map() ? 'map' : 'collection'));
+  /** The minimap layout, shared by the overlay and the Map screen: the map fills its area and the view follows the player. */
+  readonly mini = computed(() => this.overlay() || this.map());
   readonly filter = signal<LevelFilter>(null);
   readonly levels = [0, 1, 2, 3];
   readonly maxZoom = MAX_ZOOM;
-  /** The tallest the map grows, in px; its width follows the region's shape so the view box maps 1:1 to the element. */
-  readonly mapHeight = 640;
   readonly farmFilter = signal<FarmFilter>('all');
   /** One pet picked from a list; it overrides the farm filter. */
   readonly picked = signal<number | null>(null);
   readonly regionKey = signal<string | null>(null);
-  /** The map view the user moved to, with the region it belongs to; the region's own box otherwise. */
-  private readonly moved = signal<(Box & { key: string }) | null>(null);
-  /** The overlay map's zoom. */
-  private readonly overlayZoom = signal(OVERLAY_ZOOM);
-  /** Where the overlay map was dragged to (in this region); null follows the player. */
-  private readonly overlayPan = signal<{ key: string; x: number; y: number } | null>(null);
+  /** The Map screen's side panel (filters and monster list); a picked pet opens it, so the pick can be cleared. */
+  readonly panel = signal(false);
+  /** Where the minimap was dragged to (in this region); null follows the player. */
+  private readonly miniPan = signal<{ key: string; x: number; y: number } | null>(null);
   private readonly stageMap = viewChild<ElementRef<HTMLElement>>('stageMap');
-  /** Width / height of the area the overlay's map fills; null until measured. */
+  /** Width / height of the area the minimap fills; null until measured. */
   private readonly aspect = signal<number | null>(null);
   /** The pet levels' colour key over the map. */
   readonly legend = signal(false);
@@ -127,16 +127,18 @@ export class Pets {
     const [r, p] = [this.region(), this.radar()?.player];
     return r && p && this.liveNow() === r.key ? { x: p.x / 100, y: p.y / 100, us: p.t_us } : null;
   });
+  /** Whether the player's position is known; a boolean, so a new fix does not reset the zoom. */
+  private readonly hasMe = computed(() => this.me() !== null);
+  /** The minimap's zoom: close in while the player's position is known (the overlay always), the whole region otherwise. */
+  private readonly miniZoom = linkedSignal<number>(() => (this.overlay() || this.hasMe() ? FOLLOW_ZOOM : 1));
   readonly view = computed(() => {
-    const [r, m] = [this.region(), this.moved()];
-    if (r && this.overlay()) {
-      const [p, pan] = [this.me(), this.overlayPan()];
-      const centre = pan?.key === r.key ? [pan.x, pan.y] as [number, number] : p && [p.x, p.y] as [number, number];
-      return followBox(r.box, { x: r.image.x, y: r.image.y, w: r.image.w, h: r.image.h }, centre, this.overlayZoom(), this.aspect() ?? r.box.w / r.box.h);
-    }
-    return r && m?.key === r.key ? m : r?.box ?? null;
+    const r = this.region();
+    if (!r) return null;
+    const [p, pan] = [this.me(), this.miniPan()];
+    const centre = pan?.key === r.key ? [pan.x, pan.y] as [number, number] : p && [p.x, p.y] as [number, number];
+    return followBox(r.box, { x: r.image.x, y: r.image.y, w: r.image.w, h: r.image.h }, centre, this.miniZoom(), this.aspect() ?? r.box.w / r.box.h);
   });
-  /** The farm route over the map: on in the overlay, a chip on the Map tab. */
+  /** The farm route over the map: on in the overlay, a chip on the Map screen. */
   readonly showRoute = linkedSignal(() => this.overlay());
   private readonly openIds = computed(() => (this.collection()?.rows ?? []).filter(r => r.next !== null).map(r => r.id).join(','));
   private readonly routeKey = computed(() => this.region()?.key ?? null);
@@ -171,8 +173,10 @@ export class Pets {
     const m = s.monsters.find(id => s.pets.includes(gd.pet_monsters[id]?.pet)) ?? s.monsters[0];
     return { x: s.x, y: s.y, monster: pick(gd.pet_monsters[m]?.name, this.lang) ?? `#${m}` };
   });
-  /** The overlay map was dragged away from the player. */
-  readonly panned = computed(() => this.overlayPan()?.key === this.region()?.key && this.overlayPan() !== null);
+  /** The minimap was dragged away from the player. */
+  readonly panned = computed(() => this.miniPan()?.key === this.region()?.key && this.miniPan() !== null);
+  /** Offer "Centre on me": the map was moved off the player, or a region chip put it away from the player's region. */
+  readonly offMe = computed(() => this.panned() || (this.map() && this.regionKey() !== null && this.liveNow() !== null));
   /** One marker unit in view-box units: the dot's size, growing with the zoom more slowly than the map does. */
   readonly unit = computed(() => (this.region()?.dot ?? 0) * MARKER_BOOST * this.zoom() ** (MARKER_GROWTH - 1));
   /** 1 at the region's own view, up to `MAX_ZOOM`. */
@@ -192,10 +196,10 @@ export class Pets {
     const host = this.host;
     afterNextRender(() => host.nativeElement.querySelector<HTMLElement>('.back')?.focus());
     const timer = setInterval(() => this.tick.set(Date.now()), 1000);
-    // the overlay's map fills its area, so the view's shape follows the area's
+    // the minimap fills its area, so the view's shape follows the area's
     effect(onCleanup => {
       const el = this.stageMap()?.nativeElement;
-      if (!el || !this.overlay() || typeof ResizeObserver === 'undefined') return;
+      if (!el || !this.mini() || typeof ResizeObserver === 'undefined') return;
       const ro = new ResizeObserver(([e]) => {
         const { width, height } = e.contentRect;
         if (width && height) this.aspect.set(width / height);
@@ -203,26 +207,12 @@ export class Pets {
       ro.observe(el);
       onCleanup(() => ro.disconnect());
     });
-    // Esc leaves the fill first. Capture phase and stopImmediatePropagation keep the dashboard's own
-    // Esc handler (back to the roster) from also firing.
-    const onEsc = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || !this.filled() || this.overlay()) return;
-      e.stopImmediatePropagation();
-      this.filled.set(false);
-    };
-    document.addEventListener('keydown', onEsc, true);
-    // the page behind the fill must not scroll
-    effect(() => document.documentElement.classList.toggle('lock-scroll', this.filled()));
+    // the page behind the minimap must not scroll
+    effect(() => document.documentElement.classList.toggle('lock-scroll', this.mini()));
     inject(DestroyRef).onDestroy(() => {
       clearInterval(timer);
-      document.removeEventListener('keydown', onEsc, true);
       document.documentElement.classList.remove('lock-scroll');
     });
-  }
-
-  setTab(t: Tab) {
-    this.tab.set(t);
-    document.scrollingElement?.scrollTo?.({ top: 0 });
   }
 
   /** Age of a capture timestamp (µs since the epoch): seconds under a minute, else as `ago`. */
@@ -237,11 +227,6 @@ export class Pets {
     return span(this.now() - us / 1000, this.lang);
   }
 
-  private setView(b: Box) {
-    const r = this.region();
-    if (r) this.moved.set({ ...clampBox(b, r.box), key: r.key });
-  }
-
   /** Map units under a pointer event on the map. */
   private at(e: { clientX: number; clientY: number; currentTarget: EventTarget | null }, v: Box): [number, number] {
     const rect = (e.currentTarget as Element).getBoundingClientRect();
@@ -251,33 +236,28 @@ export class Pets {
     ];
   }
 
-  /** Zoom by `factor` keeping the map point `at` (default: the middle) where it is. */
+  /** Zoom by `factor`. On the Map screen the map point `at` (the pointer) stays where it is; the overlay zooms about its centre. */
   zoomBy(factor: number, at?: [number, number]) {
-    if (this.overlay()) {
-      this.overlayZoom.update(z => Math.min(MAX_ZOOM, Math.max(1, z * factor)));
-      return;
+    const [r, v, old] = [this.region(), this.view(), this.miniZoom()];
+    if (!r || !v) return;
+    const z = Math.min(MAX_ZOOM, Math.max(1, old * factor));
+    this.miniZoom.set(z);
+    if (at && this.map() && z !== old) {
+      const [k, cx, cy] = [z / old, v.x + v.w / 2, v.y + v.h / 2];
+      this.miniPan.set({ key: r.key, x: at[0] + (cx - at[0]) / k, y: at[1] + (cy - at[1]) / k });
     }
-    const v = this.view();
-    if (!v) return;
-    const [cx, cy] = at ?? [v.x + v.w / 2, v.y + v.h / 2];
-    const k = 1 / factor;
-    this.setView({ x: cx - (cx - v.x) * k, y: cy - (cy - v.y) * k, w: v.w * k, h: v.h * k });
   }
 
+  /** The whole region again. */
   resetView() {
-    this.moved.set(null);
+    this.miniPan.set(null);
+    this.miniZoom.set(1);
   }
 
-  /** Follow the player's region and frame their last position. */
+  /** Follow the player again, in the region they are in. */
   centerOnMe() {
-    if (this.overlay()) {
-      this.overlayPan.set(null);
-      return;
-    }
-    const [r, p] = [this.region(), this.me()];
-    if (!r || !p) return;
     this.regionKey.set(null);
-    this.setView(fitBox({ x: p.x, y: p.y, w: 0, h: 0 }, r.box));
+    this.miniPan.set(null);
   }
 
   onWheel(e: WheelEvent) {
@@ -304,8 +284,7 @@ export class Pets {
     if (rect.width) {
       const [x, y] = [v.x - (e.clientX - d.x) / rect.width * v.w, v.y - (e.clientY - d.y) / rect.height * v.h];
       const key = this.region()?.key;
-      if (this.overlay() && key) this.overlayPan.set({ key, x: x + v.w / 2, y: y + v.h / 2 });
-      else this.setView({ ...v, x, y });
+      if (key) this.miniPan.set({ key, x: x + v.w / 2, y: y + v.h / 2 });
     }
     d.x = e.clientX;
     d.y = e.clientY;
@@ -326,15 +305,21 @@ export class Pets {
     const on = this.selected() !== m.id;
     this.selected.set(on ? m.id : null);
     const r = this.region();
-    if (on && fit && r && m.d) this.setView(fitBox(m.box, r.box));
+    if (on && fit && r && m.d) {
+      const b = fitBox(m.box, r.box);
+      this.miniPan.set({ key: r.key, x: b.x + b.w / 2, y: b.y + b.h / 2 });
+      this.miniZoom.set(Math.min(MAX_ZOOM, Math.max(1, r.box.w / b.w)));
+    }
   }
 
   /** Show where this pet's souls drop. */
   pick(id: number) {
     this.picked.set(id);
+    this.panel.set(true);
     this.regionKey.set(null);
     this.selected.set(null);
-    this.setTab('map');
+    document.scrollingElement?.scrollTo?.({ top: 0 });
+    this.showMap.emit();
   }
 
   pct(r: PetRow): number {

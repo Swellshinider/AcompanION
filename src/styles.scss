@@ -1,23 +1,80 @@
+/* Geist (SIL OFL, `public/fonts/Geist-OFL.txt`), bundled: the CSP allows no font CDN. */
+@font-face {
+  font-family: "Geist";
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/Geist-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist";
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/Geist-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist";
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/Geist-SemiBold.woff2") format("woff2");
+}
+
 :root {
-  --bg: #14161b;
-  --panel: #1b1e25;
-  --line: #2a2e37;
-  --text: #e6e6e6;
-  --muted: #8a8f99;
-  --accent: #e0a84a;
-  --ok: #6cc070;
-  --bad: #e06c5a;
-  --gold: oklch(0.62 0.11 74);
-  --gold-hi: oklch(0.86 0.10 86);
-  --gold-line: color-mix(in oklch, var(--accent) 34%, transparent);
-  --panel-2: oklch(0.265 0.014 268);
-  --well: oklch(0.16 0.01 265);
-  --display: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-  --ui: "Segoe UI", system-ui, -apple-system, sans-serif;
+  // surfaces, dark to light
+  --page: oklch(11% 0.004 265);
+  --well: oklch(11.5% 0.006 265);
+  --bg: oklch(14.5% 0.006 265);
+  --panel: oklch(18% 0.007 265);
+  --panel-2: oklch(22% 0.008 265);
+  --line: oklch(26.5% 0.008 265);
+  --line-strong: oklch(34% 0.01 265);
+
+  --text: oklch(96% 0.004 265);
+  --text-2: oklch(80% 0.008 265);
+  --muted: oklch(63% 0.01 265);
+
+  // the one accent, plus status colours
+  --accent: oklch(76% 0.105 235);
+  --ok: oklch(76% 0.14 155);
+  --bad: oklch(69% 0.17 22);
+  --warn: oklch(80% 0.135 80);
+  --ok-soft: oklch(76% 0.14 155 / 0.14);
+  --bad-soft: oklch(69% 0.17 22 / 0.14);
+  --warn-soft: oklch(80% 0.135 80 / 0.14);
+
+  --ui: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --fs-1: 11px; // micro: level, hints
+  --fs-2: 12px; // caption, labels
+  --fs-3: 13px; // body
+  --fs-4: 15px; // emphasis, card title
+  --fs-5: 20px; // section title, key figures
+  --fs-6: 28px; // hero
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semi: 600;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 48px;
+
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+  --r-pill: 999px;
+
+  --ctl: 32px; // desktop control height
+
   color-scheme: dark;
-  // thin gold scrollbar; inherited, so inner scroll areas get it too
+  // thin scrollbar; inherited, so inner scroll areas get it too
   scrollbar-width: thin;
-  scrollbar-color: var(--gold-line) transparent;
+  scrollbar-color: var(--line-strong) transparent;
 }
 
 html,
@@ -43,29 +100,15 @@ html {
 html.overlay,
 html.overlay body {
   background: transparent;
-
-  &::before {
-    display: none;
-  }
 }
 
 body {
   min-height: 100vh;
   color: var(--text);
-  font: 14px/1.45 var(--ui);
+  font: var(--fs-3) / 1.45 var(--ui);
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
-  background: radial-gradient(120% 70% at 50% -10%, oklch(0.25 0.02 268) 0%, var(--bg) 58%, oklch(0.15 0.008 265) 100%) fixed;
-
-  &::before {
-    /* faint noise; `data:` is allowed by the CSP's img-src */
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.07;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+  background: var(--bg);
 }
 
 button {
@@ -97,28 +140,26 @@ button {
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: var(--sp-4);
 }
 
 .stat {
   display: grid;
   gap: 3px;
-  padding-top: 9px;
+  padding-top: var(--sp-2);
   border-top: 1px solid var(--line);
 
   .k {
-    font-size: 11px;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
+    font-size: var(--fs-2);
     color: var(--muted);
   }
 
   .v {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 20px;
-    font-weight: 600;
+    gap: var(--sp-2);
+    font-size: var(--fs-5);
+    font-weight: var(--fw-semi);
     font-variant-numeric: tabular-nums;
     line-height: 1.2;
   }

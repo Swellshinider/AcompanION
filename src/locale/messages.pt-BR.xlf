@@ -355,6 +355,14 @@
           <context context-type="linenumber">25,26</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="mapButton" datatype="html">
+        <source>Map</source>
+        <target>Mapa</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.html</context>
+          <context context-type="linenumber">26,28</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="meterButton" datatype="html">
         <source>DPS Meter</source>
         <target>Medidor de DPS</target>
@@ -1176,30 +1184,6 @@
           <context context-type="linenumber">10,12</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="petsTabs" datatype="html">
-        <source>Pets views</source>
-        <target>Telas de pets</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">15,16</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="petsTabCollection" datatype="html">
-        <source>Collection</source>
-        <target>Coleção</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">16,18</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="petsTabMap" datatype="html">
-        <source>Map</source>
-        <target>Mapa</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">18,21</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="petsObtained" datatype="html">
         <source>Obtained</source>
         <target>Obtidos</target>
@@ -1352,14 +1336,6 @@
           <context context-type="linenumber">113,114</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="farmHint" datatype="html">
-        <source>Scroll to zoom, drag to move, click a monster to find it.</source>
-        <target>Role para ampliar, arraste para mover, clique em um monstro para encontrá-lo.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">119,120</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="farmCenterMe" datatype="html">
         <source>Centre on me</source>
         <target>Centralizar em mim</target>
@@ -1406,22 +1382,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
           <context context-type="linenumber">127,128</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmExitFill" datatype="html">
-        <source>Exit fill</source>
-        <target>Sair do preenchimento</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">130,131</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmFill" datatype="html">
-        <source>Fill</source>
-        <target>Preencher</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">131,132</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmMap" datatype="html">

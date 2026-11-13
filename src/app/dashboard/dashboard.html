@@ -23,6 +23,9 @@
     <nav class="tabs">
       <button type="button" class="tab roster-btn" [attr.aria-current]="screen() === 'roster' ? 'page' : null" (click)="roster()" i18n="@@charactersButton">Characters</button>
       <button type="button" class="tab pets-btn" [attr.aria-current]="screen() === 'pets' ? 'page' : null" (click)="screen.set('pets')" i18n="@@petsButton">Pets</button>
+      @if (gamedata()) {
+        <button type="button" class="tab map-btn" [attr.aria-current]="screen() === 'map' ? 'page' : null" (click)="screen.set('map')" i18n="@@mapButton">Map</button>
+      }
       <button type="button" class="tab meter-btn" [attr.aria-current]="screen() === 'meter' ? 'page' : null" (click)="screen.set('meter')" i18n="@@meterButton">DPS Meter</button>
       <button type="button" class="tab settings-btn" [attr.aria-current]="screen() === 'settings' || screen() === 'whatsnew' ? 'page' : null" (click)="screen.set('settings')" i18n="@@settingsButton">Settings</button>
     </nav>
@@ -69,8 +72,8 @@
 }
 
 <main>
-  @if (screen() === 'pets') {
-    <app-pets [collection]="pets()" [gamedata]="gamedata()" [radar]="radar()" [now]="now()" (back)="back()" />
+  @if (screen() === 'pets' || screen() === 'map') {
+    <app-pets [collection]="pets()" [gamedata]="gamedata()" [radar]="radar()" [now]="now()" [map]="screen() === 'map'" (back)="back()" (showMap)="screen.set('map')" />
   } @else if (screen() === 'meter') {
     <app-meter [gamedata]="gamedata()" (back)="back()" />
   } @else if (screen() === 'settings') {
