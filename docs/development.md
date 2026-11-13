@@ -12,6 +12,19 @@ AcompanION is a Rust crate (`src-tauri/`) with a reverse-engineering CLI, a head
 - [Node](https://nodejs.org/) 24 and [pnpm](https://pnpm.io/) 11 for the frontend and the app (`pnpm install` once at the repository root); the Angular and Tauri CLIs are dev dependencies
 - Optional: [uv](https://docs.astral.sh/uv/) for `tools/re/aion_re.py`
 
+## Getting started
+
+```powershell
+git clone https://github.com/Swellshinider/AcompanION.git
+cd AcompanION
+pnpm install
+task build
+task devices      # list the Npcap adapters
+task app          # elevated terminal for capture; otherwise offers "Restart as admin"
+```
+
+For headless operation, use `task live` instead of `task app` (see [Live engine](#live-engine)). The Angular and Tauri CLIs are dev dependencies installed by `pnpm install`.
+
 ## Tasks
 
 | Task | What it does |
@@ -31,7 +44,13 @@ AcompanION is a Rust crate (`src-tauri/`) with a reverse-engineering CLI, a head
 | `task live -- [flags]` | Follow live traffic (or `--replay` a pcap) into the character state |
 | `task analyze -- <args>` | `tools/re/aion_re.py` through `uv` |
 
-Without Task, each one is a Cargo command with `--manifest-path src-tauri/Cargo.toml`; `task -n <name>` prints the exact command.
+Without Task, run the underlying commands from the repository root. For example, `task live` is:
+
+```powershell
+cargo run --manifest-path src-tauri/Cargo.toml --bin re -- live
+```
+
+`task app` is `pnpm tauri dev`; `task -n <name>` prints the exact command of any task.
 
 ## Capture workflow
 
@@ -51,8 +70,11 @@ Start `task record` **before** launching the game when you can, so the handshake
 ```powershell
 task live                                   # elevated; Enter stops it
 task live -- --seconds 60 --state out.json  # time-boxed, custom state file
+task live -- --device "<adapter name>"      # pick an adapter from `task devices`
 task live -- --replay captures/<name>.pcap --state out.json   # offline replay
 ```
+
+`task live` follows every game connection, whether started before or after the game; a mid-stream start is decoded too. Each changed character is printed as one JSON line and written to the state file. The output contains character names, so do not paste it anywhere.
 
 The state file defaults to `%APPDATA%\AcompanION\characters.json`. A replay writes nothing unless `--state` is given, so it never touches the live file. `live::run` has no automated test (it needs Npcap and the game); `Engine` is covered by synthetic frames.
 
@@ -65,13 +87,15 @@ task app:build    # release exe, no installer
 
 `task app` runs `pnpm tauri dev`, which starts the Angular dev server (`pnpm start`, port 4200) and the Tauri window. The app reads and writes the same state file as `re live` (`%APPDATA%\AcompanION\characters.json`), so it shows what an earlier `re live` run saved. Both write that file, so do not run them against live traffic at the same time.
 
+The dashboard lists every character seen with what is left to collect and updates live.
+
 The window's states, the commands and events it uses are described in [`architecture.md`](architecture.md) ("Desktop app"). `task app` and `task app:build` need the frontend dependencies and the Rust toolchain; the first build compiles Tauri and takes a while.
 
 ### Game data (`public/gamedata.json`)
 
 Names, caps, reset kinds and refills are not on the wire; the dashboard reads them from this hand-curated file, and counter ids not in it are hidden. It holds game facts only: no character names, no values.
 
-1. Find the counter ids the engine stores for a character (`%APPDATA%\AcompanION\characters.json`) and match them **with confidence** to the in-game activity they belong to, for example by doing one action in the game and watching which counter moves. A counter you cannot match stays out; list it in [`status.md`](status.md).
+1. Find the counter ids the engine stores for a character (`%APPDATA%\AcompanION\characters.json`) and match them **with confidence** to the in-game activity they belong to, for example by doing one action in the game and watching which counter moves. A counter you cannot match stays out; list it in [`agents/status.md`](agents/status.md).
 2. Add the entry: `name.en`, `category` (`daily`, `weekly`, `ticket`, `energy`), `cap`, `reset` (`daily`, `weekly` or `null`), `refill` (`amount`, `every_ms`) or `null`, and `"ms": true` when value and cap are milliseconds (store time caps in ms). A class is a `classes` entry keyed by `class_code`. Another language is another key beside `en` (`pt`): add it in the same change, or list the name in `src/app/untranslated-names.json` (see Translations).
 3. `task web:test` (the shipped file is checked against the `GameData` shape), then `task app` to look at it.
 
@@ -104,5 +128,16 @@ The language is the Settings choice (Automatic, English, Português) saved in `l
 - Smallest change that solves the problem; follow the existing structure.
 - A known simplification gets a `ponytail:` comment naming its ceiling and upgrade path.
 - When a protocol finding is confirmed, update [`protocol.md`](protocol.md) in the same change, with evidence and without account data.
-- Record a decision in [`decisions.md`](decisions.md); update [`status.md`](status.md) at the end of a session.
+- Record a decision in [`decisions.md`](decisions.md); update [`agents/status.md`](agents/status.md) at the end of a session.
 - Branches: `feature/*`, `bugfix/*`, `docs/*`, `refactor/*`, `test/*`, `chore/*`; commits use conventional prefixes (`feat:`, `fix:`, `docs:`, `chore:`, `test:`). Do not open a PR or merge without the maintainer's approval.
+
+## Releasing
+
+The version lives in `src-tauri/Cargo.toml` only. One-time setup: `pnpm tauri signer generate -w <path>`, put the public key in `plugins.updater.pubkey` of `src-tauri/tauri.conf.json`, and add the private key and its password as the repository secrets `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Never commit the private key: without it nobody can ship updates, and anyone who has it can.
+
+1. Bump `version` in `src-tauri/Cargo.toml` (and `Cargo.lock`) through a pull request and merge it.
+2. On `main`: `git tag vX.Y.Z && git push origin vX.Y.Z`. The `Release` workflow builds the installer and creates a **draft** release.
+3. Write the release notes into the draft (`gh release edit vX.Y.Z -R Swellshinider/AcompanION --notes-file <file>`), starting from this version's section of `docs/patch-notes.md` (then put the date on its heading and open the next one, in `docs/patch-notes.pt-BR.md` too: the app shows both in Settings). The notes are written in English and, after a `---` line, again in Portuguese under `## Português (Brasil)`, starting from the version's section of `docs/patch-notes.pt-BR.md`. They are for players, not developers: plain language, what is new or fixed in terms of what the user sees, no module names, commit hashes or jargon. Keep the install steps and the SmartScreen note in both languages. Do not paste the commit list.
+4. Check the draft and publish it. Only then do installed apps see the update.
+
+Hotfix for an old version: `git switch -c release/X.Y vX.Y.Z`, fix, bump the patch version, tag `vX.Y.(Z+1)` on that branch.

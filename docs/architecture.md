@@ -1,6 +1,6 @@
 # Architecture
 
-AcompanION watches game traffic passively and turns it into per-character state. Today that is a Rust crate with a headless live engine, a reverse-engineering CLI (`re`) and a Tauri 2 desktop app (`acompanion`) with an Angular dashboard on top ([`status.md`](status.md) for what is verified).
+AcompanION watches game traffic passively and turns it into per-character state. Today that is a Rust crate with a headless live engine, a reverse-engineering CLI (`re`) and a Tauri 2 desktop app (`acompanion`) with an Angular dashboard on top ([`agents/status.md`](agents/status.md) for what is verified).
 
 ## Pipeline
 

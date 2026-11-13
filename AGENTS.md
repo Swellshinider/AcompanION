@@ -6,14 +6,15 @@ Context and rules for AI coding agents working in this repository. Humans: see [
 
 AcompanION: a Windows companion for AION 2 that passively decodes game traffic and shows per-character progress (dailies, tickets, energy, pets) and a combat meter. Rust core (`src-tauri/`) with a Tauri 2 + Angular 21 desktop app.
 
-The protocol decoder, the headless live engine (`state.rs`, `live.rs`, `re live`) and the desktop app (`main.rs`, `app.rs`, `src/app/`, `public/gamedata.json`) are built, including the Pets screens, the movable translucent overlay and the combat meter. The curated game data is partial; `docs/status.md` lists what is verified, what is not and what comes next.
+The protocol decoder, the headless live engine (`state.rs`, `live.rs`, `re live`) and the desktop app (`main.rs`, `app.rs`, `src/app/`, `public/gamedata.json`) are built, including the Pets screens, the movable translucent overlay and the combat meter. The curated game data is partial; `docs/agents/status.md` lists what is verified, what is not and what comes next.
 
 ## Read in this order
 
-1. `docs/status.md` — where we stopped and the next concrete steps (source of truth for "what now")
-2. `docs/protocol.md` — what is known about the wire protocol, with evidence
-3. `docs/decisions.md` — why choices were made (do not re-litigate without new evidence)
-4. `docs/architecture.md` — pipeline, modules, state model, desktop app
+1. `docs/agents/specification.md` — project intent, current deliverable and scope boundaries
+2. `docs/agents/status.md` — where we stopped and the next concrete steps (source of truth for "what now")
+3. `docs/protocol.md` — what is known about the wire protocol, with evidence
+4. `docs/decisions.md` — why choices were made (do not re-litigate without new evidence)
+5. `docs/architecture.md` — pipeline, modules, state model, desktop app
 
 ## Commands
 
@@ -30,7 +31,7 @@ pnpm i18n                                                            # extract s
 uv run --with lz4 python tools/re/aion_re.py <chain|hist|findstr|findint|frame> ...
 ```
 
-Expected today: Rust 177 tests pass (plus 2 in the `re` bin), 2 ignored; frontend 245 tests pass; clippy clean. Keep all true. The app needs an elevated terminal to capture; `pnpm ng build`, `pnpm i18n` and `pnpm tauri build --no-bundle` pass (the installer needs the updater signing key and is built by `.github/workflows/release.yml` on a `vX.Y.Z` tag; see README, Releasing).
+Expected today: Rust 177 tests pass (plus 2 in the `re` bin), 2 ignored; frontend 245 tests pass; clippy clean. Keep all true. The app needs an elevated terminal to capture; `pnpm ng build`, `pnpm i18n` and `pnpm tauri build --no-bundle` pass (the installer needs the updater signing key and is built by `.github/workflows/release.yml` on a `vX.Y.Z` tag; see `docs/development.md`, Releasing).
 
 ## Hard rules
 
@@ -42,7 +43,7 @@ Expected today: Rust 177 tests pass (plus 2 in the `re` bin), 2 ignored; fronten
 - **Rust emits ids and raw values, never display text.** All names, formatting and plurals belong to the frontend (i18n from day one; English first).
 - **Commits:** small, imperative, conventional prefixes (`feat:`, `fix:`, `docs:`, `chore:`, `test:`). No co-author trailers and no tool/agent attribution in messages.
 - **Patch notes:** a commit that changes something a player can notice also adds a plain-language line under the next version's section in `docs/patch-notes.md` (what the player sees, no jargon). The same line, translated, goes in `docs/patch-notes.pt-BR.md` (the app shows both in Settings; `patch-notes.spec.ts` checks they match). Release notes are built from it.
-- **Releases:** a `vX.Y.Z` tag creates a draft (README, Releasing). Before publishing, its notes are rewritten for players in plain language (what changed for the user), never a developer changelog, in English and then in Portuguese (pt-BR) in the same body.
+- **Releases:** a `vX.Y.Z` tag creates a draft (`docs/development.md`, Releasing). Before publishing, its notes are rewritten for players in plain language (what changed for the user), never a developer changelog, in English and then in Portuguese (pt-BR) in the same body.
 - **Branches/PRs:** work on a `feature/*`, `bugfix/*`, `docs/*`, `refactor/*`, `test/*` or `chore/*` branch, never directly on the default branch. Do not open PRs or merge without explicit approval from the maintainer.
 
 ## Conventions
@@ -56,7 +57,7 @@ Expected today: Rust 177 tests pass (plus 2 in the `re` bin), 2 ignored; fronten
 
 ## Workflow used here
 
-brainstorm → spec → plan, kept locally in `.superpowers/` (gitignored); one implementer per task, a reviewer after each task, a whole-branch review at the end. Durable decisions go into `docs/decisions.md` and `docs/status.md`.
+brainstorm → spec → plan; tracked intent and the current deliverable live in `docs/agents/specification.md`, with verification, known limits and next steps in `docs/agents/status.md`. Keep `.superpowers/` as local, gitignored scratch material. Use one implementer per task, a reviewer after each task and a whole-branch review at the end. Durable rationale goes into `docs/decisions.md`. If upcoming work needs multiple deliverables, put their specifications in `docs/agents/<feature>.md` and keep `specification.md` as the overall index.
 
 ## Environment notes
 

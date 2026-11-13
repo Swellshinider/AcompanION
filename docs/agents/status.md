@@ -1,6 +1,6 @@
 # Status
 
-Where things stand and what comes next. Update it at the end of every working session. Run commands through `task` (see [development.md](development.md)); wire-level evidence is in [protocol.md](protocol.md) and the reasons behind choices in [decisions.md](decisions.md).
+Where things stand and what comes next. Update it at the end of every working session. Current intent and acceptance criteria are in [specification.md](specification.md). Run commands through `task` (see [development.md](../development.md)); wire-level evidence is in [protocol.md](../protocol.md) and the reasons behind choices in [decisions.md](../decisions.md).
 
 ## Where things stand
 
@@ -60,7 +60,7 @@ Each needs one deliberate in-game experiment, recorded with `task record -- capt
 | Membership expiry | A recording that includes a purchase or renewal; scans of earlier recordings found it in no encoding |
 | `0c 61` leading and trailer bytes, `24 e3` fields (`a`, `ms`, `x`, sub-lists, tag byte), the `charged` varint of `0b 61` | One recording per counter changing alone, then diff the field against the action |
 
-Layouts and evidence for everything decoded are in [protocol.md](protocol.md).
+Layouts and evidence for everything decoded are in [protocol.md](../protocol.md).
 
 ## Next steps
 
