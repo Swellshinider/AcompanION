@@ -10,70 +10,55 @@
   --route: color-mix(in oklch, var(--warn) 80%, black);
 }
 
-// the overlay shows the filled map only: no page chrome, no list beside it
+// the overlay shows the minimap only: no page chrome, no list beside it
 :host(.overlay) {
-  .back, .page-h, .dungeons, .side, .tools .fill {
+  .back, .page-h {
     display: none;
   }
 
-  // the minimap: the map fills the whole window and only the zoom buttons float over it
+  // the overlay's area is its main: `contain: layout` there makes fixed fill it, not the screen
   .stage.filled {
-    grid-template-rows: minmax(0, 1fr);
-    gap: 0;
-    padding: 0;
+    position: fixed;
+    z-index: 20;
 
     .stage-top {
-      position: absolute;
       top: 6px;
       right: 6px;
-      z-index: 2;
-
-      .chip {
-        background: var(--panel);
-      }
+      left: auto;
     }
 
-    .regions, .hint, .reset-btn, .cap {
+    .regions, .reset-btn, .cap {
       display: none;
     }
+  }
+}
 
-    .map {
-      width: 100%;
-      height: 100%;
-    }
+// the Map screen: the minimap fills what is left of the dashboard under its header
+:host(.map) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
 
-    // the notes sit over the map's bottom edge, so the window ends where the map does; the pointer passes through to pan and zoom
-    .stage-foot {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 2;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 0 var(--sp-2);
-      background: color-mix(in oklch, var(--bg) 80%, transparent);
-      pointer-events: none;
-    }
+  .back, .page-h {
+    display: none;
+  }
 
-    // above the notes, not under them
-    .legend {
-      bottom: calc(var(--sp-2) + 28px);
-    }
+  .sec {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    margin: 0;
+  }
 
-    .live-note, .gain, .route-note {
-      margin: 0;
-      padding: var(--sp-1) var(--sp-2);
-      font-size: var(--fs-2);
-    }
+  .map-layout {
+    flex: 1;
+    min-height: 0;
+  }
 
-    // the pet that last gained souls, at the footer's right
-    .gain {
-      margin-left: auto;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
+  .note {
+    padding: var(--sp-4);
   }
 }
 
@@ -447,24 +432,38 @@ kbd {
   color: var(--muted);
 }
 
-// the map and its monster list; the list drops below the map on narrow windows
+// holds the minimap and its side panel; the minimap fills it
 .map-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(250px, 340px);
-  gap: var(--sp-4);
-  align-items: start;
-  margin-top: var(--sp-4);
+  position: relative;
 }
 
+// the Map screen's filters and monster list, over the map's right side (the Monsters chip opens it)
 .side {
-  grid-column: 2;
-  min-width: 0;
-  overflow: hidden;
-  background: var(--panel);
+  position: absolute;
+  top: calc(var(--sp-2) * 2 + var(--ctl));
+  right: var(--sp-2);
+  bottom: calc(var(--sp-2) + 28px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  width: min(340px, calc(100% - var(--sp-4)));
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: color-mix(in oklch, var(--panel) 96%, transparent);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
 
+  .sec-h {
+    margin: 0;
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--line);
+  }
+
+  // the whole panel scrolls, not each list
   .farm {
+    flex: none;
+    max-height: none;
+    overflow: visible;
     border: 0;
   }
 }
@@ -484,24 +483,51 @@ kbd {
   }
 }
 
+// the minimap (the Map screen and the overlay): the map fills the area, the controls float over its top
+// edge and the notes over its bottom edge, so the window ends where the map does
 .stage {
-  grid-column: 1;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
   min-width: 0;
+  overflow: hidden;
+  background: var(--bg);
 }
 
+// only the chips take the pointer: the rest of the strip lets it through to the map
 .stage-top {
-  display: grid;
-  gap: var(--sp-3);
+  position: absolute;
+  top: var(--sp-2);
+  right: var(--sp-2);
+  left: var(--sp-2);
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  pointer-events: none;
+
+  .chip {
+    background: var(--panel);
+    pointer-events: auto;
+  }
+
+  // the chips that are pressed or hovered keep their own fill
+  .chip:hover,
+  .chip.on,
+  .chip[aria-pressed="true"] {
+    background: var(--panel-2);
+  }
 }
 
 .map {
   display: block;
   box-sizing: border-box;
   width: 100%;
-  margin: var(--sp-3) auto 0;
+  height: 100%;
   background: var(--well);
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
 
   cursor: grab;
   touch-action: none;
@@ -587,6 +613,10 @@ kbd {
 
 .stage-map {
   position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  container-type: size;
 }
 
 // the overlay's hover name, beside the pointer
@@ -607,7 +637,7 @@ kbd {
 .legend {
   position: absolute;
   left: var(--sp-2);
-  bottom: var(--sp-2);
+  bottom: calc(var(--sp-2) + 28px);   // above the notes, not under them
   display: grid;
   gap: 2px;
   margin: 0;
@@ -632,13 +662,8 @@ kbd {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--sp-2);
-
-  .hint {
-    flex: 1 1 220px;
-    color: var(--muted);
-    font-size: var(--fs-2);
-  }
 
   .chip {
     min-width: var(--ctl);
@@ -649,78 +674,48 @@ kbd {
       cursor: default;
     }
   }
-
-  .fill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--sp-2);
-
-    svg {
-      width: 14px;
-      height: 14px;
-    }
-  }
 }
 
-.live-note, .route-note {
-  margin: var(--sp-2) 0 0;
+// the notes over the map's bottom edge; the pointer passes through to pan and zoom
+.stage-foot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 var(--sp-2);
+  background: color-mix(in oklch, var(--bg) 80%, transparent);
+  pointer-events: none;
+}
+
+.live-note, .gain, .route-note, .cap {
+  margin: 0;
   color: var(--muted);
   font-size: var(--fs-2);
 }
 
-.cap {
-  min-height: 1.45em;
-  margin: var(--sp-2) 0 0;
-  color: var(--muted);
-
-  b {
-    margin-right: 0.4em;
-    color: var(--text);
-    font-weight: var(--fw-medium);
-  }
+.live-note, .gain, .route-note {
+  padding: var(--sp-1) var(--sp-2);
 }
 
-// Fill: the map covers the whole app window, above the sticky header. Not the OS fullscreen.
-.stage.filled {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: var(--sp-2);
-  padding: var(--sp-3) var(--sp-4);
-  background: var(--bg);
-  overflow: hidden;
+// the pet that last gained souls, at the footer's right
+.gain {
+  margin-left: auto;
+  text-align: right;
+}
 
-  .stage-top {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-  }
+// only takes room while it names a monster
+.cap:has(b) {
+  padding: var(--sp-1) var(--sp-2);
+}
 
-  .hint {
-    display: none;
-  }
-
-  // the map keeps its aspect ratio (pointer maths relies on it) and takes what is left of the screen
-  .stage-map {
-    display: grid;
-    place-items: center;
-    min-height: 0;
-    container-type: size;
-  }
-
-  .map {
-    width: min(100cqw, 100cqh * var(--ar));
-    height: auto;
-    margin: 0;
-  }
-
-  .cap {
-    margin-top: 0;
-  }
+.cap b {
+  margin-right: 0.4em;
+  color: var(--text);
+  font-weight: var(--fw-medium);
 }
 
 .farm {
@@ -801,25 +796,5 @@ kbd {
 @for $l from 0 through 3 {
   i.lv#{$l} {
     background: var(--lv#{$l});
-  }
-}
-
-@media (max-width: 760px) {
-  .map-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .side {
-    grid-column: 1;
-
-    .farm {
-      max-height: 240px;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .stage.filled {
-    padding: var(--sp-2);
   }
 }

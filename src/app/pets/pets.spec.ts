@@ -78,14 +78,20 @@ describe('Pets farm map', () => {
   const chip = (el: HTMLElement, text: string) =>
     [...el.querySelectorAll<HTMLButtonElement>('[data-sec="farm"] .chip')].find(b => b.textContent?.trim().startsWith(text))!;
   /** The pets screen with game data, as the header's Map screen unless `map` is false. */
-  function renderFarm(map = true) {
+  function renderFarm(map = true, panel = true) {
     const f = TestBed.createComponent(Pets);
     f.componentRef.setInput('collection', collection);
     f.componentRef.setInput('gamedata', gd);
     f.componentRef.setInput('now', 60_000);
     f.componentRef.setInput('map', map);
     f.detectChanges();
+    if (map && panel) openPanel(f);
     return { f, el: f.nativeElement as HTMLElement };
+  }
+  /** The Map screen's side panel (filters and monster list) is closed until its chip is pressed. */
+  function openPanel(f: { nativeElement: HTMLElement; detectChanges(): void }) {
+    f.nativeElement.querySelector<HTMLButtonElement>('.panel-btn')!.click();
+    f.detectChanges();
   }
 
   it('is absent without game data', () => {
@@ -247,53 +253,28 @@ describe('Pets farm map', () => {
     });
   });
 
-  describe('fill', () => {
-    const fillButton = (el: HTMLElement) => el.querySelector<HTMLButtonElement>('[data-sec="farm"] .tools .fill')!;
-    const esc = () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-
-    it('covers the window, locks the page scroll and leaves on the button', () => {
+  describe('Map screen', () => {
+    it('fills its area, locks the page scroll and releases it when the screen goes away', () => {
       const { f, el } = renderFarm();
-      expect(el.querySelector('.stage.filled')).toBeNull();
-      fillButton(el).click();
-      f.detectChanges();
       expect(el.querySelector('.stage.filled')).not.toBeNull();
-      expect(fillButton(el).getAttribute('aria-pressed')).toBe('true');
-      expect(fillButton(el).textContent).toContain('Exit fill');
-      expect(el.querySelector('svg.map')!.getAttribute('style')).not.toContain('max-width');
+      expect(el.querySelector('.tools .fill')).toBeNull();
       expect(document.documentElement.classList).toContain('lock-scroll');
-      fillButton(el).click();
-      f.detectChanges();
-      expect(el.querySelector('.stage.filled')).toBeNull();
-      expect(document.documentElement.classList).not.toContain('lock-scroll');
-    });
-
-    it('takes the first Escape to leave the fill and only the next one to go back', () => {
-      const { f, el } = renderFarm();
-      let backs = 0;
-      f.componentInstance.back.subscribe(() => backs++);
-      // what the dashboard does on Escape
-      const toRoster = (e: KeyboardEvent) => e.key === 'Escape' && f.componentInstance.back.emit();
-      document.addEventListener('keydown', toRoster);
-      try {
-        fillButton(el).click();
-        f.detectChanges();
-        esc();
-        f.detectChanges();
-        expect(el.querySelector('.stage.filled')).toBeNull();
-        expect(backs).toBe(0);
-        esc();
-        expect(backs).toBe(1);
-      } finally {
-        document.removeEventListener('keydown', toRoster);
-      }
-    });
-
-    it('releases the scroll lock when the screen goes away', () => {
-      const { f, el } = renderFarm();
-      fillButton(el).click();
-      f.detectChanges();
       f.destroy();
       expect(document.documentElement.classList).not.toContain('lock-scroll');
+    });
+
+    it('keeps the filters and the monster list in a side panel that the Monsters chip opens and closes', () => {
+      const { f, el } = renderFarm(true, false);
+      expect(el.querySelector('.side')).toBeNull();
+      const toggle = el.querySelector<HTMLButtonElement>('.panel-btn')!;
+      toggle.click();
+      f.detectChanges();
+      expect(el.querySelector('.side .mon')).not.toBeNull();
+      expect(chip(el, 'Not maxed')).toBeDefined();
+      expect(toggle.getAttribute('aria-pressed')).toBe('true');
+      toggle.click();
+      f.detectChanges();
+      expect(el.querySelector('.side')).toBeNull();
     });
   });
 
@@ -419,6 +400,7 @@ describe('Pets farm map', () => {
       f.componentRef.setInput('radar', r);
       f.componentRef.setInput('map', true);
       f.detectChanges();
+      openPanel(f);
       return { f, el: f.nativeElement as HTMLElement };
     }
     const circles = (el: HTMLElement, cls: string) => el.querySelectorAll(`[data-sec="farm"] svg.map circle.${cls}`);
@@ -467,10 +449,21 @@ describe('Pets farm map', () => {
       expect(circles(el, 'live').length).toBe(0);
       chip(el, 'All').click();
       f.detectChanges();
-      const base = viewBox(el);
+      expect(el.querySelector('.me-btn')).toBeNull();   // already on the player
+      chip(el, 'South').click();
+      f.detectChanges();
+      expect(chip(el, 'North').classList).not.toContain('on');
       chip(el, 'Centre on me').click();
       f.detectChanges();
-      expect(viewBox(el)).not.toBe(base);
+      expect(chip(el, 'North').classList).toContain('on');
+      expect(el.querySelector('.me-btn')).toBeNull();
+    });
+
+    it('shows the whole region without the game, and closes in on the player once it runs', () => {
+      const width = (el: HTMLElement) => Number(viewBox(el)!.split(' ')[2]);
+      const away = renderLive(null);
+      const closeIn = renderLive(radar([10], { x: 0, y: 0, t_us: 0 }));
+      expect(width(closeIn.el)).toBeLessThan(width(away.el));
     });
   });
 });

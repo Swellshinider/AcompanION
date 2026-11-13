@@ -4,6 +4,19 @@
   min-height: 100vh;
 }
 
+// the Map screen: the window is exactly the screen's height and the map takes what is left under the header
+:host(.map-screen) {
+  height: 100vh;
+
+  main {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-width: none;
+    padding: 0;
+  }
+}
+
 .top {
   position: sticky;
   top: 0;

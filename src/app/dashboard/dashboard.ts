@@ -18,7 +18,7 @@ import { WhatsNew } from '../whats-new/whats-new';
   imports: [DecimalPipe, CharacterDetail, Emblem, Glyph, Meter, Pets, Settings, WhatsNew],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
-  host: { '(document:keydown.escape)': 'back()' },
+  host: { '(document:keydown.escape)': 'back()', '[class.map-screen]': "screen() === 'map'" },
 })
 export class Dashboard {
   private readonly chars = inject(CharactersService);

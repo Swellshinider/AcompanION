@@ -8,6 +8,7 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 - O app inteiro ganhou um visual novo, mais limpo e moderno.
 - A tela de Pets agora abre direto na sua coleção, e o mapa de farm ganhou uma aba própria, Mapa, no cabeçalho.
+- A aba Mapa agora funciona como o minimapa do overlay: ocupa a janela, segue você enquanto o jogo roda e guarda os filtros e a lista de monstros em um painel que você abre e fecha.
 
 ## v0.2.6 (2026-10-28)
 

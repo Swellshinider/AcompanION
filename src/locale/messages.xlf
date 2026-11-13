@@ -142,7 +142,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">93,94</context>
+          <context context-type="linenumber">206,207</context>
         </context-group>
       </trans-unit>
       <trans-unit id="charFilterWasting" datatype="html">
@@ -1082,19 +1082,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">99</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">184</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">205</context>
+          <context context-type="linenumber">212</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">263</context>
+          <context context-type="linenumber">264</context>
         </context-group>
       </trans-unit>
       <trans-unit id="petsSoulsToMax" datatype="html">
@@ -1147,280 +1147,263 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">98,99</context>
+          <context context-type="linenumber">152,153</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">173,174</context>
+          <context context-type="linenumber">211,212</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">262,263</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmTitle" datatype="html">
-        <source>Where to farm</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">88,89</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmUnpick" datatype="html">
-        <source>Show all pets again</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">90</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmFilter" datatype="html">
-        <source>Pets on the map</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">92,93</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmNotMax" datatype="html">
-        <source>Not maxed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">94,95</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmClosest" datatype="html">
-        <source>Closest</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">95,96</context>
+          <context context-type="linenumber">263,264</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmRegions" datatype="html">
         <source>Region</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">109,110</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmHint" datatype="html">
-        <source>Scroll to zoom, drag to move, click a monster to find it.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">115,116</context>
+          <context context-type="linenumber">91,92</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmCenterMe" datatype="html">
         <source>Centre on me</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">117,119</context>
+          <context context-type="linenumber">98,100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmZoomIn" datatype="html">
         <source>Zoom in</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">119,120</context>
+          <context context-type="linenumber">100,101</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmZoomOut" datatype="html">
         <source>Zoom out</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">120,121</context>
+          <context context-type="linenumber">101,102</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmRoute" datatype="html">
         <source>Route</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">121,122</context>
+          <context context-type="linenumber">102,103</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmLegend" datatype="html">
         <source>Legend</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">122,123</context>
+          <context context-type="linenumber">103,104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmReset" datatype="html">
         <source>Reset</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">123,124</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmExitFill" datatype="html">
-        <source>Exit fill</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">126,127</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmFill" datatype="html">
-        <source>Fill</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">127,128</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmMap" datatype="html">
-        <source>Spawn points of the monsters listed below</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">134,135</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="petsMax" datatype="html">
-        <source>Max</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">174,175</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">204,205</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">271,272</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">287,288</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmInView" datatype="html">
-        <source>In view: <x id="INTERPOLATION" equiv-text="{{ live().length }}"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">188,189</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmFix" datatype="html">
-        <source>Your last position: <x id="INTERPOLATION" equiv-text="{{ fixAge(p.us) }}"/> ago</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">189,190</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmRouteNext" datatype="html">
-        <source>Next: <x id="INTERPOLATION" equiv-text="{{ n.monster }}"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">195,196</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmRouteNone" datatype="html">
-        <source>No open pets to farm here.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">197,199</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmLevel" datatype="html">
-        <source>Lv <x id="INTERPOLATION" equiv-text="{{ a.level }}"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">210</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">283</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="farmNeeds" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ a.toNext }}"/> to go</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">211</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">286</context>
+          <context context-type="linenumber">104,105</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmMonsters" datatype="html">
         <source>Monsters</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">218,219</context>
+          <context context-type="linenumber">106,108</context>
         </context-group>
-      </trans-unit>
-      <trans-unit id="farmInRegion" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ r.monsters.length }}"/> in region</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">219,220</context>
+          <context context-type="linenumber">220,221</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmMap" datatype="html">
+        <source>Spawn points of the monsters listed below</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">113,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="petsMax" datatype="html">
+        <source>Max</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">153,154</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">183,184</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">272,273</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">288,289</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmInView" datatype="html">
+        <source>In view: <x id="INTERPOLATION" equiv-text="{{ live().length }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">167,168</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmFix" datatype="html">
+        <source>Your last position: <x id="INTERPOLATION" equiv-text="{{ fixAge(p.us) }}"/> ago</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">168,169</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmRouteNext" datatype="html">
+        <source>Next: <x id="INTERPOLATION" equiv-text="{{ n.monster }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">174,175</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmRouteNone" datatype="html">
+        <source>No open pets to farm here.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">176,178</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmLevel" datatype="html">
+        <source>Lv <x id="INTERPOLATION" equiv-text="{{ a.level }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">189</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">284</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmNeeds" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ a.toNext }}"/> to go</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">190</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">287</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmEmpty" datatype="html">
         <source>No monsters on the map for this selection.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">229,231</context>
+          <context context-type="linenumber">196,198</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmTitle" datatype="html">
+        <source>Where to farm</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">201,202</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmUnpick" datatype="html">
+        <source>Show all pets again</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">203</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmFilter" datatype="html">
+        <source>Pets on the map</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">205,206</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmNotMax" datatype="html">
+        <source>Not maxed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">207,208</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmClosest" datatype="html">
+        <source>Closest</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">208,209</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="farmInRegion" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ r.monsters.length }}"/> in region</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pets/pets.html</context>
+          <context context-type="linenumber">221,222</context>
         </context-group>
       </trans-unit>
       <trans-unit id="farmDungeons" datatype="html">
         <source>Only in dungeons</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">232,233</context>
+          <context context-type="linenumber">230,231</context>
         </context-group>
       </trans-unit>
       <trans-unit id="petsEmpty" datatype="html">
         <source>No pets yet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">243,244</context>
+          <context context-type="linenumber">244,245</context>
         </context-group>
       </trans-unit>
       <trans-unit id="petsEmptyNote" datatype="html">
         <source>Pets are read when a character enters the world. Log in with capture running and they appear here.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">244,248</context>
+          <context context-type="linenumber">245,249</context>
         </context-group>
       </trans-unit>
       <trans-unit id="genusCogni" datatype="html">
         <source>Cogni</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">254,255</context>
+          <context context-type="linenumber">255,256</context>
         </context-group>
       </trans-unit>
       <trans-unit id="genusFera" datatype="html">
         <source>Fera</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">255,256</context>
+          <context context-type="linenumber">256,257</context>
         </context-group>
       </trans-unit>
       <trans-unit id="genusNatura" datatype="html">
         <source>Natura</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">256,257</context>
+          <context context-type="linenumber">257,258</context>
         </context-group>
       </trans-unit>
       <trans-unit id="genusVarian" datatype="html">
         <source>Varian</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">257,258</context>
+          <context context-type="linenumber">258,259</context>
         </context-group>
       </trans-unit>
       <trans-unit id="genusSpecial" datatype="html">
         <source>Special</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">258,260</context>
+          <context context-type="linenumber">259,261</context>
         </context-group>
       </trans-unit>
       <trans-unit id="petsShowOnMap" datatype="html">
         <source>Show on map</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pets/pets.html</context>
-          <context context-type="linenumber">276</context>
+          <context context-type="linenumber">277</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settingsTitle" datatype="html">
