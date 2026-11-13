@@ -3,7 +3,7 @@
 }
 
 // a small rounded-square badge: class icon over the level. `--s` (the `size` input) scales the hero one;
-// on a roster card it is a fixed 40 x 44.
+// on a roster card it is a fixed 64 x 72.
 .emblem {
   --s: 84px;
   --m: calc(var(--s) * 0.31);
@@ -64,14 +64,14 @@
 }
 
 :host-context(.card) .emblem {
-  --m: 18px;
-  width: 40px;
-  height: 44px;
-  gap: 2px;
+  --m: 30px;
+  width: 64px;
+  height: 72px;
+  gap: var(--sp-1);
 }
 
 :host-context(.card) .lv {
-  font-size: var(--fs-1);
+  font-size: var(--fs-3);
   font-weight: var(--fw-semi);
 
   small {
