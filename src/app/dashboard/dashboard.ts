@@ -45,8 +45,8 @@ export class Dashboard {
   readonly selected = signal<string | null>(null);
   /** `server:name` of the roster card asking "Remove?". */
   readonly confirming = signal<string | null>(null);
-  /** The screen: the roster (and a character's detail), the Pets screen, the combat Meter, Settings or its What's new page. */
-  readonly screen = signal<'roster' | 'pets' | 'meter' | 'settings' | 'whatsnew'>('roster');
+  /** The screen: the roster (and a character's detail), the Pets screen, the farm Map, the combat Meter, Settings or its What's new page. Pets and Map share one `app-pets`, so a picked pet carries over. */
+  readonly screen = signal<'roster' | 'pets' | 'map' | 'meter' | 'settings' | 'whatsnew'>('roster');
   readonly resetHour = String(DAILY_RESET_HOUR_UTC).padStart(2, '0');
 
   readonly rows = computed<CharacterRow[]>(() => {

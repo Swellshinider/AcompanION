@@ -42,7 +42,11 @@ export class Pets {
   readonly overlay = input(false);
   /** The overlay's fallback while the game has not said where the player is: the region they were last seen in. */
   readonly lastRegion = input<string | null>(null);
-  readonly tab = linkedSignal<Tab>(() => (this.overlay() ? 'map' : 'collection'));
+  /** The header's Map screen: the farm map instead of the collection. */
+  readonly map = input(false);
+  /** A pet was picked from the collection: the parent opens the Map screen, which shows where its souls drop. */
+  readonly showMap = output<void>();
+  readonly tab = computed<Tab>(() => (this.overlay() || this.map() ? 'map' : 'collection'));
   /** The map covers the whole app window (not the OS screen). */
   readonly filled = linkedSignal(() => this.overlay());
   readonly filter = signal<LevelFilter>(null);
@@ -220,11 +224,6 @@ export class Pets {
     });
   }
 
-  setTab(t: Tab) {
-    this.tab.set(t);
-    document.scrollingElement?.scrollTo?.({ top: 0 });
-  }
-
   /** Age of a capture timestamp (µs since the epoch): seconds under a minute, else as `ago`. */
   fixAge(us: number): string {
     const ms = Math.max(0, this.tick() - us / 1000);
@@ -334,7 +333,8 @@ export class Pets {
     this.picked.set(id);
     this.regionKey.set(null);
     this.selected.set(null);
-    this.setTab('map');
+    document.scrollingElement?.scrollTo?.({ top: 0 });
+    this.showMap.emit();
   }
 
   pct(r: PetRow): number {

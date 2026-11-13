@@ -54,9 +54,8 @@ describe('Pets', () => {
     expect(emitted).toBe(1);
   });
 
-  it('has no map tab and inert cards without game data', () => {
+  it('has inert cards without game data', () => {
     const { el } = render();
-    expect(el.querySelector('#tab-map')).toBeNull();
     expect(el.querySelector<HTMLButtonElement>('.pcard')!.disabled).toBe(true);
     expect(el.querySelector('.pcard .go')).toBeNull();
   });
@@ -78,33 +77,32 @@ describe('Pets farm map', () => {
   const monsters = (el: HTMLElement) => [...el.querySelectorAll('[data-sec="farm"] .mon .n')].map(n => n.textContent?.replace(/\s+/g, ' ').trim());
   const chip = (el: HTMLElement, text: string) =>
     [...el.querySelectorAll<HTMLButtonElement>('[data-sec="farm"] .chip')].find(b => b.textContent?.trim().startsWith(text))!;
-  /** The pets screen with game data, on the Map tab unless `map` is false. */
+  /** The pets screen with game data, as the header's Map screen unless `map` is false. */
   function renderFarm(map = true) {
     const f = TestBed.createComponent(Pets);
     f.componentRef.setInput('collection', collection);
     f.componentRef.setInput('gamedata', gd);
     f.componentRef.setInput('now', 60_000);
+    f.componentRef.setInput('map', map);
     f.detectChanges();
-    if (map) openMap(f);
     return { f, el: f.nativeElement as HTMLElement };
-  }
-  function openMap(f: { nativeElement: HTMLElement; detectChanges(): void }) {
-    f.nativeElement.querySelector<HTMLButtonElement>('#tab-map')!.click();
-    f.detectChanges();
   }
 
   it('is absent without game data', () => {
     expect(render().el.querySelector('[data-sec="farm"]')).toBeNull();
   });
 
-  it('keeps the map behind its own tab', () => {
+  it('opens on the collection and shows the map only as its own screen', () => {
     const { f, el } = renderFarm(false);
     expect(el.querySelector('[data-sec="farm"]')).toBeNull();
-    expect(el.querySelector('#tab-collection')?.getAttribute('aria-selected')).toBe('true');
-    openMap(f);
+    expect(el.querySelector('[data-sec="all"]')).not.toBeNull();
+    expect(el.querySelector('[role="tablist"]')).toBeNull();
+    expect(el.querySelector('h2')?.textContent).toContain('Pets');
+    f.componentRef.setInput('map', true);
+    f.detectChanges();
     expect(el.querySelector('[data-sec="farm"]')).not.toBeNull();
     expect(el.querySelector('[data-sec="all"]')).toBeNull();
-    expect(el.querySelector('#tab-map')?.getAttribute('aria-selected')).toBe('true');
+    expect(el.querySelector('h2')?.textContent).toContain('Map');
   });
 
   it('shows the monsters of every pet by region and narrows by filter', () => {
@@ -172,11 +170,14 @@ describe('Pets farm map', () => {
     expect(el.querySelector('.cap')?.textContent?.trim()).toBe('');
   });
 
-  it('picks one pet from a card, which opens the map, and clears it again', () => {
+  it('picks one pet from a card, which asks for the map, and clears it again', () => {
     const { f, el } = renderFarm(false);
+    let asked = 0;
+    f.componentInstance.showMap.subscribe(() => asked++);
     el.querySelector<HTMLButtonElement>('[data-sec="closest"] .pcard')!.click();   // Beta, no monsters
+    expect(asked).toBe(1);
+    f.componentRef.setInput('map', true);   // what the parent does on `showMap`
     f.detectChanges();
-    expect(el.querySelector('#tab-map')?.getAttribute('aria-selected')).toBe('true');
     expect(el.querySelector('[data-sec="farm"] .picked')?.textContent).toContain('Beta');
     expect(el.querySelector('[data-sec="farm"] .note')).not.toBeNull();
     el.querySelector<HTMLButtonElement>('[data-sec="farm"] .picked')!.click();
@@ -416,8 +417,8 @@ describe('Pets farm map', () => {
       f.componentRef.setInput('gamedata', gd);
       f.componentRef.setInput('now', 60_000);
       f.componentRef.setInput('radar', r);
+      f.componentRef.setInput('map', true);
       f.detectChanges();
-      openMap(f);
       return { f, el: f.nativeElement as HTMLElement };
     }
     const circles = (el: HTMLElement, cls: string) => el.querySelectorAll(`[data-sec="farm"] svg.map circle.${cls}`);

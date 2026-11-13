@@ -5,22 +5,18 @@
 </button>
 
 <div class="page-h">
-  <h2 i18n="@@petsTitle">Pets</h2>
+  <h2>
+    @if (tab() === 'map') { <ng-container i18n="@@mapButton">Map</ng-container> }
+    @else { <ng-container i18n="@@petsTitle">Pets</ng-container> }
+  </h2>
   @if (collection(); as c) {
     <span class="meta" i18n="@@petsUpdated">Updated {{ ago(c.updatedUs) }} ago</span>
   }
 </div>
 
 @if (collection(); as c) {
-<div class="tabs" role="tablist" i18n-aria-label="@@petsTabs" aria-label="Pets views">
-  <button type="button" class="tab" role="tab" id="tab-collection" aria-controls="panel-collection" [attr.aria-selected]="tab() === 'collection'" (click)="setTab('collection')" i18n="@@petsTabCollection">Collection</button>
-  @if (farm()) {
-    <button type="button" class="tab" role="tab" id="tab-map" aria-controls="panel-map" [attr.aria-selected]="tab() === 'map'" (click)="setTab('map')" i18n="@@petsTabMap">Map</button>
-  }
-</div>
-
 @if (tab() === 'collection') {
-<div role="tabpanel" id="panel-collection" aria-labelledby="tab-collection">
+<div>
 <div class="summary">
   <div class="stat">
     <span class="k" i18n="@@petsObtained">Obtained</span>
@@ -87,7 +83,7 @@
 </section>
 </div>
 } @else if (farm(); as f) {
-<section class="sec" data-sec="farm" role="tabpanel" id="panel-map" aria-labelledby="tab-map">
+<section class="sec" data-sec="farm">
   <div class="sec-h">
     <h3 i18n="@@farmTitle">Where to farm</h3>
     @if (picked() !== null) {

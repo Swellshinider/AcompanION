@@ -7,6 +7,7 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 ### Melhorado
 
 - O app inteiro ganhou um visual novo, mais limpo e moderno.
+- A tela de Pets agora abre direto na sua coleção, e o mapa de farm ganhou uma aba própria, Mapa, no cabeçalho.
 
 ## v0.2.6 (2026-10-28)
 

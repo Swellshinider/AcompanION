@@ -12,7 +12,7 @@
 
 // the overlay shows the filled map only: no page chrome, no list beside it
 :host(.overlay) {
-  .back, .page-h, .tabs, .dungeons, .side, .tools .fill {
+  .back, .page-h, .dungeons, .side, .tools .fill {
     display: none;
   }
 
@@ -125,41 +125,6 @@ kbd {
     font-weight: var(--fw-semi);
     letter-spacing: -0.02em;
     line-height: 1.2;
-  }
-}
-
-.tabs {
-  display: flex;
-  gap: var(--sp-5);
-  margin-top: var(--sp-3);
-  border-bottom: 1px solid var(--line);
-}
-
-.tab {
-  position: relative;
-  min-height: 40px;
-  padding: 0 2px;
-  background: none;
-  border: 0;
-  color: var(--muted);
-  font-weight: var(--fw-medium);
-  cursor: pointer;
-  transition: color 0.12s;
-
-  &:hover,
-  &[aria-selected="true"] {
-    color: var(--text);
-  }
-
-  // the active tab: a flat underline sitting on the tab bar's own line
-  &[aria-selected="true"]::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -1px;
-    height: 2px;
-    background: var(--accent);
   }
 }
 
@@ -854,10 +819,6 @@ kbd {
 }
 
 @media (max-width: 480px) {
-  .tabs {
-    gap: var(--sp-4);
-  }
-
   .stage.filled {
     padding: var(--sp-2);
   }

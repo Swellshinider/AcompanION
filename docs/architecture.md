@@ -128,10 +128,10 @@ Status ids: `starting`, `running`, `reconnecting`, `save_failed`, `not_admin`, `
 | `src/app/characters.service.ts` | Wire types, `merge` by `(server, name)`, `CharactersService`: subscribes to both events first, then reads the snapshots, so later updates win |
 | `src/app/gamedata.ts` | `GameData` types, `loadGamedata`, and the pure reset/refill math (`lastReset`, `nextReset`, `leftNow`, `fullAt`, `span`, `summarize` with `Summary.items`, `pick`) |
 | `src/app/app.ts` | Root component: renders `Overlay` or `Dashboard` by the window label |
-| `src/app/dashboard/` | The main window's page: header (status pill, reset countdowns), failure banner, roster of cards or the open character, and the switch to Pets, Meter and Settings; keyboard-focusable cards |
+| `src/app/dashboard/` | The main window's page: header (status pill, reset countdowns), failure banner, roster of cards or the open character, and the switch to Pets, Map, Meter and Settings; keyboard-focusable cards |
 | `src/app/character/` | Detail screen for one character (`CharacterRow`) |
 | `src/app/emblem/` + `src/app/glyph.ts` | Class badge and class icons: the game's own images (`public/classes/<class>.png`) and a mask-painted generic glyph (`unknown.svg`) |
-| `src/app/pets/` + `src/app/route.ts` | Pets screen: collection, farm map, live radar layer and the farm route (`farmRoute`, pure) |
+| `src/app/pets/` + `src/app/route.ts` | Pets screen (the collection) and Map screen (farm map, live radar layer and the farm route (`farmRoute`, pure)), one component driven by the `map` input |
 | `src/app/meter/` + `src/app/fight.ts` | Meter screen and overlay view; `fight.ts` is pure (skill folding, DPS window, current rate over the last 5 s from the service's `recent` snapshots, boss result, player and skill rows) |
 | `src/app/overlay/`, `overlay-panel/`, `overlay-settings.ts`, `overlay-control.ts` | The overlay page, its per-view control card and the persisted preferences; `restoreOverlay` reopens the overlays that were open at start |
 | `src/app/shugo.ts`, `shugo-alert/` | The alert's preferences, the clock (`nextFestival`), the scheduler (`startShugoAlert`) and the pop-up page with its chime |
