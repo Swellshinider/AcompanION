@@ -17,11 +17,11 @@ describe('WhatsNew', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('lists every released version, newest first, without the next one', async () => {
-    const { el } = await render('0.3.0');
+    const { el } = await render('0.3.1');
     const titles = [...el.querySelectorAll('.panel h3')].map(h => h.textContent);
-    expect(titles[0]).toBe('v0.3.0');
+    expect(titles[0]).toBe('v0.3.1');
     expect(titles.at(-1)).toBe('v0.1.1');
-    expect(titles).not.toContain('v0.3.1');
+    expect(titles).not.toContain('v0.3.2');
   });
 
   it('marks only the installed version', async () => {
