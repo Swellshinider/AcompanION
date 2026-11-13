@@ -4,6 +4,10 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ## v0.3.1 (next)
 
+### Corrigido
+
+- Reiniciar como administrador não abre mais pedindo para encerrar outra instância e puxar a captura.
+
 ## v0.3.0 (2026-11-13)
 
 ### Melhorado
