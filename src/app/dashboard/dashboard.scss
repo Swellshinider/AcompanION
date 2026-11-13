@@ -9,41 +9,34 @@
   top: 0;
   z-index: 5;
   display: flex;
-  align-items: stretch;
-  min-height: 68px;
-  padding: 0 18px;
-  background: color-mix(in oklch, var(--bg) 94%, black);
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: 56px;
+  padding: 0 var(--sp-6);
+  background: var(--bg);
   border-bottom: 1px solid var(--line);
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -1px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-line) 18%, var(--gold-line) 82%, transparent);
-  }
 }
 
 .brand {
   display: flex;
   align-items: center;
   flex: none;
-  gap: 11px;
+  gap: var(--sp-2);
 }
 
 .mark {
   display: block;
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-sm);
 }
 
 h1 {
   margin: 0;
-  font: 600 21px/1 var(--display);
-  letter-spacing: 0.015em;
+  font-size: var(--fs-4);
+  font-weight: var(--fw-semi);
+  letter-spacing: -0.01em;
+  line-height: 1;
   white-space: nowrap;
 }
 
@@ -55,116 +48,96 @@ h1 {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px 7px;
+  gap: var(--sp-1) var(--sp-2);
   min-width: 0;
-  margin-left: 18px;
 }
 
+// a soft status pill: `--c` is the state colour, used for the dot and the tint
 .pill {
+  --c: var(--bad);
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 25px;
-  padding: 0 9px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 99px;
-  font-size: 11px;
-  font-weight: 600;
+  gap: var(--sp-2);
+  height: 28px;
+  padding: 0 var(--sp-3) 0 10px;
+  background: color-mix(in oklch, var(--c) 14%, transparent);
+  border-radius: var(--r-pill);
+  color: var(--c);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-medium);
   white-space: nowrap;
 
   &::before {
     content: "";
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: var(--bad);
+    background: currentColor;
   }
 
-  &[data-status="running"]::before {
-    background: var(--ok);
-    box-shadow: 0 0 0 3px color-mix(in oklch, var(--ok) 22%, transparent), 0 0 10px var(--ok);
-    animation: pulse 2.4s ease-in-out infinite;
+  &[data-status="running"] {
+    --c: var(--ok);
+
+    &::before {
+      animation: pulse 2.4s ease-in-out infinite;
+    }
   }
 
-  &[data-status="starting"]::before,
-  &[data-status="save_failed"]::before {
-    background: var(--accent);
+  &[data-status="starting"],
+  &[data-status="save_failed"] {
+    --c: var(--warn);
   }
 
   // the game badge: not running is a state, not an error
-  &[data-game]::before {
-    background: var(--muted);
+  &[data-game] {
+    --c: var(--muted);
   }
 
-  &[data-game="true"]::before {
-    background: var(--ok);
-    box-shadow: 0 0 0 3px color-mix(in oklch, var(--ok) 22%, transparent);
+  &[data-game="true"] {
+    --c: var(--ok);
   }
 }
 
 @keyframes pulse {
   50% {
-    box-shadow: 0 0 0 5px color-mix(in oklch, var(--ok) 8%, transparent), 0 0 4px var(--ok);
+    opacity: 0.35;
   }
 }
 
-// the section tabs, docked to the right and as tall as the header
+// the section tabs, docked to the right
 .tabs {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   flex: none;
+  gap: 2px;
   margin-left: auto;
-  border-left: 1px solid var(--line);
 }
 
 .tab {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 86px;
-  padding: 0 13px;
+  height: var(--ctl);
+  padding: 0 var(--sp-3);
   border: 0;
+  border-radius: var(--r-md);
   background: transparent;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-3);
+  font-weight: var(--fw-medium);
   white-space: nowrap;
   cursor: pointer;
-  transition: color 0.14s;
-
-  // a short hairline between tabs
-  & + &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 1px;
-    height: 18px;
-    transform: translateY(-50%);
-    background: var(--line);
-  }
+  transition: background 0.12s, color 0.12s;
 
   &:hover {
+    background: var(--panel);
     color: var(--text);
   }
 
   // the section the user is in
   &[aria-current="page"] {
-    color: var(--gold-hi);
-    text-shadow: 0 0 10px color-mix(in oklch, var(--accent) 24%, transparent);
-
-    &::after {
-      content: "";
-      position: absolute;
-      left: 11px;
-      right: 11px;
-      bottom: 0;
-      height: 2px;
-      background: var(--accent);
-      box-shadow: 0 0 9px color-mix(in oklch, var(--accent) 48%, transparent);
-    }
+    background: var(--panel-2);
+    color: var(--text);
   }
 }
 
@@ -174,7 +147,7 @@ h1 {
 }
 
 .reset {
-  padding: 0 16px;
+  padding: 0 var(--sp-5);
   white-space: nowrap;
 
   &:first-child {
@@ -186,8 +159,7 @@ h1 {
   }
 
   b {
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
+    font-weight: var(--fw-medium);
     color: var(--text);
   }
 }
@@ -196,11 +168,11 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 16px;
-  padding: 10px 24px;
-  background: color-mix(in oklch, var(--accent) 9%, var(--bg));
+  gap: var(--sp-2) var(--sp-4);
+  padding: var(--sp-3) var(--sp-6);
+  background: var(--panel);
   border-bottom: 1px solid var(--line);
-  border-left: 3px solid var(--accent);
+  color: var(--text-2);
 
   p {
     flex: 1 1 320px;
@@ -209,30 +181,31 @@ h1 {
 }
 
 .btn {
-  height: 34px;
-  padding: 0 14px;
-  background: var(--panel);
-  border: 1px solid var(--gold-line);
-  border-radius: 4px;
-  color: var(--text);
-  font-weight: 600;
+  height: var(--ctl);
+  padding: 0 var(--sp-3);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  color: var(--text-2);
+  font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 
   &:hover:not(:disabled) {
     background: var(--panel-2);
-    border-color: var(--accent);
+    border-color: var(--line-strong);
+    color: var(--text);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: default;
   }
 }
 
 .detail {
   flex-basis: 100%;
-  font-size: 12px;
+  font-size: var(--fs-2);
   color: var(--muted);
   white-space: pre-wrap;
   word-break: break-all;
@@ -244,48 +217,40 @@ main {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 18px 24px 22px;
+  padding: var(--sp-5) var(--sp-6) var(--sp-6);
 }
 
 .page-h {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 18px;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
 
   h2 {
     margin: 0;
-    font: 600 22px/1.2 var(--display);
-    letter-spacing: 0.01em;
+    font-size: var(--fs-5);
+    font-weight: var(--fw-semi);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 }
 
 .meta {
-  font-size: 12.5px;
+  font-size: var(--fs-3);
   color: var(--muted);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  gap: var(--sp-4);
 }
 
 // wraps a card and its trash: a button cannot hold another button
 .slot {
   position: relative;
   display: grid;
-  transition: transform 0.16s;
-
-  &:hover,
-  &:focus-within {
-    transform: translateY(-2px);
-  }
-
-  &:has(.card:active) {
-    transform: none;
-  }
 
   &:hover .trash,
   &:focus-within .trash,
@@ -297,25 +262,24 @@ main {
 .trash {
   position: absolute;
   z-index: 2;
-  top: 10px;
-  right: 10px;
+  top: var(--sp-3);
+  right: var(--sp-3);
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  background: color-mix(in oklch, var(--panel) 80%, transparent);
-  border: 1px solid transparent;
-  border-radius: 4px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-sm);
   color: var(--bad);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+  transition: opacity 0.12s, background 0.12s;
 
   &:hover,
   &:focus-visible {
-    background: var(--panel-2);
-    border-color: var(--bad);
+    background: var(--bad-soft);
   }
 
   svg {
@@ -336,21 +300,28 @@ main {
   display: grid;
   align-content: center;
   justify-items: center;
-  gap: 12px;
-  padding: 16px;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
   text-align: center;
-  color: var(--muted);
-  background: color-mix(in oklch, var(--panel) 94%, transparent);
-  border: 1px solid var(--bad);
-  border-radius: 5px;
+  color: var(--text-2);
+  background: color-mix(in oklch, var(--panel) 96%, transparent);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
 
   .actions {
     display: flex;
-    gap: 8px;
+    gap: var(--sp-2);
   }
 
   .btn.danger {
     border-color: var(--bad);
+    color: var(--bad);
+
+    &:hover:not(:disabled) {
+      background: var(--bad-soft);
+      border-color: var(--bad);
+      color: var(--bad);
+    }
   }
 }
 
@@ -360,32 +331,20 @@ main {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-areas: "em who" "st st" "seen seen";
-  gap: 12px 16px;
-  padding: 18px 18px 14px;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-3);
+  padding: var(--sp-4);
   text-align: left;
   color: inherit;
   cursor: pointer;
-  background: linear-gradient(180deg, var(--panel-2), var(--panel) 62%);
+  background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 5px;
-  box-shadow: inset 0 1px 0 var(--gold-line);
-  transition: transform 0.16s, border-color 0.16s, box-shadow 0.16s;
+  border-radius: var(--r-lg);
+  transition: background 0.12s, border-color 0.12s;
 
-  > * {
-    position: relative;
-    z-index: 1;
-  }
-
+  // the class watermark is ornament, not information
   .art {
-    position: absolute;
-    z-index: 0;
-    right: -20px;
-    bottom: -30px;
-    width: 160px;
-    height: 160px;
-    color: var(--accent);
-    opacity: 0.06;
-    pointer-events: none;
+    display: none;
   }
 
   app-emblem {
@@ -394,62 +353,74 @@ main {
 
   &:hover,
   &:focus-visible {
-    border-color: var(--gold);
-    box-shadow:
-      inset 0 1px 0 var(--gold-line),
-      0 10px 26px rgb(0 0 0 / 0.4),
-      0 0 0 1px color-mix(in oklch, var(--accent) 20%, transparent);
+    background: var(--panel-2);
+    border-color: var(--line-strong);
   }
 }
 
 .who {
   grid-area: who;
-  align-self: center;
   display: grid;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
 }
 
 .name {
-  font: 600 22px/1.15 var(--display);
-  letter-spacing: 0.01em;
+  font-size: var(--fs-4);
+  font-weight: var(--fw-semi);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
   overflow-wrap: anywhere;
 }
 
 .cls {
-  font-size: 13px;
+  font-size: var(--fs-2);
   color: var(--muted);
 }
 
+// key figures side by side, no rule above each
 .card .stats {
   grid-area: st;
+  display: flex;
+  gap: var(--sp-6);
+
+  .stat {
+    padding-top: 0;
+    border-top: 0;
+    gap: 0;
+  }
+
+  .v {
+    font-size: var(--fs-4);
+  }
 }
 
 .seen {
   grid-area: seen;
-  padding-top: 10px;
+  padding-top: var(--sp-3);
   border-top: 1px solid var(--line);
-  font-size: 12px;
+  font-size: var(--fs-2);
   color: var(--muted);
 }
 
 .empty {
   display: grid;
   justify-items: center;
-  gap: 6px;
-  padding: 64px 24px;
+  gap: var(--sp-2);
+  padding: var(--sp-8) var(--sp-6);
   text-align: center;
-  background: color-mix(in oklch, var(--panel) 60%, transparent);
-  border: 1px dashed var(--line);
-  border-radius: 5px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-lg);
 
   app-emblem {
-    margin-bottom: 22px;
+    margin-bottom: var(--sp-4);
   }
 
   h3 {
     margin: 0;
-    font: 600 20px var(--display);
+    font-size: var(--fs-5);
+    font-weight: var(--fw-semi);
+    letter-spacing: -0.02em;
   }
 
   p {
@@ -464,10 +435,10 @@ main {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 4px 24px;
-  padding: 10px 24px;
+  gap: var(--sp-1) var(--sp-6);
+  padding: var(--sp-3) var(--sp-6);
   border-top: 1px solid var(--line);
-  font-size: 12.5px;
+  font-size: var(--fs-2);
   color: var(--muted);
 }
 
@@ -475,24 +446,16 @@ main {
 @media (max-width: 860px) {
   .top {
     flex-wrap: wrap;
-    align-items: center;
-    padding: 8px 14px;
+    padding: var(--sp-2) var(--sp-4);
   }
 
   .brand {
-    min-height: 48px;
-  }
-
-  .status-group {
-    margin-left: 12px;
+    min-height: 40px;
   }
 
   .tabs {
     flex: 1 0 100%;
-    height: 46px;
-    margin-top: 4px;
-    border-left: 0;
-    border-top: 1px solid var(--line);
+    margin-left: 0;
 
     .tab {
       flex: 1;
@@ -503,36 +466,15 @@ main {
 
 @media (max-width: 640px) {
   .top {
-    padding: 8px 10px;
-  }
-
-  .brand {
-    gap: 8px;
-  }
-
-  h1 {
-    font-size: 18px;
-  }
-
-  .pill {
-    min-height: 24px;
-    padding: 0 7px;
-    font-size: 10px;
+    padding: var(--sp-2) var(--sp-3);
   }
 
   main {
-    padding: 14px 16px 22px;
+    padding: var(--sp-4);
   }
 
   .banner,
   .foot {
-    padding-inline: 16px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .slot:hover,
-  .slot:focus-within {
-    transform: none;
+    padding-inline: var(--sp-4);
   }
 }

@@ -9,10 +9,10 @@
   align-items: center;
   box-sizing: border-box;
   height: 100%;
-  padding: 0 18px;
+  padding: 0 var(--sp-4);
   background: var(--panel);
-  border: 1px solid var(--gold-line);
-  border-radius: 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
   color: var(--text);
   overflow: hidden;
   user-select: none;
@@ -24,14 +24,17 @@
 
 .title {
   margin: 0;
-  font: 600 16px var(--display);
+  font-size: var(--fs-4);
+  font-weight: var(--fw-semi);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 
 // shrinks over the time the alert stays up
 .bar {
   position: absolute;
   inset: auto 0 0;
-  height: 3px;
+  height: 2px;
   background: var(--accent);
   transform-origin: left;
   animation: drain var(--secs) linear forwards;

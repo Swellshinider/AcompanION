@@ -4,6 +4,10 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ## v0.2.7 (next)
 
+### Melhorado
+
+- O app inteiro ganhou um visual novo, mais limpo e moderno.
+
 ## v0.2.6 (2026-10-28)
 
 ### Corrigido

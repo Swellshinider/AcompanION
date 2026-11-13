@@ -5,21 +5,23 @@
 .back {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 36px;
-  margin-bottom: 16px;
-  padding: 0 12px 0 10px;
+  gap: var(--sp-2);
+  height: var(--ctl);
+  margin-bottom: var(--sp-4);
+  padding: 0 var(--sp-3) 0 var(--sp-2);
   background: transparent;
   border: 1px solid var(--line);
-  border-radius: 4px;
-  color: inherit;
-  font-weight: 600;
+  border-radius: var(--r-md);
+  color: var(--text-2);
+  font: inherit;
+  font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 
   &:hover {
     background: var(--panel-2);
-    border-color: var(--gold-line);
+    border-color: var(--line-strong);
+    color: var(--text);
   }
 
   svg {
@@ -29,11 +31,11 @@
 }
 
 kbd {
-  margin-left: 4px;
+  margin-left: var(--sp-1);
   padding: 1px 5px;
   border: 1px solid var(--line);
-  border-radius: 3px;
-  font: 600 11px var(--ui);
+  border-radius: var(--r-sm);
+  font: var(--fw-medium) var(--fs-1) var(--ui);
   color: var(--muted);
 }
 
@@ -42,54 +44,66 @@ kbd {
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 4px 16px;
+  gap: var(--sp-1) var(--sp-4);
 
   h2 {
     margin: 0;
-    font: 600 32px/1.2 var(--display);
+    font-size: var(--fs-5);
+    font-weight: var(--fw-semi);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 }
 
 .current {
-  margin: 0 0 12px;
+  margin: 0 0 var(--sp-3);
+  color: var(--text-2);
+
+  b {
+    color: var(--text);
+    font-weight: var(--fw-semi);
+  }
 }
 
 .sections {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
 }
 
 .overlays {
-  margin-top: 16px;
+  margin-top: var(--sp-4);
 }
 
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
+  gap: var(--sp-3);
 }
 
 .panel {
   box-sizing: border-box;
-  padding: 16px 18px;
+  padding: var(--sp-4) var(--sp-5);
   background: var(--panel);
-  border: 1px solid var(--gold-line);
-  border-radius: 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
   color: var(--text);
 
   h3 {
-    margin: 0 0 12px;
-    font: 600 16px var(--display);
+    margin: 0 0 var(--sp-3);
+    font-size: var(--fs-4);
+    font-weight: var(--fw-semi);
+    letter-spacing: -0.01em;
   }
 }
 
 .check {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 30px;
+  gap: var(--sp-2);
+  min-height: var(--ctl);
+  color: var(--text-2);
 }
 
 input[type="checkbox"] {
@@ -100,46 +114,50 @@ input[type="checkbox"] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
-  min-height: 30px;
-  margin-top: 6px;
+  gap: var(--sp-2) var(--sp-3);
+  min-height: var(--ctl);
+  margin-top: var(--sp-1);
+  color: var(--text-2);
 
-  select {
-    height: 30px;
-    padding: 0 8px;
-    background: var(--panel-2);
-    border: 1px solid var(--gold-line);
-    border-radius: 4px;
+  select,
+  input[type="number"] {
+    box-sizing: border-box;
+    height: var(--ctl);
+    padding: 0 var(--sp-2);
+    background: var(--well);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
     color: var(--text);
     font: inherit;
+    transition: border-color 0.12s;
+
+    &:hover:not(:disabled) {
+      border-color: var(--line-strong);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+    }
   }
 
   input[type="number"] {
-    box-sizing: border-box;
     width: 80px;
-    height: 30px;
-    padding: 0 8px;
-    background: var(--panel-2);
-    border: 1px solid var(--gold-line);
-    border-radius: 4px;
-    color: var(--text);
-    font: inherit;
   }
 }
 
 .check + .row {
-  margin-top: 6px;
+  margin-top: var(--sp-1);
 }
 
 .row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: var(--sp-2) var(--sp-3);
 }
 
 .row + .row {
-  margin-top: 8px;
+  margin-top: var(--sp-2);
 }
 
 .status {
@@ -148,8 +166,9 @@ input[type="checkbox"] {
 
 .note,
 .err {
-  margin: 10px 0 0;
-  font-size: 12px;
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-2);
+  line-height: 1.5;
   color: var(--muted);
 }
 
@@ -163,23 +182,25 @@ input[type="checkbox"] {
 }
 
 .btn {
-  height: 34px;
-  padding: 0 14px;
-  background: var(--panel);
-  border: 1px solid var(--gold-line);
-  border-radius: 4px;
-  color: var(--text);
-  font-weight: 600;
+  height: var(--ctl);
+  padding: 0 var(--sp-3);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  color: var(--text-2);
+  font: inherit;
+  font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 
   &:hover:not(:disabled) {
     background: var(--panel-2);
-    border-color: var(--accent);
+    border-color: var(--line-strong);
+    color: var(--text);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: default;
   }
 }

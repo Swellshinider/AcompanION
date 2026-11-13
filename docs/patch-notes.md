@@ -13,6 +13,10 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.2.7 (next)
 
+### Improved
+
+- The whole app has a new, cleaner and more modern look.
+
 ## v0.2.6 (2026-10-28)
 
 ### Fixed

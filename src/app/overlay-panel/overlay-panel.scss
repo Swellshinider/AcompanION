@@ -5,10 +5,10 @@
 .box {
   box-sizing: border-box;
   height: 100%;
-  padding: 12px 14px;
-  background: var(--panel-2);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 5px;
+  border-radius: var(--r-lg);
   color: var(--text);
 }
 
@@ -16,14 +16,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-2);
+  padding-bottom: var(--sp-2);
   border-bottom: 1px solid var(--line);
   cursor: pointer;
 
   .name {
-    font: 600 15px var(--display);
+    font-size: var(--fs-4);
+    font-weight: var(--fw-semi);
+    letter-spacing: -0.01em;
   }
 }
 
@@ -34,11 +36,11 @@
   width: 36px;
   height: 20px;
   margin: 0;
-  background: var(--panel);
-  border: 1px solid var(--gold-line);
-  border-radius: 10px;
+  background: var(--well);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.12s, border-color 0.12s;
 
   &::after {
     content: '';
@@ -49,7 +51,7 @@
     height: 14px;
     background: var(--muted);
     border-radius: 50%;
-    transition: transform 0.15s, background 0.15s;
+    transition: transform 0.12s, background 0.12s;
   }
 
   &:checked {
@@ -57,7 +59,7 @@
     border-color: var(--accent);
 
     &::after {
-      background: var(--panel);
+      background: var(--page);
       transform: translateX(16px);
     }
   }
@@ -72,8 +74,9 @@
 .range {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 30px;
+  gap: var(--sp-2);
+  min-height: var(--ctl);
+  color: var(--text-2);
 }
 
 .range {
@@ -90,6 +93,7 @@
   output {
     min-width: 38px;
     text-align: right;
+    color: var(--text);
     font-variant-numeric: tabular-nums;
   }
 }
@@ -99,7 +103,7 @@ input[type="checkbox"]:not(.switch) {
 }
 
 .err {
-  margin: 10px 0 0;
-  font-size: 12px;
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-2);
   color: var(--bad);
 }

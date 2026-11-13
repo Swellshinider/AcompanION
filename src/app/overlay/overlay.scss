@@ -10,19 +10,30 @@
   flex-direction: column;
   box-sizing: border-box;
   height: 100%;
-  background: var(--bg);
+  // dark glass: the game blurs and dims behind the panel (the user's opacity fades the whole shell)
+  background: color-mix(in oklch, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(16px) brightness(0.8);
+  backdrop-filter: blur(16px) brightness(0.8);
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--r-lg);
   overflow: hidden;
   transition: border-color 0.15s;
 
+  // visible over any game scene: the accent, not a grey
   &:hover {
-    border-color: var(--gold-line);
+    border-color: color-mix(in oklch, var(--accent) 70%, transparent);
   }
 
-  // the meter paints only its own bars over the game
+  // the meter paints only its own bars over the game: no panel, no blur
   &.bare {
     background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+
+    // while the mouse is over it, a tint shows where the card ends
+    &:hover {
+      background: color-mix(in oklch, var(--bg) 45%, transparent);
+    }
   }
 }
 
@@ -36,7 +47,7 @@ header {
   height: 0;
   min-height: 0;
   overflow: hidden;
-  padding: 0 4px 0 10px;
+  padding: 0 var(--sp-1) 0 var(--sp-3);
   background: var(--panel);
   border-bottom: 0;
   cursor: move;
@@ -46,7 +57,7 @@ header {
   transition: flex-basis 0.15s, opacity 0.15s;
 
   .shell:hover & {
-    flex-basis: 27px;
+    flex-basis: 28px;
     border-bottom: 1px solid var(--line);
     opacity: 1;
     pointer-events: auto;
@@ -55,9 +66,8 @@ header {
 
 .title {
   color: var(--muted);
-  font: 600 11px var(--ui);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-medium);
 }
 
 .x {
@@ -66,9 +76,9 @@ header {
   padding: 0;
   background: transparent;
   border: 0;
-  border-radius: 3px;
+  border-radius: var(--r-sm);
   color: var(--muted);
-  font: 16px/1 var(--ui);
+  font: var(--fs-4)/1 var(--ui);
   cursor: pointer;
 
   &:hover {
@@ -84,7 +94,7 @@ main {
   position: relative;
   contain: layout;
   overflow: auto;
-  padding: 8px 10px;
+  padding: var(--sp-2) var(--sp-3);
 }
 
 // the radar fills the area by itself: nothing to scroll or pad
@@ -101,13 +111,13 @@ main.map {
   z-index: 30;
   width: 72px;
   margin: 0;
-  accent-color: var(--gold-hi);
+  accent-color: var(--accent);
   cursor: pointer;
 }
 
 .who {
-  margin: 0 0 8px;
-  font: 600 15px var(--display);
+  margin: 0 0 var(--sp-2);
+  font: var(--fw-semi) var(--fs-4) var(--ui);
 }
 
 .empty {
