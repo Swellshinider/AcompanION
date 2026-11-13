@@ -13,6 +13,10 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.3.1 (next)
 
+### Fixed
+
+- Restarting as administrator no longer opens asking to close another instance and take over the capture.
+
 ## v0.3.0 (2026-11-13)
 
 ### Improved

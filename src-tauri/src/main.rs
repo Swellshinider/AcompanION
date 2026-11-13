@@ -9,7 +9,7 @@ use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
 use anyhow::Context;
-use acompanion::app::{Rect, Shared, Status, classify, corner_pos, on_screen, save_status};
+use acompanion::app::{RESTARTED_ARG, Rect, Shared, Status, classify, corner_pos, load_state_waiting, on_screen, save_status};
 use acompanion::events::Opcodes;
 use acompanion::live::Engine;
 use acompanion::state::{Key, State};
@@ -153,14 +153,10 @@ fn take_over(handle: AppHandle) -> Result<(), String> {
     let path = acompanion::state::default_path().ok_or("APPDATA is not set")?;
     let quit_file = acompanion::app::quit_path(&path);
     std::fs::write(&quit_file, b"").map_err(|e| e.to_string())?;
-    let until = Instant::now() + TAKE_OVER_WAIT;
-    let loaded = loop {
-        match acompanion::app::load_state(&path) {
-            Ok((state, Some(guard))) => break Ok((state, guard)),
-            Ok(_) if Instant::now() < until => std::thread::sleep(Duration::from_millis(200)),
-            Ok(_) => break Err("the other instance did not close".to_string()),
-            Err(e) => break Err(format!("{e:#}")),
-        }
+    let loaded = match load_state_waiting(&path, TAKE_OVER_WAIT) {
+        Ok((state, Some(guard))) => Ok((state, guard)),
+        Ok(_) => Err("the other instance did not close".to_string()),
+        Err(e) => Err(format!("{e:#}")),
     };
     let _ = std::fs::remove_file(&quit_file);
     let (state, guard) = loaded?;
@@ -415,9 +411,11 @@ fn capture(handle: AppHandle, shared: Arc<Mutex<Shared>>, stop: Arc<AtomicBool>,
 
 fn main() {
     // An unreadable state file stops capture: the engine would overwrite it on its first save.
+    // after "restart as administrator" the old instance may still be closing: wait for its lock
+    let wait = if std::env::args().any(|a| a == RESTARTED_ARG) { TAKE_OVER_WAIT } else { Duration::ZERO };
     let loaded = acompanion::state::default_path()
         .context("APPDATA is not set")
-        .and_then(|p| Ok((acompanion::app::load_state(&p)?, p)));
+        .and_then(|p| Ok((load_state_waiting(&p, wait)?, p)));
     let (status, saved, start) = match loaded {
         Ok(((state, guard), path)) => {
             let saved = state.to_json()["characters"].clone();

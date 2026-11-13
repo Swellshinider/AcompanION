@@ -3,6 +3,7 @@
 
 use std::fs::File;
 use std::path::{Path, PathBuf};
+use std::time::{Duration, Instant};
 
 use anyhow::Result;
 use serde_json::{Value, json};
@@ -16,6 +17,19 @@ use crate::state::{self, State};
 pub fn load_state(path: &Path) -> Result<(State, Option<File>)> {
     let guard = state::try_lock(path)?;
     Ok((State::load(path)?, guard))
+}
+
+/// `load_state`, retried every 200 ms for up to `wait` while another instance holds the lock; the guard is
+/// `None` only if it never let go.
+pub fn load_state_waiting(path: &Path, wait: Duration) -> Result<(State, Option<File>)> {
+    let until = Instant::now() + wait;
+    loop {
+        let loaded = load_state(path)?;
+        if loaded.1.is_some() || Instant::now() >= until {
+            return Ok(loaded);
+        }
+        std::thread::sleep(Duration::from_millis(200));
+    }
 }
 
 /// The file another instance creates next to the state file to ask the lock owner to close.
@@ -121,9 +135,12 @@ pub fn corner_pos(work: Rect, size: (i32, i32), corner: &str, margin: i32) -> Op
     }
 }
 
+/// Passed to the elevated relaunch: the old instance is still closing, so wait for its lock at start.
+pub const RESTARTED_ARG: &str = "--restarted";
+
 /// PowerShell that relaunches `exe` through UAC; it exits non-zero when the prompt is declined.
 pub fn runas_script(exe: &str) -> String {
-    format!("Start-Process -FilePath '{}' -Verb RunAs -ErrorAction Stop", exe.replace('\'', "''"))
+    format!("Start-Process -FilePath '{}' -ArgumentList '{RESTARTED_ARG}' -Verb RunAs -ErrorAction Stop", exe.replace('\'', "''"))
 }
 
 /// Relaunch elevated and wait for the prompt. `Ok(true)`: accepted, the new instance is starting.
@@ -246,6 +263,23 @@ mod tests {
     }
 
     #[test]
+    fn a_restarted_instance_waits_for_the_old_one_to_release_the_lock() {
+        let dir = std::env::temp_dir().join(format!("acompanion-app-wait-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("characters.json");
+        State::default().save(&path).unwrap();
+        let (_, guard) = load_state(&path).unwrap();
+        assert!(load_state_waiting(&path, Duration::from_millis(250)).unwrap().1.is_none());
+        let releaser = std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_millis(300));
+            drop(guard);
+        });
+        assert!(load_state_waiting(&path, Duration::from_secs(5)).unwrap().1.is_some());
+        releaser.join().unwrap();
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
     fn saved_fights_are_read_next_to_the_state_file_and_none_without_a_path() {
         let dir = std::env::temp_dir().join(format!("acompanion-app-history-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
@@ -266,7 +300,7 @@ mod tests {
     fn runas_script_quotes_the_path() {
         assert_eq!(
             runas_script(r"C:\It's here\acompanion.exe"),
-            r"Start-Process -FilePath 'C:\It''s here\acompanion.exe' -Verb RunAs -ErrorAction Stop"
+            r"Start-Process -FilePath 'C:\It''s here\acompanion.exe' -ArgumentList '--restarted' -Verb RunAs -ErrorAction Stop"
         );
     }
 }
