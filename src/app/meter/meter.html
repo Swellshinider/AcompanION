@@ -71,7 +71,7 @@
               @else { <ng-container i18n="@@meterLastFight">Last fight</ng-container> }
               · {{ length() }}
             </span>
-            <span class="meta">{{ short(damage()) }} · {{ short(damageRate()) }}/s</span>
+            <span class="meta"><ng-container i18n="@@meterSumTotal">Total</ng-container>&ngsp;<b>{{ short(damage()) }}</b> · {{ short(damageRate()) }}/s</span>
           </div>
           @if (target(); as t) {
             <div class="line2">
@@ -96,6 +96,7 @@
               <span class="fill" [style.width.%]="r.top * 100"></span>
               <span class="disc"><span class="ico" [appGlyph]="icon(r.p)" aria-hidden="true"></span></span>
               <span class="n"><ng-container [ngTemplateOutlet]="who" [ngTemplateOutletContext]="{ $implicit: r.p }" /></span>
+              <span class="a">{{ short(r.amount) }}</span>
               @if (r.now !== null) { <span class="now">{{ r.now | number:'1.0-0' }}/s</span> }
               <span class="v">{{ r.dps | number:'1.0-0' }}/s</span>
               <span class="s">{{ r.share | percent:'1.1-1' }}</span>

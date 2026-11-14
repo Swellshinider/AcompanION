@@ -4,6 +4,10 @@ Tradução em português do Brasil de [patch-notes.md](patch-notes.md), mostrada
 
 ## v0.3.2 (next)
 
+### Melhorado
+
+- O overlay mostra o dano total de cada jogador e identifica o total do grupo.
+
 ## v0.3.1 (2026-11-13)
 
 ### Corrigido
