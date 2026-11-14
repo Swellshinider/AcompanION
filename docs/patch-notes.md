@@ -13,6 +13,10 @@ The top section is the next version, named by the patch bump of the last release
 
 ## v0.3.2 (next)
 
+### Improved
+
+- The overlay shows each player's total damage and labels the group total.
+
 ## v0.3.1 (2026-11-13)
 
 ### Fixed

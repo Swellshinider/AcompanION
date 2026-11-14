@@ -182,6 +182,8 @@ describe('Meter', () => {
     const { el } = render({ current: now, recent: [base, now], compact: true });
     expect(el.querySelector('.row .now')?.textContent).toBe('100/s');
     expect(el.querySelector('.row .v')?.textContent).toBe('60/s');
+    expect(el.querySelector('.row .a')?.textContent).toBe('600');
+    expect(el.querySelector('.line1 .meta')?.textContent).toMatch(/Total\s+600/);
   });
 
   it('shows the boss health as numbers, a bar and a percentage in the overlay', () => {
